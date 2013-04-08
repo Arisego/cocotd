@@ -10,7 +10,7 @@
 
 #include "tinyxml/tinyxml.h"
 #include "utils/ScirptDer.h"
-#include "utils/SpotLight.h"
+//#include "utils/mSpotLight.h"
 #include "utils/Controller.h"
 #include "utils/States.h"
 
@@ -92,7 +92,7 @@ public:
 	void PrepareSave();
 	void Snap();
 
-	CCSpotLight* spotLight;
+	mSpotLight* spotLight;
 
 	string scpfile;
 

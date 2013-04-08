@@ -3,7 +3,7 @@
 
 
 #include <cmath>
-#include "utils/SpotLight.h"
+//#include "utils/SpotLight.h"
 
 
 #include "GameManager.h"
@@ -510,14 +510,14 @@ m_debugDraw->SetFlags(flags);
 
 		//CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
 		CCSize s1 = CCSize(rw,rh);
-		CCRenderTexture* renderLayer = CCRenderTexture::renderTextureWithWidthAndHeight(s1.width, s1.height);  
+		renderLayer = CCRenderTexture::renderTextureWithWidthAndHeight(s1.width, s1.height);  
 		renderLayer->setPosition(ccp(-dx + s1.width/2,-dy + s1.height/2));  
 		ccBlendFunc bf = {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};  
 		renderLayer->getSprite()->setBlendFunc(bf);  
 		addChild(renderLayer,dy);  
 
 
-		spotLight = CCSpotLight::spotLightWithRenderTexture(renderLayer, 400.0f, ccc4f(0, 0, 0, 0.95));  
+		spotLight = mSpotLight::spotLightWithRenderTexture(renderLayer, 400.0f, ccc4f(0, 0, 0, 0.95));  
 		if(!spotLight) 
 			return false;  
 		spotLight->setAnchorPoint(ccp(0, 0));  
@@ -764,4 +764,20 @@ void TileMap::b_click()
 {
 	if(!cancontrol || !CharaS::sharedCharaS()->getdispchara()) return;
 	GameManager::sharedLogicCenter()->ml->switch_to_battle("myiso");
+}
+
+void TileMap::test_disable_all_entiles()
+{
+	CCDictElement* pCde = NULL;
+	CCDICT_FOREACH(m_itemlist,pCde){
+		Entiles* t_e = (Entiles*) pCde->getObject();
+		t_e->m_sprite->setVisible(false);
+	}
+	m_controller = NULL;
+
+	renderLayer->removeFromParent();
+	spotLight->removeFromParent();
+
+	CC_SAFE_RELEASE_NULL(renderLayer);  
+	CC_SAFE_RELEASE_NULL(spotLight);
 }

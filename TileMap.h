@@ -8,7 +8,7 @@
 #include "utils/Entiles.h"
 #include "utils/ETile.h"
 #include "utils/EPhsics.h"
-#include "utils/SpotLight.h"
+#include "utils/mSpotLight.h"
 #include "utils/Controller.h"
 #include "byeven/BYCocos.h"
 
@@ -122,7 +122,7 @@ public:
 	CCSpriteBatchNode *sheet;
 
 
-	CCSpotLight* spotLight;
+	mSpotLight* spotLight;
 
 	b2World *_world; 
 	b2Body *_body; 
@@ -197,11 +197,14 @@ public:
 	 float round(float r);
 	 virtual void update_b2world(float dt);
 	 void update_collide();
+	 void test_disable_all_entiles();
 
 	string map_path;
 	string scr_path;
 	bool m_isLoad;
 	Script* lsp;
+
+	CCRenderTexture* renderLayer;
 };
 
 #endif	// __TILEMAP_H__
