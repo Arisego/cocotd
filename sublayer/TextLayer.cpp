@@ -87,11 +87,21 @@ void TextLayer::onEnter()
 
 	m_Label = CCLabelTTF::create("", "fonts/msyhbd.ttf", 24, CCSize(m_textwidth, m_height), kCCTextAlignmentLeft);
 	mSingeWidth = 24;
+	m_Label->setPosition(CCPointZero);
+	m_Label->setAnchorPoint(CCPointZero);
+
+	cns_blocks = CCNode::create();
 
 	//m_Label->setColor(ccc3(0,0,0));
-	m_Label->setPosition( ccp((s.width + m_avatarwidth )/ 2, m_height) );
-	m_Label->setAnchorPoint(CCPoint(0.5,1));
-	layer1->addChild(m_Label);
+	cpn_textcn = CCClippingNode::create();
+	cpn_textcn->setContentSize(CCSize(m_textwidth, m_height));
+	cpn_textcn->setPosition( ccp((s.width + m_avatarwidth )/ 2, m_height) );
+	cpn_textcn->setAnchorPoint(CCPoint(0.5,1));
+	cpn_textcn->addChild(m_Label);
+	cpn_textcn->setStencil(cns_blocks);
+	cpn_textcn->setInverted(true);
+	
+	layer1->addChild(cpn_textcn);
 
 
 
@@ -295,6 +305,70 @@ void TextLayer::FlushText(const char* line,bool dst){
 	}
 }
 
+void TextLayer::StreamText(float dt){
+	if(!m_bIsNoFade) return;
+	if(cur<sum){
+		if(mLineCount+mSingeWidth>m_textwidth){
+			mLineCount = 0;
+			lines += '\n';
+		}
+
+		char t = fulline[cur];
+		if((t&0xE0) == 0xE0){	//3byte
+			lines += t;
+			lines += fulline[cur+1];
+			lines += fulline[cur+2];
+			cur += 3;
+			mLineCount += mSingeWidth;
+		}else if((t&0xC0) == 0xC0){//2byte
+			lines += t;
+			lines += fulline[cur+1];
+			cur += 2;
+			mLineCount += mSingeWidth;
+		}else{//1byte
+			lines += t;
+			cur++;
+			mLineCount += mSingeWidth/2;
+		}
+		//CCLOG("streaming text:%s",lines.c_str());
+		m_iTextcount++;
+		FlushText(lines.c_str());
+	}else{
+		StopStream();
+	}
+
+}
+
+void TextLayer::FormText(){
+	for(int i = 0; i< sum;)
+	{	
+		if(mLineCount+mSingeWidth>m_textwidth){
+			mLineCount = 0;
+			lines += '\n';
+		}
+
+		char t = fulline[i];
+		if((t&0xE0) == 0xE0){	//3byte
+			lines += t;
+			lines += fulline[i+1];
+			lines += fulline[i+2];
+			i += 3;
+			mLineCount += mSingeWidth;
+		}else if((t&0xC0) == 0xC0){//2byte
+			lines += t;
+			lines += fulline[i+1];
+			i += 2;
+			mLineCount += mSingeWidth;
+		}else{//1byte
+			lines += t;
+			i++;
+			mLineCount += mSingeWidth/2;
+		}
+		//CCLOG("streaming text:%s",lines.c_str());
+		m_iTextcount++;
+	}
+}
+
 void TextLayer::ShowText(const char* line){
 
 	cur = 0;
@@ -303,8 +377,10 @@ void TextLayer::ShowText(const char* line){
 	fulline = line;
 	lines.clear();
 	mLineCount = 0;
+	FormText();
 	m_bIsShownOver = false;
-	
+	FlushText(line,true);
+
 	if(m_bIsSkip){
 		FlushText(line,true);
 	}else{
@@ -372,40 +448,6 @@ void TextLayer::StopStream(){					//文字显示完成后调用
 	}else{
 		if(e_layerstate == 3) e_layerstate = 0;
 	}
-}
-
-void TextLayer::StreamText(float dt){
-	if(!m_bIsNoFade) return;
-	if(cur<sum){
-		if(mLineCount+mSingeWidth>m_textwidth){
-			mLineCount = 0;
-			lines += '\n';
-		}
-
-		char t = fulline[cur];
-		if((t&0xE0) == 0xE0){	//3byte
-				lines += t;
-				lines += fulline[cur+1];
-				lines += fulline[cur+2];
-				cur += 3;
-				mLineCount += mSingeWidth;
-		}else if((t&0xC0) == 0xC0){//2byte
-				lines += t;
-				lines += fulline[cur+1];
-				cur += 2;
-				mLineCount += mSingeWidth;
-		}else{//1byte
-			lines += t;
-			cur++;
-			mLineCount += mSingeWidth/2;
-		}
-		//CCLOG("streaming text:%s",lines.c_str());
-		m_iTextcount++;
-		FlushText(lines.c_str());
-	}else{
-		StopStream();
-	}
-
 }
 
 void TextLayer::update(float dt)

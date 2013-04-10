@@ -43,6 +43,11 @@ public:
 	void ShowText(const char* line);
 	void FlushText(const char* line,bool dst = false);
 	void StreamText(float dt);
+
+	void FormText();
+	CCClippingNode* cpn_textcn;
+	CCNode*	cns_blocks;
+
 	CCLayerColor* layer1;
 	MouseMenu* menu;
 
