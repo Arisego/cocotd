@@ -33,7 +33,8 @@ bool Container::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
 
 void Container::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent){
 	if(!isVisible()) return;
-	mLasto = pTouch;
+	if(!mLasto) mLasto = new CCTouch();
+	mLasto->setTouchInfo(pTouch->getID(),pTouch->getLocationInView().x,pTouch->getLocationInView().y);
 }
 
 void Container::update(float fDelta){
@@ -42,6 +43,7 @@ void Container::update(float fDelta){
 			onHover();
 		}else{
 			onNormal();
+			CC_SAFE_RELEASE_NULL(mLasto);
 		}
 	}
 }

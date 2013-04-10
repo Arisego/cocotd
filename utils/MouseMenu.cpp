@@ -143,7 +143,8 @@ void MouseMenu::ccTouchMoved(CCTouch* touch, CCEvent* event)
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32 )
     CCAssert(m_eState == kCCMenuStateTrackingTouch, "[Menu ccTouchMoved] -- invalid state");
 #endif
-	lastto = touch;
+	if(!lastto) lastto = new CCTouch();
+	lastto->setTouchInfo(touch->getID(),touch->getLocationInView().x,touch->getLocationInView().y);
 
 }
 
