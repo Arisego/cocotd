@@ -20,6 +20,7 @@ bool ListDBView::init()
 		CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
 		CC_BREAK_IF(!init_data());
 		pTableView = new TableView();
+		pTableView->autorelease();
 		pTableView->setDataSource(this);
 		pTableView->initWithViewSize(CCSizeMake(width, height));
 		pTableView->setDirection(kCCScrollViewDirectionVertical);
@@ -70,6 +71,7 @@ CCTableViewCell* ListDBView::tableCellAtIndex(CCTableView *table, unsigned int i
 	pLabel->setPosition(CCPointZero);
 	pLabel->setAnchorPoint(CCPointZero);
 	pCell->setTag(pLabel->getTag());
+	pLabel->retain();
 	//pLabel->setTag(123);
 
 	if(pLabel->getParent() != NULL)

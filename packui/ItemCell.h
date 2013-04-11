@@ -30,6 +30,10 @@ protected:
 	int m_iType;
 
 public:
+	~ItemCell(){
+		CCLOG(">ItemCell_DEC");
+	}
+
 	int sum,lock;
 
 	ItemCell(float w, float h, int type, ItemCellData* a_icd);

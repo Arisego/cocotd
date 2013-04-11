@@ -90,7 +90,7 @@ void TextLayer::onEnter()
 	m_Label->setPosition(CCPointZero);
 	m_Label->setAnchorPoint(CCPointZero);
 
-	cns_blocks = CCNode::create();
+	cns_blocks = CCSpriteBatchNode::create("Images/block.png");
 
 	//m_Label->setColor(ccc3(0,0,0));
 	cpn_textcn = CCClippingNode::create();
@@ -99,7 +99,7 @@ void TextLayer::onEnter()
 	cpn_textcn->setAnchorPoint(CCPoint(0.5,1));
 	cpn_textcn->addChild(m_Label);
 	cpn_textcn->setStencil(cns_blocks);
-	cpn_textcn->setInverted(true);
+	//cpn_textcn->setInverted(true);
 	
 	layer1->addChild(cpn_textcn);
 
@@ -296,9 +296,12 @@ void TextLayer::FadeText(CCObject* sender){
 //[in] dst false时更新文字，true时强制刷新为fullline最终版
 void TextLayer::FlushText(const char* line,bool dst){
 	if(m_bIsShownOver)	return;
-	if(dst){		
-		lines.append(fulline,cur,sum-cur);
-		m_Label->setString(lines.c_str());
+	if(dst){	
+		m_Label->setString(line);
+		//lines.append(fulline,cur,sum-cur);
+		//m_Label->setString(lines.c_str());
+		cns_blocks->removeAllChildren();
+		cpn_textcn->setInverted(true);
 		StopStream();
 	}else{
 		m_Label->setString(line);
@@ -308,32 +311,42 @@ void TextLayer::FlushText(const char* line,bool dst){
 void TextLayer::StreamText(float dt){
 	if(!m_bIsNoFade) return;
 	if(cur<sum){
-		if(mLineCount+mSingeWidth>m_textwidth){
-			mLineCount = 0;
-			lines += '\n';
+		int t_cur = vi_text.at(cur);
+		++cur;
+
+		switch(t_cur)
+		{
+		case(0):
+			{
+				m_fBlockY -= 24;				//CHV:The height of one line = 24;
+				mLineCount = 0;
+				StreamText(0);
+				return;
+			}
+		case(1):
+			{
+				mLineCount += mSingeWidth/2;
+				break;;
+			}
+		default:		//	2&&3
+			{
+				mLineCount += mSingeWidth;
+				break;
+			}
 		}
 
-		char t = fulline[cur];
-		if((t&0xE0) == 0xE0){	//3byte
-			lines += t;
-			lines += fulline[cur+1];
-			lines += fulline[cur+2];
-			cur += 3;
-			mLineCount += mSingeWidth;
-		}else if((t&0xC0) == 0xC0){//2byte
-			lines += t;
-			lines += fulline[cur+1];
-			cur += 2;
-			mLineCount += mSingeWidth;
-		}else{//1byte
-			lines += t;
-			cur++;
-			mLineCount += mSingeWidth/2;
-		}
-		//CCLOG("streaming text:%s",lines.c_str());
-		m_iTextcount++;
-		FlushText(lines.c_str());
+		//CCLOG("Insert block at:%f,%f.",mLineCount,m_fBlockY);
+		CCSprite* t_cs = CCSprite::create("Images/block.png");
+		t_cs->setAnchorPoint(ccp(1,1));
+		t_cs->setPosition(ccp(mLineCount,m_fBlockY));
+		cns_blocks->addChild(t_cs);
+
 	}else{
+		CCSprite* t_cs = CCSprite::create("Images/block.png");
+		t_cs->setAnchorPoint(ccp(1,1));
+		t_cs->setPosition(ccp(mLineCount+24,m_fBlockY));
+		cns_blocks->addChild(t_cs);
+		//CCLOG("We should stopstream.");
 		StopStream();
 	}
 
@@ -344,7 +357,9 @@ void TextLayer::FormText(){
 	{	
 		if(mLineCount+mSingeWidth>m_textwidth){
 			mLineCount = 0;
+			++m_iLine;
 			lines += '\n';
+			vi_text.push_back(0);
 		}
 
 		char t = fulline[i];
@@ -354,19 +369,22 @@ void TextLayer::FormText(){
 			lines += fulline[i+2];
 			i += 3;
 			mLineCount += mSingeWidth;
+			vi_text.push_back(3);
 		}else if((t&0xC0) == 0xC0){//2byte
 			lines += t;
 			lines += fulline[i+1];
 			i += 2;
 			mLineCount += mSingeWidth;
+			vi_text.push_back(2);
 		}else{//1byte
 			lines += t;
 			i++;
 			mLineCount += mSingeWidth/2;
+			vi_text.push_back(1);
 		}
-		//CCLOG("streaming text:%s",lines.c_str());
 		m_iTextcount++;
 	}
+	CCLOG("forming text:%s",lines.c_str());
 }
 
 void TextLayer::ShowText(const char* line){
@@ -377,13 +395,21 @@ void TextLayer::ShowText(const char* line){
 	fulline = line;
 	lines.clear();
 	mLineCount = 0;
+	vi_text.clear();
+	m_iLine = 0;
 	FormText();
 	m_bIsShownOver = false;
-	FlushText(line,true);
+	cns_blocks->removeAllChildren();
+	cpn_textcn->setInverted(false);
+
+	sum = m_iLine + m_iTextcount;
+	mLineCount = 0;
+	m_fBlockY = m_height;
 
 	if(m_bIsSkip){
 		FlushText(line,true);
 	}else{
+		FlushText(line,false);
 		this->schedule( schedule_selector(TextLayer::StreamText),m_fTText);		//在这里配置文字间隔
 	}
 }

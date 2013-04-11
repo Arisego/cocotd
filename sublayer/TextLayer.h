@@ -45,8 +45,11 @@ public:
 	void StreamText(float dt);
 
 	void FormText();
+	vector<int> vi_text;
+	int m_iLine;	//The num of line.
+	float m_fBlockY;
 	CCClippingNode* cpn_textcn;
-	CCNode*	cns_blocks;
+	CCSpriteBatchNode*	cns_blocks;
 
 	CCLayerColor* layer1;
 	MouseMenu* menu;

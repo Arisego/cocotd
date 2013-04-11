@@ -81,6 +81,7 @@ public:
 
 			ItemCell* tic = new ItemCell(cWidth, cHeight, m_ICType, ticd);
 			tic->setTag(item_id);
+			tic->autorelease();
 				//CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 24,CCSize(rw,0), kCCTextAlignmentLeft);
 				//tlt->retain();
 
@@ -173,6 +174,9 @@ protected:
 public:
 	~ListDBView(){
 		EventCenter::sharedEventCenter()->setScroller(NULL);
+		removeAllChildren();
+//		data->removeAllObjects();
+//		CC_SAFE_RELEASE_NULL(data);
 	}
 
 	void scroll_in(WPARAM wParam, LPARAM lParam){

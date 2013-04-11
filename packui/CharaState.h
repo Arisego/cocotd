@@ -14,6 +14,8 @@
 class CharaState : public Container, public InterfaceEffect
 {
 protected:
+	bool m_bKill3333;
+
 	Chara* mpChara;
 	CCSprite* mpChraSprite;
 	int m_iChState;		//The State for long or full
@@ -90,6 +92,7 @@ public:
 	void refresh_attrtable();
 	void refresh_equlist();
 
+	~CharaState();
 };
 
 #endif

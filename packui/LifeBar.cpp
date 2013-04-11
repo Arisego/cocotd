@@ -26,7 +26,7 @@ LifeBar::LifeBar(string psz, int m){
 	m_clbVal->setPosition(ccp(50,-2));
 	addChild(m_clbVal,1);
 	
-
+	autorelease();
 }
 
 void LifeBar::revalue(int a_max){

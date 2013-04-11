@@ -18,6 +18,16 @@ ModelLayer::ModelLayer(){
 	b_StateRunning = true;
 }
 
+ModelLayer::~ModelLayer(){
+	if(mtTab) mtTab->CleanStates();
+	//removeAllChildren();
+	CCLOG(">Model_Layer_DEC");
+	//std::vector<Container*>::iterator it;
+	//for(it = m_vBtns.begin(); it != m_vBtns.end(); ++it){
+	//	(*it)->removeFromParent();
+	//	(*it)->release();
+	//}
+}
 
 
 //对于ModelLayer -- 
@@ -50,6 +60,7 @@ void ModelLayer::preQuit(){
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	BYLayerDescendant *mb = new BYLayerDescendant();
+	mb->autorelease();
 	
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
@@ -69,6 +80,8 @@ void ModelLayer::preQuit(){
 	mif_Yes->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(ModelLayer::c_quit_yes) );
 	SpriteTextMenuItem* mif_No = new SpriteTextMenuItem();
 	mif_No->initWithNormalSprite(spriteNormal1, spriteSelected1, spriteDisabled1, this, menu_selector(ModelLayer::c_quit_no) );
+	mif_No->autorelease();
+	mif_Yes->autorelease();
 
 	//CCMenuItemFont *mif_Yes = CCMenuItemFont::create("Yes",  this, menu_selector(ModelLayer::c_quit_yes) );
 	//CCMenuItemFont *mif_No = CCMenuItemFont::create("No",  this, menu_selector(ModelLayer::c_quit_no) );
@@ -118,12 +131,14 @@ void ModelLayer::preConfig(int type, int flag, int tab){
 	if(m_clock) return;			//TODO:切换Flag和Tab
 	setTouchEnabled(true);
 	mb = NULL;
+	mtTab = NULL;
+
 	m_vBtns.clear();
 	m_clock = true;
 	miType = type;
 	miFlag = flag;
 	miTab = tab;
-
+	
 	if(! (miFlag & miType)) return;	//当前按钮列表不提供这个功能则退出
 
 	m_fHeight = 50;
@@ -176,13 +191,16 @@ void ModelLayer::Add_Button(const char* name,int tag){
 	tabc->setAnchorPoint(ccp(0,0));
 	tabc->setPosition(ccp(m_fWidth,m_fHeight));
 	addChild(tabc);
+	
 	m_vBtns.push_back(tabc);
 }
 
 void ModelLayer::buttonback(CCObject* sender){
 	int itag = ((Container *) sender)->getTag();
-	if(miFlag == itag) return;
-
+	if(miFlag == itag) {
+		CCLOG(">Test clean.");
+		//return;
+	}
 	switch(itag){
 	case 0:
 		{
@@ -205,8 +223,10 @@ void ModelLayer::Show_Content(){
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	if(!mb){
 		mb = new BYLayerDescendant();
+		mb->autorelease();
 		mb->setAnchorPoint(ccp(0,0));
 		mb->setPosition(ccp(110,50));
+		
 
 		CCScale9Sprite* nback = CCScale9Sprite::create(s_Button); 
 		nback->setAnchorPoint(ccp(0,0));
@@ -217,6 +237,7 @@ void ModelLayer::Show_Content(){
 	}
 
 	mb->removeChildByTag(CONTENT_TAG);
+
 	switch(miFlag){
 	case(0x0010):
 		{

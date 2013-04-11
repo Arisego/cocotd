@@ -48,6 +48,7 @@ public:
 	void buttonback(CCObject* sender);
 
 	ModelLayer();
+	~ModelLayer();
 	
 };
 

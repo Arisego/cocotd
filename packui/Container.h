@@ -49,9 +49,11 @@ public:
 	CCLabelBMFont* labelAtlas;
 
 	Container();
+	~Container();
 
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
 	virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+	virtual void onExit();
 
 	virtual void update(float fDelta);
 	virtual bool checkTouch(CCTouch *pTouch);

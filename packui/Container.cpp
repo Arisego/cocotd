@@ -1,8 +1,19 @@
 #include "Container.h"
 
 Container::Container(){
+	autorelease();
 	m_bIsEnabled = true;
 	mLasto = NULL;
+}
+
+Container::~Container(){
+	CCLOG(">Container_DEC");
+	CC_SAFE_RELEASE_NULL(mLasto);
+	removeAllChildren();
+}
+
+void Container::onExit(){
+	unscheduleUpdate();
 }
 
 void Container::setEnability(bool tar){
@@ -155,7 +166,7 @@ void Container::initString(const char* s_Title,float width,float height,string c
 
 	labelAtlas = CCLabelBMFont::create(s_Title, "fonts/CocoTd.fnt");
 	labelAtlas->setPosition(ccp(width/2,height/2));
-	addChild(labelAtlas,1);
+	this->addChild(labelAtlas,1);
 
 	m_obContentSize.width = width;
 	m_obContentSize.height = height;

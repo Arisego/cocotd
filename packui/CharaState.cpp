@@ -4,9 +4,18 @@
 #include "utils/EffectControler.h"
 #include "packui/CharaListView.h"
 
+CharaState::~CharaState(){
+//	CC_SAFE_RELEASE_NULL(m_caTList);
+	CC_SAFE_RELEASE_NULL(m_cdEquips);
+}
+
 void CharaState::update(float fDelta){
 	if(m_iChState>-1){
 		Container::update(fDelta);
+	}
+	if(m_bKill3333){
+		m_bKill3333 = false;
+		removeChildByTag(0x3333);
 	}
 }
 
@@ -21,6 +30,7 @@ bool CharaState::f_init(){
 	{
 		//NULL for CC_SAFE_RELEASE_NULL in multi use of some component.
 		CCLOG(">f_init.");
+		m_bKill3333 = false;
 		mpChraSprite = NULL;
 		m_iChState = -1;
 		m_iGroup = -1;
@@ -180,6 +190,7 @@ void CharaState::show_all()		//显示所有内容
 	CCLOG(">Prepare to show all.%s",mpChara->m_sName.c_str());	
 	
 	r_mb = new BYLayerDescendant();
+	r_mb->autorelease();
 	r_mb->setAnchorPoint(ccp(0,0));
 	r_mb->setPosition(ccp(0,1));
 	r_mb->setContentSize(CCSizeMake(700,500));
@@ -246,6 +257,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 	if(!r_inBox){
 		
 		r_inBox = new BYLayerDescendant();
+		r_inBox->autorelease();
 		r_inBox->setAnchorPoint(ccp(0,0));
 		r_inBox->setPosition(ccp(353,1));
 		r_inBox->setContentSize(CCSizeMake(301,281));
@@ -419,6 +431,7 @@ void CharaState::show_content()			//显示背景和状态条
 	l_mb = new BYLayerDescendant();
 	l_mb->setAnchorPoint(ccp(0,0));
 	l_mb->setPosition(ccp(1,1));
+	l_mb->autorelease();
 	addChild(l_mb);
 
 	removeChildByTag(0x98);
@@ -556,6 +569,7 @@ void CharaState::get_target(){
 	removeChildByTag(0x3333);
 
 	CharaListView* clw = new CharaListView();
+	clw->autorelease();
 	clw->m_iCLVState = -1;
 	clw->init();
 	
@@ -571,14 +585,14 @@ void CharaState::get_target(){
 
 void CharaState::targetBack( CCObject* pSender)
 {
-	//IN:TODO:if target == 0 , then it means affecting all the chara, we just get that the sender is back.
+	//IN:[TODO]:if value_target == 0 , then it means affecting all the chara, we just get that the sender is back.
 
 	CharaState* t_cs = (CharaState*) pSender;
 	if(t_cs->getTag() < 0)
 	{
 		EffectControler::sharedEffectControler()->f_effect_over();
 		EffectControler::sharedEffectControler()->f_clear();
-		removeChildByTag(0x3333);
+		m_bKill3333 = true;
 		r_mb->m_bIsEnabled = true;
 	}else{
 		m_caTList->addObject(t_cs->getcontent());

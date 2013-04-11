@@ -45,6 +45,14 @@ class mControlSwith : public CCControlSwitch
 {
 	bool m_bIsMouseDown;
 
+	~mControlSwith(){
+		CCLOG(">mcs_desc");
+	}
+
+	virtual void onExit(){
+		CCLOG(">mcs_exit");
+	}
+
 	virtual void onEnter(){
 		m_bIsMouseDown = false;
 		CCControlSwitch::onEnter();

@@ -29,8 +29,20 @@ using namespace std;
 class Tab : public BYLayerDescendant
 {
 public:
-	virtual void Clear() = 0;
+	virtual void CleanStates() = 0;
 	virtual void ShowTab(int itab) = 0;
+
+	Tab(){
+		autorelease();
+	}
+
+	virtual void onExit(){
+		//this->unscheduleUpdate();
+	}
+
+	~Tab(){
+		CCLOG(">Tab DesC.");
+	}
 };
 
 class ConfigTab : public Tab{
@@ -39,7 +51,7 @@ private:
 	float m_flwidth,m_frwidth;
 	std::map<int,int> valMo,ValCh;
 	ConfigManager* cm;
-
+	Container* tabc;
 
 public:
 
@@ -50,11 +62,11 @@ public:
 	}
 
 	ConfigTab(){
-
+	//	this;
 		cm = ConfigManager::sharedConfigManager();
 
 
-		Container* tabc = new Container();
+		tabc = new Container();
 		tabc->initwithPsz("Images/tab_head.png",cm->GetConfigS("system").c_str(),100,30,this,menu_selector(ConfigTab::menuCallback));
 		tabc->setAnchorPoint(ccp(0,0));
 		tabc->setPosition(ccp(0,500));
@@ -65,8 +77,10 @@ public:
 		ShowTab();
 	}
 
-	void Clear(){
+	void CleanStates(){
 		removeAllChildren();
+		//removeFromParent();
+		//CC_SAFE_RELEASE_NULL(tabc);
 	}
 
 	void SystemC_Tab(){
@@ -79,6 +93,7 @@ public:
 
 		cm->GetConfigV(CM_FULLSCREEN,v);
 		s = cm->GetConfigS("full_screen");
+
 		CCLabelBMFont* labelAtlas = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
 		mControlSwith *switchControl = new mControlSwith();
 		switchControl->initWithMaskSprite(
@@ -96,6 +111,7 @@ public:
 		labelAtlas->setPosition(ccp(m_flwidth,s_fheight));
 		switchControl->setOn(v);
 		valMo[CM_FULLSCREEN] = v;
+		switchControl->autorelease();
 		addChild(labelAtlas);
 		addChild(switchControl);
 		switchControl->addTargetWithActionForControlEvents(this, cccontrol_selector(ConfigTab::valueChanged), CCControlEventValueChanged);
@@ -232,6 +248,7 @@ public:
 
 	void valueChanged(CCObject* sender, CCControlEvent controlEvent)
 	{
+		this;
 		CCControlSwitch* pSwitch = (CCControlSwitch*)sender;
 		CCEGLView::sharedOpenGLView()->setFullScreen(pSwitch->isOn());
 		cm->SetConfigV(CM_FULLSCREEN,pSwitch->isOn());
@@ -409,7 +426,7 @@ public:
 
 	}
 
-	void Clear(){
+	void CleanStates(){
 		m_vTabs.clear();
 		removeAllChildren();
 	}
@@ -556,7 +573,7 @@ public:
 		Information_Tab();
 	}
 
-	void Clear(){
+	void CleanStates(){
 		removeAllChildren();
 	}
 };
@@ -819,7 +836,7 @@ public:
 
 	}
 
-	void Clear(){
+	void CleanStates(){
 		removeAllChildren();
 	}
 };
@@ -836,6 +853,7 @@ public:
 		removeAllChildren();
 
 		CharaListView* t_clv = new CharaListView();
+		t_clv->autorelease();
 		t_clv->m_iCLVState = 1;
 		t_clv->init();
 		t_clv->setbegin(0);
@@ -849,7 +867,7 @@ public:
 
 	}
 
-	void Clear(){
+	void CleanStates(){
 		removeAllChildren();
 	}
 };
