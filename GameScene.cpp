@@ -65,7 +65,8 @@ Scriptor* sp;
 string fscp;
 
 GameScene::~GameScene(){
-	;
+	//CC_SAFE_DELETE(sp);
+	CCLOG(">GameScene Destruct.");
 }
 
 void cleanup(void *arg){  
@@ -117,6 +118,7 @@ void initImg(Script* sp){
 		unsigned char* pBuffer = fi->getFileData(t->getstring("copname"),&filesize);
 		image->initWithImageData((void*)pBuffer, filesize, CCImage::kFmtPng);
 		ImageInfo *pImageInfo = new ImageInfo();
+
 		pImageInfo->image = image;
 		pImageInfo->imageType = CCImage::kFmtPng;		
 
@@ -197,6 +199,7 @@ void GameScene::f_initover(){
 	
 
 	ml = new MapLayer();
+	ml->autorelease();
 	this->addChild(ml,tLyMap);
 	
 	ml->f_init();
@@ -209,13 +212,14 @@ void GameScene::f_initover(){
 	img->release();
 
 	//背景层
-	bg = new CCLayer();
+	bg = CCLayer::create();
 	BgImg = NULL;
 	this->addChild(bg,tLyCG);
 	
 
 	m_IsTextShown = false;
 	te = new TextLayer();
+	te->autorelease();
 	e_curscript = 0;
 	addChild(te,tLyText);
 	AddState(te);
@@ -224,6 +228,7 @@ void GameScene::f_initover(){
 	e_TextAuto = false;
 	//
 	tMovie = new MovieLayer();
+	tMovie->autorelease();
 	AddState(tMovie);
 	this->addChild(tMovie,tLyMovie);
 
@@ -325,7 +330,7 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 
 			//////////////////////////////////////////////////////////////////////////
 
-			CCLayer* SplashLayer = new CCLayer();
+			CCLayer* SplashLayer = CCLayer::create();
 			CCLabelTTF* pLabel = CCLabelTTF::create("LOADING...", "Arial", 24);
 			CC_BREAK_IF(! pLabel);
 

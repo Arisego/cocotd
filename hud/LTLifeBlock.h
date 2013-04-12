@@ -8,6 +8,8 @@
 class LTLifeBlock : public BYLayerDescendant
 {
 public:
+	~LTLifeBlock();
+
 	virtual bool init();
 	void setChara();
 	void RefreshValue();

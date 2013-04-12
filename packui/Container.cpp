@@ -9,7 +9,7 @@ Container::Container(){
 Container::~Container(){
 	CCLOG(">Container_DEC");
 	CC_SAFE_RELEASE_NULL(mLasto);
-	removeAllChildren();
+//	removeAllChildren();
 }
 
 void Container::onExit(){

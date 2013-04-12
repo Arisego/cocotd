@@ -6,6 +6,10 @@
 #define IP_WIDTH 99
 #define IP_HEITH 132
 
+ItemPicker::~ItemPicker(){
+	CCLOG(">ItemPicker Desc.");
+}
+
 bool ItemPicker::refresh_itemlist(){
 	do 
 	{

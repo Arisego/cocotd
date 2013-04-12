@@ -2,6 +2,11 @@
 
 #include "GameManager.h"
 
+BattleMap::~BattleMap(){
+	CC_SAFE_RELEASE_NULL(m_touch);
+	CC_SAFE_RELEASE_NULL(m_caTarget);
+	CC_SAFE_RELEASE_NULL(m_caTarCharas);
+}
 
 bool BattleMap::init()
 {
@@ -12,6 +17,7 @@ bool BattleMap::init()
 		return false;
 	}
 
+	m_touch = NULL; 
 	m_caTarget = NULL;
 	m_caTarCharas = NULL;
 
@@ -209,11 +215,11 @@ void BattleMap::update(float dt)
 void BattleMap::ccTouchMoved(CCTouch *touch, CCEvent * pEvent){
 	TileMap::ccTouchMoved(touch,pEvent);
 	if(!cancontrol) {
-		m_touch = NULL;
+		CC_SAFE_RELEASE_NULL(m_touch);
 		return;
 	}
-	m_touch = touch;
-	
+	if(!m_touch) m_touch = new CCTouch();
+	m_touch->setTouchInfo(touch->getID(),touch->getLocationInView().x,touch->getLocationInView().y);
 }
 
 void BattleMap::f_generateEnemy( int i )
@@ -261,7 +267,7 @@ void BattleMap::f_generateEnemy( int i )
 		EChesses* t_fij_ec = new EChesses();
 
 		t_fij_ec->load_chara_dbsp((Script*) t_scp->scripts->objectAtIndex(0));
-
+		CC_SAFE_DELETE(t_scp);
 		
 		t_fij_ec->psz	=	"grossinis_sister2.png";			//Test Only.
 		t_fij_ec->pos	=	ccp(10,10);

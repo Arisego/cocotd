@@ -198,8 +198,8 @@ void ModelLayer::Add_Button(const char* name,int tag){
 void ModelLayer::buttonback(CCObject* sender){
 	int itag = ((Container *) sender)->getTag();
 	if(miFlag == itag) {
-		CCLOG(">Test clean.");
-		//return;
+		//CCLOG(">Test clean.");
+		return;
 	}
 	switch(itag){
 	case 0:

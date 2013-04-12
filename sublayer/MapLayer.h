@@ -28,6 +28,8 @@ class MapLayer : public BYLayerAncestor, public StateMachine, public InterfaceEf
 {
 
 public:
+	~MapLayer();
+
 	void switch_to_battle(string s);		//Switch to battle.
 	void switch_to_walk();
 

@@ -12,6 +12,10 @@
 
 TileMap::~TileMap(){
 		//EventCenter::sharedEventCenter()->setController(NULL);
+	CC_SAFE_DELETE(sp);
+
+	CC_SAFE_RELEASE_NULL(m_ea);
+	CC_SAFE_RELEASE_NULL(m_itemlist);
 
 		CC_SAFE_DELETE(colse);
 		CC_SAFE_DELETE(_world);		
@@ -181,7 +185,7 @@ bool TileMap::init()
 	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 	m_tilemap->setPosition(ccp(0,0));
 
-	Scriptor* sp;
+	
 	sp = new Scriptor();
 	sp->parse_file(CCString::createWithFormat("script/%s.xml",scr_path.c_str())->getCString());
 
@@ -374,7 +378,7 @@ m_debugDraw->SetFlags(flags);
 		CCArray* tca = sp->initcs;
 		for(int i = 0;i<sp->in;i++){
 			Script* tmp = (Script*) tca->objectAtIndex(i);					//script pack
-			CCDictionary* dtmp = new CCDictionary();	
+			//CCDictionary* dtmp = new CCDictionary();	
 			CCArray* mca = tmp->scriptnodes;
 			for(int j = 0;j<tmp->m_snum;j++){
 				Script* mtca = (Script*) mca->objectAtIndex(j);				//single item script

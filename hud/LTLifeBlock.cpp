@@ -3,6 +3,12 @@
 #define LT_AVA_WIDTH 100
 #define LT_AVA_HEITH 100
 
+LTLifeBlock::~LTLifeBlock(){
+	//CC_SAFE_RELEASE_NULL(m_lbhp);
+	//CC_SAFE_RELEASE_NULL(m_lbmp);
+	CCLOG(">LTLifeBlock Dec.");
+}
+
 bool LTLifeBlock::init()
 {
 	do{

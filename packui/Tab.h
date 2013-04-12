@@ -615,6 +615,7 @@ public:
 	BYLayerDescendant* mb;
 	void RefreshData(){
 		mb = new BYLayerDescendant();
+		mb->autorelease();
 		mb->setAnchorPoint(ccp(0,0));
 		mb->setPosition(ccp(1,1));
 
@@ -744,6 +745,7 @@ public:
 			removeChildByTag(0x3333);
 
 			CharaListView* clw = new CharaListView();
+			
 			clw->m_iCLVState = -1;
 			clw->m_iMiniType = 1;
 			clw->m_iItemCount = m_sIcd->sum;
@@ -772,7 +774,9 @@ public:
 		{
 			EffectControler::sharedEffectControler()->f_effect_over();
 			EffectControler::sharedEffectControler()->f_clear();
-			removeChildByTag(0x3333);
+			//removeChildByTag(0x3333);
+			((CharaListView*) getChildByTag(0x3333))->setVisible(false);
+			((CharaListView*) getChildByTag(0x3333))->autorelease();
 			mb->m_bIsEnabled = true;
 		}else{
 			m_caTList->addObject(t_cs->getcontent());
@@ -834,6 +838,10 @@ public:
 
 	void ShowTab(int itab = -2){
 
+	}
+
+	~PACTab(){
+		CC_SAFE_RELEASE_NULL(ldb);
 	}
 
 	void CleanStates(){

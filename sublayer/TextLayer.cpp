@@ -14,6 +14,11 @@ using namespace std;
 
 CCDictionary* TextLayer::lockstate = NULL;
 
+TextLayer::~TextLayer(){
+	CCLOG(">TextLayer desconstruct.");
+	CC_SAFE_RELEASE_NULL(lockstate);
+}
+
 void TextLayer::Close(){
 	Pause();	
 	//FlushText("",true);
@@ -71,6 +76,8 @@ void TextLayer::ELoad(){
 
 void TextLayer::onEnter()
 {
+	lockstate	=	NULL;
+
 	TagMap.clear();
 	PathMap.clear();
 	s = CCDirector::sharedDirector()->getWinSize();
@@ -178,7 +185,7 @@ CCAction* TextLayer::DerAction(Script* ts, int indent){				//如果有新的效�
 		if(strcmp(type,"sequence") == 0 || strcmp(type,"spawn") == 0 || strcmp(type,"repeat") == 0){
 			int num = ts->m_snum;
 			CCArray* sl = ts->scriptnodes;
-			CCArray* ss = new CCArray(num);				//store the actions
+			CCArray* ss = CCArray::createWithCapacity(num);				//store the actions
 
 			for(int i=0;i<num;i++){
 				tmp = DerAction((Script*) sl->objectAtIndex(i),indent+1);
@@ -563,6 +570,7 @@ bool TextLayer::click(CCTouch *touch, CCEvent * pEvent)
 
 void TextLayer::DerLock(Script* ts)
 {
+	CC_SAFE_RELEASE_NULL(lockstate);
 	lockstate = new CCDictionary();
 	CCArray* locks = ts->scriptnodes;
 	int num = ts->m_snum;
@@ -579,7 +587,7 @@ bool TextLayer::DerSelMenu(Script* ts){
 		CCArray* scrs = ts->scriptnodes;
 		int n = ts->m_snum;
 
-		CCArray* tm = new CCArray(n);
+		CCArray* tm = CCArray::createWithCapacity(n);
 		for(int i=0;i<n;i++){
 			Script* tmp = (Script*) scrs->objectAtIndex(i);		//set more here if you want more.
 			CCMenuItemFont::setFontName("Marker Felt");

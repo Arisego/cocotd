@@ -26,6 +26,7 @@ public:
 class LinePrior : public BYLayerDescendant
 {
 public:
+	~LinePrior();
 	bool f_init();
 	
 	void addPin(Chara* ,string);

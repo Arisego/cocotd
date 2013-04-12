@@ -17,6 +17,10 @@ protected:
 	CCTouch* lasttouch;
 
 public:
+	virtual void onExit(){
+		unscheduleUpdate();
+	}
+
 	void f_init(){
 		lasttouch = NULL;
 		setTouchEnabled(false);

@@ -86,6 +86,7 @@ void MoviePlayer::play(const char *path)
 void MoviePlayer::stop(void)
 {
     libvlc_media_player_stop(vlc_player);
+	libvlc_release(vlc);
 	bStoped = true;
 }
 

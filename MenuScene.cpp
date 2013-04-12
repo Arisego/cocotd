@@ -19,6 +19,10 @@ static const char s_PressSendScore[]      = "Images/SendScoreButtonPressed.png";
 
 using namespace cocos2d;
 
+MenuScene::~MenuScene(){
+	CCLOG(">MenuScece descontruct");
+}
+
 // on "init" you need to initialize your instance
 bool MenuScene::init()
 {
@@ -51,7 +55,7 @@ bool MenuScene::init()
 		CC_SAFE_DELETE(fi);
 
 		//背景层
-		CCLayer* bg = new CCLayer();
+		CCLayer* bg = CCLayer::create();
 		CCSprite* BgImg = CCSprite::create("Images/cabackground.png");	//将文件标识与目录设置相同以做调试用，现在没有设置。
 
 
@@ -60,6 +64,7 @@ bool MenuScene::init()
 		bg->addChild(BgImg);
 
 		 CCParticleSystem* m_pParticleSystem = new CCParticleSystemQuad();
+		 m_pParticleSystem->autorelease();
 		 m_pParticleSystem->initWithFile("particle/first.plist");
 		 bg->addChild(m_pParticleSystem);
 		 m_pParticleSystem->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height + origin.y));
@@ -75,21 +80,11 @@ bool MenuScene::init()
 
 
 		//菜单
-		MenuLayerMainMenu *menu =  new MenuLayerMainMenu();
+		MenuLayerMainMenu *menu = new MenuLayerMainMenu();
+		menu->autorelease();
 		CC_BREAK_IF(! menu);
 		this->addChild(menu);
 		AddState(menu);
-
-
-		//MoviePlayer* pPlayer = MoviePlayer::instance();
-
-		//// Place the sprite on the center of the screen
-		//pPlayer->setPosition(ccp(visibleSize.width/2, visibleSize.height/2));
-
-		//// Add the sprite to Cocos2dPlayer layer as a child layer.
-		//this->addChild(pPlayer, 0);
-
-		//pPlayer->play("test.mpg");
 
 		scheduleUpdate();
 
@@ -125,6 +120,7 @@ MenuLayerMainMenu::MenuLayerMainMenu()
     //dynamic_cast<CCNode*>(mgr)->addChild(spriteDisabled);
 
     SpriteTextMenuItem* item1 = new SpriteTextMenuItem();
+	item1->autorelease();
 	item1->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(MenuLayerMainMenu::menuCallback) );
 	item1->settext("StartGame", "fonts/Scissor Cuts.TTF", 24);
 	/*item1->setAnchorPoint(CCPoint(0,0));*/

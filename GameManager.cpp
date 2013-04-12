@@ -192,6 +192,11 @@ void GameManager::preQuit(){
 		}
 		
 		if(mdl) mdl->setTouchEnabled(false);
+		if(m_bInfo) {
+			InfoTab::sharedInfoTab()->m_bIsEnabled = false;
+			InfoTab::sharedInfoTab()->setTouchEnabled(false);
+		}
+			
 	}
 }
 
@@ -202,8 +207,15 @@ void GameManager::noQuit(){
 			if(!m_bInfo)
 				(dynamic_cast<StatesManager*> (cs))->NoQuit();
 		}
-		else mdl->setTouchEnabled(true);
+		else {
+			if(m_bInfo) {
+				InfoTab::sharedInfoTab()->m_bIsEnabled = true;
+				InfoTab::sharedInfoTab()->setTouchEnabled(true);
+			}
+			else mdl->setTouchEnabled(true);
+		}
 
+		
 	}	
 }
 

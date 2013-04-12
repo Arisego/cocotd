@@ -26,6 +26,7 @@ private:
 	float m_fTAuto,m_fTText;
 
 public:
+	~TextLayer();
 	TextLayer();  
 	virtual void Pause();
 	virtual void Resume();

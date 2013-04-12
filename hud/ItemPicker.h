@@ -11,7 +11,8 @@ class ItemPicker : public BYLayerDescendant, public Selector
 public:
 	virtual bool init();
 	void show_item();
-	
+	~ItemPicker();
+
 private:
 	int m_iCItemID;			//Real id. for last;
 

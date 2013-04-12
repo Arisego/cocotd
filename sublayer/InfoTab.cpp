@@ -8,6 +8,10 @@
 static const char s_Button[]			  = "Images/button.png";
 static const char s_MenuItem[]            = "Images/menuitemsprite.png";
 
+InfoTab::~InfoTab(){
+	CCLOG(">Info_Tab_DEC");
+}
+
 //////////////////////////////////////////////////////////////////////////
 InfoTab* InfoTab::m_sharedInfoTab = NULL;
 
@@ -45,7 +49,7 @@ void InfoTab::showinfo(string s){
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	BYLayerDescendant *mb = new BYLayerDescendant();
-
+	mb->autorelease();
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
 
@@ -93,6 +97,7 @@ void InfoTab::showselect(string s, vector<string> sellis, CCObject* target, SEL_
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	mb = new BYLayerDescendant();
+	mb->autorelease();
 
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
@@ -152,7 +157,7 @@ bool InfoTab::handletouch(CCTouch* pt){
 void InfoTab::selectrediret(CCObject* pSender){
 	CCLOG(">Redirecting for InfoTab. Block this to off if needed..");			//内部按钮转接至出口函数并dismiss
 	switch(m_iType){
-	case(3):{
+	case(4):{
 			Container* t_ct = ((Container*) pSender);
 			if(t_ct->getTag()>0) t_ct->setTag(m_icount);
 			break;
@@ -182,7 +187,7 @@ void InfoTab::showbmfl(string s,CCObject* target, SEL_MenuHandler selector,strin
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	mb = new BYLayerDescendant();
-
+	mb->autorelease();
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
 	//////////////////////////////////////////////////////////////////////////
@@ -239,7 +244,7 @@ void InfoTab::showsteper(string s, CCObject* target, SEL_MenuHandler selector,in
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	mb = new BYLayerDescendant();
-
+	mb->autorelease();
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
 	//////////////////////////////////////////////////////////////////////////
@@ -320,7 +325,7 @@ void InfoTab::showldb( string s, CCObject* target, SEL_MenuHandler selector, str
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	mb = new BYLayerDescendant();
-
+	mb->autorelease();
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
 	//////////////////////////////////////////////////////////////////////////
@@ -340,6 +345,7 @@ void InfoTab::showldb( string s, CCObject* target, SEL_MenuHandler selector, str
 		ldb->setAnchorPoint(ccp(0,0));
 		ldb->setPosition(ccp(-150,m_fHeight));
 		ldb->setContentSize(CCSizeMake(300,88));
+		ldb->autorelease();
 		mb->addChild(ldb);
 	}else{
 		CC_SAFE_RELEASE_NULL(ldb);

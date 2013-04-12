@@ -1,5 +1,11 @@
 #include "LinePrioer.h"
 
+LinePrior::~LinePrior(){
+	CC_SAFE_RELEASE_NULL(m_caPinSteped);
+	CC_SAFE_RELEASE_NULL(m_cdPins);
+	CCLOG(">LinePrior Dec.");
+}
+
 void LinePrior::activate()
 {
 	if (m_bIsEnabled)

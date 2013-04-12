@@ -71,13 +71,16 @@ CCTableViewCell* ListDBView::tableCellAtIndex(CCTableView *table, unsigned int i
 	pLabel->setPosition(CCPointZero);
 	pLabel->setAnchorPoint(CCPointZero);
 	pCell->setTag(pLabel->getTag());
-	pLabel->retain();
+	
 	//pLabel->setTag(123);
 
 	if(pLabel->getParent() != NULL)
 		return (CCTableViewCell *) pLabel->getParent();
-	else
+	else{
+		//pLabel->retain();
 		pCell->addChild(pLabel);
+	}
+		
 
 
 

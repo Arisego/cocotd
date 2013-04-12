@@ -33,6 +33,12 @@ public:
 	string m_sSql;									//Query String.
 
 	~ListDBSource(){
+		m_miiViDb.clear();
+
+		CCObject* tco;
+		CCARRAY_FOREACH(data,tco){
+			((Container*) tco)->onExit();
+		}
 		CC_SAFE_RELEASE_NULL(data);					//Do not Release m_caStData, they are maintance by StateCenter.
 	}
 
@@ -81,7 +87,7 @@ public:
 
 			ItemCell* tic = new ItemCell(cWidth, cHeight, m_ICType, ticd);
 			tic->setTag(item_id);
-			tic->autorelease();
+			//tic->autorelease();
 				//CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 24,CCSize(rw,0), kCCTextAlignmentLeft);
 				//tlt->retain();
 
@@ -174,7 +180,8 @@ protected:
 public:
 	~ListDBView(){
 		EventCenter::sharedEventCenter()->setScroller(NULL);
-		removeAllChildren();
+		pTableView->removeFromParent();
+//		removeAllChildren();
 //		data->removeAllObjects();
 //		CC_SAFE_RELEASE_NULL(data);
 	}

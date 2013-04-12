@@ -23,6 +23,8 @@ private:
 	bool init();
 
 public:
+	~InfoTab();
+
 	bool m_bIsEnabled;
 
 	static InfoTab *sharedInfoTab();

@@ -13,6 +13,15 @@ USING_NS_CC;
 //	pDirector->getTouchDispatcher()->addTargetedDelegate(this, kCCMenuHandlerPriority, true);
 //}
 
+MapLayer::~MapLayer(){
+	CCLOG(">MapLayer Destruct.");
+	CC_SAFE_RELEASE_NULL(bm);
+	CC_SAFE_RELEASE_NULL(tm);
+	CC_SAFE_RELEASE_NULL(t_bm);
+	CC_SAFE_RELEASE_NULL(m_ldb);
+	CC_SAFE_RELEASE_NULL(m_lpJudgement);
+	CC_SAFE_RELEASE_NULL(m_etClock);
+}
 
 void MapLayer::LoadMap(const char* pszN, const char* pscR, Script* tp){
 	removeAllChildren();
@@ -140,6 +149,7 @@ void MapLayer::show_hud(){
 
 			if(!m_IP){
 				m_IP = new ItemPicker();
+				m_IP->autorelease();
 		
 				//if(!
 				m_IP->init();
@@ -157,6 +167,8 @@ void MapLayer::show_hud(){
 
 			if(!m_ltb){
 				m_ltb = new LTLifeBlock();
+				m_ltb->autorelease();
+
 				m_ltb->init();
 				m_ltb->setAnchorPoint(ccp(0,1));
 				m_ltb->setPosition(ccp(1,500));

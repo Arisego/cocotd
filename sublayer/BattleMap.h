@@ -19,6 +19,8 @@ struct StepNode{
 
 class BattleMap : public TileMap{
 public:
+	~BattleMap();
+
 	CCPoint m_touchpoint;
 	CCTouch* m_touch;
 	int b_battle;			//battlemap用state标记 || 1 - 等待弹出菜单 2 - 菜单弹出，拒绝事件 3 - 等待地图对象选择并返回给draw_func();

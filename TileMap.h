@@ -153,8 +153,13 @@ public:
 
 	TileMap(const char* a, const char* b);
 	TileMap(const char* a, const char* b, Script* asp);
-	TileMap(){ };
+	TileMap(){
+		sp = NULL;
+		m_ea = NULL;
+//		autorelease();
+	};
 
+	 Scriptor* sp;
 	 Entiles* m_controller;				//控制交互指针，理论上可以控制任何单位。
 
 	 CCDictionary* m_elist;				//地图sp
