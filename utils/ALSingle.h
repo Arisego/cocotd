@@ -546,7 +546,7 @@ private:
 		Sources.push_back(source); 
 		return source;
 	}
-
+public:
 	void KillALLoadedData()
 	{
 		LoadedFiles.clear();

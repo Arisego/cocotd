@@ -119,7 +119,7 @@ void GameManager::runSceneWithId(SceneId id)
 	mCurrentStage = NULL;
 
 	ALSingle::sharedALSingle()->StopAll();
-
+	
 
 	switch (id)
 	{
@@ -142,6 +142,11 @@ void GameManager::runSceneWithId(SceneId id)
 	CCLOG("Prepare to show the new scene.");
 	if (newScene)
 	{
+		CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames();
+		CCTextureCache::sharedTextureCache()->removeAllTextures();
+		ALSingle::sharedALSingle()->KillALLoadedData();
+		
+
 		mdl->noConfig();
 		CC_SAFE_RELEASE_NULL(mdl);
 		ALSingle::sharedALSingle()->sc = newScene;

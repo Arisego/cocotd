@@ -66,6 +66,7 @@ string fscp;
 
 GameScene::~GameScene(){
 	//CC_SAFE_DELETE(sp);
+	CC_SAFE_RELEASE_NULL(tMovie);
 	CCLOG(">GameScene Destruct.");
 }
 
@@ -228,7 +229,7 @@ void GameScene::f_initover(){
 	e_TextAuto = false;
 	//
 	tMovie = new MovieLayer();
-	tMovie->autorelease();
+	//tMovie->autorelease();
 	AddState(tMovie);
 	this->addChild(tMovie,tLyMovie);
 
