@@ -66,6 +66,7 @@ string fscp;
 
 GameScene::~GameScene(){
 	//CC_SAFE_DELETE(sp);
+	CC_SAFE_RELEASE_NULL(snapshot);
 	CC_SAFE_RELEASE_NULL(tMovie);
 	CCLOG(">GameScene Destruct.");
 }
@@ -399,8 +400,11 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 } 
 
 void GameScene::Snap(){
-	if(!m_bCanSnap) return;
-	if(snapshot) CC_SAFE_RELEASE_NULL(snapshot);
+	//if(!m_bCanSnap) return;
+	CC_SAFE_RELEASE_NULL(snapshot);
+	ml->show_hud();
+	GameManager::sharedGameManager()->prePareSave();
+
 	CCDirector::sharedDirector()->setNextDeltaTimeZero(true);
 	CCSize winsize = CCDirector::sharedDirector()->getWinSize();
 	//CCLayerColor* whitePage = CCLayerColor::layerWithColor(ccc4(255, 255, 255, 0), winsize.width, winsize.height);
@@ -410,18 +414,20 @@ void GameScene::Snap(){
 	rtx->begin();
 	CCDirector::sharedDirector()->getRunningScene()->visit();
 	rtx->end();
+
+	ml->close_hud();
+	GameManager::sharedGameManager()->finisSave();
 	//snapshot = new CCImage();
 	snapshot = rtx->newCCImage();
 }
 
 void GameScene::PrepareSave(){
-	Snap();
 	StateCenter::sharedStateCenter()->f_get_state();
-
+	Snap();
 }
 
 void GameScene::PreQuit(){
-	PrepareSave();
+	//PrepareSave();
 	StatesManager::PreQuit();
 	ml->Close();
 }

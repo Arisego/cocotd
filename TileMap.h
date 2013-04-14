@@ -38,13 +38,16 @@ public:
 	b2Fixture *f2;
 	int type;
 
+	~CollideInfo(){
+	
+	}
+
 	CollideInfo(b2Fixture* fi1, b2Fixture* fi2, int t){
 		f1 = fi1;
 		f2 = fi2;
 		type = t;
 	}
 };
-
 
 class MyQueryCallback : public b2QueryCallback {		//用于处理搜索结果的类
 public:
@@ -114,6 +117,7 @@ class TileMap : public BYLayerDescendant, public Controller
 {
 public:
 	~TileMap();
+	CCArray* m_notuseditems;
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  

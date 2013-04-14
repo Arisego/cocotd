@@ -57,7 +57,7 @@ public:
 
 	static mSpotLight* spotLightWithRenderTexture(CCRenderTexture* texture, float radius, ccColor4F color); 
 	virtual void setRenderRect(float nx, float ny);
-	virtual void draw();
+	//virtual void draw();
 
 private:
 	bool initWithRenderTexture(CCRenderTexture* texture, float radius, ccColor4F color); 

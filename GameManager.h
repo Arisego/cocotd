@@ -46,6 +46,9 @@ public:
 	void goConfig();
 	void noConfig();
 
+	void prePareSave();
+	void finisSave();
+
 
 protected:
 	GameManager();

@@ -269,3 +269,15 @@ void GameManager::noConfig(){
 
 	}
 }
+
+void GameManager::prePareSave()
+{
+	if(mdl) mdl->setVisible(false);
+	if(m_bInfo) InfoTab::sharedInfoTab()->setVisible(false);
+}
+
+void GameManager::finisSave()
+{
+	if(mdl)	mdl->setVisible(true);
+	if(m_bInfo) InfoTab::sharedInfoTab()->setVisible(true);
+}

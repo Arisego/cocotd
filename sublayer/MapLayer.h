@@ -94,6 +94,7 @@ protected:
 
 	LTLifeBlock* m_ltb;
 	ItemPicker* m_IP;
+public:
 	void show_hud();
 	void close_hud();
 

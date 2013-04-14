@@ -114,6 +114,8 @@ bool StateCenter::m_lock_check(Script* ts){
 bool StateCenter::f_save_file(const char* psz){
 	do 
 	{
+		GameManager::sharedLogicCenter()->PrepareSave();
+
 		TiXmlDocument *myDocument = new TiXmlDocument();
 
 		TiXmlDeclaration Declaration( "1.0","UTF-8", "yes" );  
@@ -343,6 +345,7 @@ bool StateCenter::f_save_file(const char* psz){
 		CCString* fullPath = CCString::createWithFormat("save/%s.xml",psz);
 		myDocument->SaveFile(fullPath->getCString());//保存到文件
 		fullPath = CCString::createWithFormat("save/%s.jpg",psz);
+		
 		GameManager::sharedLogicCenter()->snapshot->saveToFile(fullPath->getCString(),false);
 
 		return true;

@@ -2,6 +2,7 @@
 
 Entiles::Entiles()
 {
+	autorelease();
 	name.clear();
 	m_sprite = new CCSprite();
 

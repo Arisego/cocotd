@@ -16,6 +16,7 @@ TileMap::~TileMap(){
 
 	CC_SAFE_RELEASE_NULL(m_ea);
 	CC_SAFE_RELEASE_NULL(m_itemlist);
+	CC_SAFE_RELEASE_NULL(m_notuseditems);
 
 		CC_SAFE_DELETE(colse);
 		CC_SAFE_DELETE(_world);		
@@ -172,6 +173,7 @@ bool TileMap::init()
 	}
 
 	cancontrol = false;
+	m_notuseditems = new CCArray();
 	//////////////////////////////////////////////////////////////////////////
 	// 2. TileMap初始化
 	m_tilemap = CCTMXTiledMap::create(CCString::createWithFormat("map/%s.tmx",map_path.c_str())->getCString());
@@ -246,6 +248,7 @@ bool TileMap::init()
 	kted->name = "edge";
 	groundBody->SetUserData(kted);
 	groundBody->CreateFixture(&sd);
+	m_notuseditems->addObject(kted);
 	//////////////////////////////////////////////////////////////////////////
 	//
 	//////////////////////////////////////////////////////////////////////////
@@ -356,6 +359,7 @@ m_debugDraw->SetFlags(flags);
 				circle.m_radius = ktca->getfloat("radius");
 				ballFixtureDef.userData = kte;
 				_body->CreateFixture(&ballFixtureDef);
+				m_notuseditems->addObject(kte);
 
 			}
 
@@ -419,6 +423,7 @@ m_debugDraw->SetFlags(flags);
 					circle.m_radius = ktca->getint("radio")/PTM_RATIO;
 					ballFixtureDef.userData = kte;
 					_body->CreateFixture(&ballFixtureDef);
+					m_notuseditems->addObject(kte);
 
 				}
 
@@ -481,6 +486,7 @@ m_debugDraw->SetFlags(flags);
 
 							e->m_body = b;
 							b->SetUserData(e);
+							m_notuseditems->addObject(e);
 						}
 						break;
 					}
@@ -497,6 +503,7 @@ m_debugDraw->SetFlags(flags);
 						t->name = "tile";
 						t->m_body = b;
 						b->SetUserData(t);
+						m_notuseditems->addObject(t);
 
 						break;
 					}
@@ -731,8 +738,13 @@ void TileMap::update_collide(){
 			ret &= t2->SCTouch(t_f2,t_f1,type == 2);
 
 		} while (0);
+
 		if(!ret) break;						//SEL: 实体删除策略 - 1
 	} 
+	for (iter= colse->bc.begin();iter!= colse->bc.end();iter++)  
+	{
+		(*iter)->release();
+	}
 	colse->bc.clear();
 }
 

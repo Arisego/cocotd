@@ -17,6 +17,8 @@ bool BattleMap::init()
 		return false;
 	}
 
+	m_notuseditems = new CCArray();
+
 	m_touch = NULL; 
 	m_caTarget = NULL;
 	m_caTarCharas = NULL;
@@ -101,6 +103,7 @@ bool BattleMap::init()
 	kted->name = "edge";
 	groundBody->SetUserData(kted);
 	groundBody->CreateFixture(&sd);
+	m_notuseditems->addObject(kted);
 	//////////////////////////////////////////////////////////////////////////
 #ifdef DEBUGDRAW
 

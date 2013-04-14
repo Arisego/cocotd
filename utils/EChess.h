@@ -23,7 +23,7 @@ public:
 
 	MoveDirect m_mdV,m_mdH;
 
-	~EChesses(){
+	void onDestroy(){
 		m_sprite->removeFromParent();
 		m_body->GetWorld()->DestroyBody(m_body);
 		m_pChara->release();

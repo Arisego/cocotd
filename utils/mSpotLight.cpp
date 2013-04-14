@@ -57,24 +57,24 @@ void mSpotLight::setRenderRect(float nx, float ny){
 	y = ny;
 }
 
-void mSpotLight::draw()
-{
-	m_renderTexture->clear(m_renderColor.r, m_renderColor.g, m_renderColor.b, m_renderColor.a);  
-	m_renderTexture->begin();  
-
-	ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
-
-
-	glBindTexture(GL_TEXTURE_2D, (GLuint)m_renderTexture);  
-	glBlendFunc(GL_ZERO, GL_SRC_ALPHA);  
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);  
-
-	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); 
-	m_pobTexture->drawInRect(CCRect(x-m_spotLightRadius, y-m_spotLightRadius, 2 * m_spotLightRadius, 2 * m_spotLightRadius));
-
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  
-	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);   
-	m_renderTexture->end();  
-
-	ccGLBlendFunc( m_sBlendFunc.src, m_sBlendFunc.dst );
-}
+//void mSpotLight::draw()
+//{
+//	m_renderTexture->clear(m_renderColor.r, m_renderColor.g, m_renderColor.b, m_renderColor.a);  
+//	m_renderTexture->begin();  
+//
+//	ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
+//
+//
+//	glBindTexture(GL_TEXTURE_2D, (GLuint)m_renderTexture);  
+//	glBlendFunc(GL_ZERO, GL_SRC_ALPHA);  
+//	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);  
+//
+//	glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA); 
+//	m_pobTexture->drawInRect(CCRect(x-m_spotLightRadius, y-m_spotLightRadius, 2 * m_spotLightRadius, 2 * m_spotLightRadius));
+//
+//	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);  
+//	glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);   
+//	m_renderTexture->end();  
+//
+//	ccGLBlendFunc( m_sBlendFunc.src, m_sBlendFunc.dst );
+//}
