@@ -264,7 +264,7 @@ bool StateCenter::f_save_file(const char* psz){
 			PackElement->SetAttribute("type", "2");
 			PackElement->SetAttribute("map",m_tpsz.c_str());
 			PackElement->SetAttribute("script",m_tscr.c_str());
-			ccColor4F color = GameManager::sharedLogicCenter()->ml->tm->spotLight->getRenderColor();
+			ccColor4F color = GameManager::sharedLogicCenter()->ml->tm->getRenderColor();
 			PackElement->SetAttribute("r",((CCString*) CCString::createWithFormat("f%f",color.r))->getCString());
 			PackElement->SetAttribute("g",((CCString*) CCString::createWithFormat("f%f",color.g))->getCString());
 			PackElement->SetAttribute("b",((CCString*) CCString::createWithFormat("f%f",color.b))->getCString());

@@ -6,6 +6,7 @@ USING_NS_CC;
 
 #define WM_Z 1
 #define BM_Z 2
+#define SL_Z 3
 
 //void MapLayer::registerWithTouchDispatcher()
 //{
@@ -28,6 +29,7 @@ void MapLayer::LoadMap(const char* pszN, const char* pscR, Script* tp){
 	tm = NULL;
 	wm = new WalkMap(pszN,pscR,tp);
 	addChild(wm,WM_Z);
+	wm->f_init(this,SL_Z);
 	tm = wm;
 	m_iMLState = 1;
 	tm->ELoad();
@@ -37,11 +39,13 @@ void MapLayer::LoadMap(const char* pszN, const char* pscR, Script* tp){
 void MapLayer::openTileMap(const char* pszN, const char* pscr){
 	if(wm){
 		wm->removeFromParent();
+		wm->f_clear_circles();
 		CC_SAFE_RELEASE_NULL(wm);
 	}
 	wm = new WalkMap(pszN,pscr);
 	//wm->retain();
 	addChild(wm,WM_Z);
+	wm->f_init(this,SL_Z);
 	tm = wm;
 	m_iMLState = 1;
 }
@@ -74,6 +78,7 @@ void MapLayer::closeBattleMap(){
 void MapLayer::closeTileMap(){
 	if(wm){
 		wm->removeFromParent();
+		wm->f_clear_circles();
 		CC_SAFE_RELEASE_NULL(wm);
 	}
 	tm = NULL;
@@ -681,6 +686,7 @@ void MapLayer::switch_to_battle( string s )
 	m_iMLState = 3;
 	if(wm){
 		wm->setVisible(false);
+		wm->f_state_circle(false);
 		wm->cancontrol = false;
 		show_hud();
 
@@ -715,6 +721,7 @@ void MapLayer::switch_to_walk()
 		EventCenter::sharedEventCenter()->setController(wm);
 
 		wm->setVisible(true);
+		wm->f_state_circle(true);
 		wm->cancontrol = true;
 		m_iMLState = 1;
 		show_hud();

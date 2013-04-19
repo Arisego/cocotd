@@ -45,7 +45,7 @@ void TileMap::DerMapAct(Script* s){
 		}
 	case 2:				//光罩
 		{
-			spotLight->setRenderColor(ccc4f(s->getfloat("r"),s->getfloat("g"),s->getfloat("b"),s->getfloat("a")));
+			mSpotLight::setRenderColor(ccc4f(s->getfloat("r"),s->getfloat("g"),s->getfloat("b"),s->getfloat("a")));
 			break;
 		}
 	case 3:				//Follow,Attack,or something else . Controled by msp for better effect. Msp is now moved into entiles.
@@ -520,20 +520,6 @@ m_debugDraw->SetFlags(flags);
 
 
 		//CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
-		CCSize s1 = CCSize(rw,rh);
-		renderLayer = CCRenderTexture::renderTextureWithWidthAndHeight(s1.width, s1.height);  
-		renderLayer->setPosition(ccp(-dx + s1.width/2,-dy + s1.height/2));  
-		ccBlendFunc bf = {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};  
-		renderLayer->getSprite()->setBlendFunc(bf);  
-		addChild(renderLayer,dy);  
-
-
-		spotLight = mSpotLight::spotLightWithRenderTexture(renderLayer, 400.0f, ccc4f(0, 0, 0, 0.95));  
-		if(!spotLight) 
-			return false;  
-		spotLight->setAnchorPoint(ccp(0, 0));  
-		spotLight->setPosition(ccp(s1.width/2, s1.height/2));   
-		addChild(spotLight,dy); 
 
 
 		m_controller = NULL;
@@ -547,7 +533,7 @@ m_debugDraw->SetFlags(flags);
 			m_iNaScp = lsp->getint("iscript");
 			m_sNaScp = lsp->getstring("sscript");
 
-			spotLight->setRenderColor(c4f);
+			mSpotLight::setRenderColor(c4f);
 		}else{
 
 			f_setcontroller(m_getEntile("pc","control"));	//ITEMMANAGER设置控制器和镜头
@@ -562,7 +548,7 @@ m_debugDraw->SetFlags(flags);
 		addChild(sheet);
 
 		this->scheduleUpdate();
-
+		update_b2world(0);
 		return true;
 }
 
@@ -671,8 +657,7 @@ Entiles* TileMap::m_getEntile(const char* gn){
 }
 
 void TileMap::update_b2world(float dt){
-
-	_world->Step(dt, 10, 10);  
+	_world->Step(dt, dt * 600, 7);					// [Change since M4.0.3] 防止不同配置引起的帧率起伏
 	for(b2Body *b = _world->GetBodyList(); b; b=b->GetNext()) {				//TODO:当地图太大时引入区域查询(region queries)
 		if (b->GetUserData() != NULL) {  
 			Entiles *ballData = (Entiles *)b->GetUserData();  
@@ -761,16 +746,22 @@ void TileMap::update(float dt)
 		else m_controller->direc = MS_STOP;
 	}
 
+	if(cancontrol){
+		update_collide();
+		update_b2world(dt);
+	}
 
-	update_collide();
-	update_b2world(dt);
 
 
 	if (m_controller)
 	{
 		CCPoint p = m_controller->m_sprite->getPosition();
-		p = CC_POINT_POINTS_TO_PIXELS(p);
-		spotLight->setRenderRect(p.x +dx,p.y+dy);
+
+		p = this->convertToWorldSpace(p);
+		//p = CCDirector::sharedDirector()->convertToUI(worldPoint);
+		
+		//p = CC_POINT_POINTS_TO_PIXELS(p);
+		mSpotLight::setRenderRect(p.x,p.y);
 	}
 
 
@@ -792,8 +783,7 @@ void TileMap::test_disable_all_entiles()
 	m_controller = NULL;
 
 	renderLayer->removeFromParent();
-	spotLight->removeFromParent();
 
 	CC_SAFE_RELEASE_NULL(renderLayer);  
-	CC_SAFE_RELEASE_NULL(spotLight);
+
 }

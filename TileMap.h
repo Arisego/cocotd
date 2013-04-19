@@ -113,7 +113,7 @@ public:
 	}
 };
 
-class TileMap : public BYLayerDescendant, public Controller
+class TileMap : public BYLayerDescendant, public Controller, public mSpotLight
 {
 public:
 	~TileMap();
@@ -126,7 +126,7 @@ public:
 	CCSpriteBatchNode *sheet;
 
 
-	mSpotLight* spotLight;
+	//mSpotLight* spotLight;
 
 	b2World *_world; 
 	b2Body *_body; 

@@ -304,7 +304,10 @@ void TextLayer::FadeText(CCObject* sender){
 void TextLayer::FlushText(const char* line,bool dst){
 	if(m_bIsShownOver)	return;
 	if(dst){	
-		m_Label->setString(line);
+		if(line){
+			m_Label->setString(line);
+		}
+		
 		//lines.append(fulline,cur,sum-cur);
 		//m_Label->setString(lines.c_str());
 		cns_blocks->removeAllChildren();
@@ -365,32 +368,33 @@ void TextLayer::FormText(){
 		if(mLineCount+mSingeWidth>m_textwidth){
 			mLineCount = 0;
 			++m_iLine;
-			lines += '\n';
+			//lines += '\n';
 			vi_text.push_back(0);
 		}
 
 		char t = fulline[i];
 		if((t&0xE0) == 0xE0){	//3byte
-			lines += t;
-			lines += fulline[i+1];
-			lines += fulline[i+2];
+			//lines += t;
+			//lines += fulline[i+1];
+			//lines += fulline[i+2];
 			i += 3;
 			mLineCount += mSingeWidth;
 			vi_text.push_back(3);
 		}else if((t&0xC0) == 0xC0){//2byte
-			lines += t;
-			lines += fulline[i+1];
+			//lines += t;
+			//lines += fulline[i+1];
 			i += 2;
 			mLineCount += mSingeWidth;
 			vi_text.push_back(2);
 		}else{//1byte
-			lines += t;
+			//lines += t;
 			i++;
 			mLineCount += mSingeWidth/2;
 			vi_text.push_back(1);
 		}
 		m_iTextcount++;
 	}
+	lines = fulline;
 	CCLOG("forming text:%s",lines.c_str());
 }
 

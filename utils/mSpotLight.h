@@ -2,7 +2,9 @@
 #define __SPOT_LIGHT_H__  
   
 #include "cocos2d.h"
+#include "cocos-ext.h"
 
+USING_NS_CC_EXT;
 using namespace cocos2d;
 using namespace std;
 
@@ -12,30 +14,23 @@ typedef struct _SpotInfo : public CCObject
 } SpotInfo;
 
 
-class mSpotLight: public CCSprite  
+class mSpotLight
 {  
 protected:
+	int m_iLaDep;
+
 	float m_spotLightRadius;
 	ccColor4F m_renderColor;
-	CCRenderTexture* m_renderTexture; 
+
+	CCClippingNode* cp_board;
+	CCSpriteBatchNode* cns_blocks;
 
 public: 
 	mSpotLight();  
-	~mSpotLight();  
+	void f_clear_circles();  
 
-	virtual CCRenderTexture* getRenderTexture(void) const { 
-		return m_renderTexture; 
-	}
-
-	virtual void setRenderTexture(CCRenderTexture* var)   
-	{ 
-		if (m_renderTexture != var) 
-		{ 
-			CC_SAFE_RETAIN(var); 
-			CC_SAFE_RELEASE(m_renderTexture); 
-			m_renderTexture = var; 
-		} 
-	}  
+	bool m_bAvalible;					//This does not control the on/off, it just represent that cp_board's visibility.
+	void f_state_circle(bool st);
 
 	virtual float getSpotLightRadius(void) const {
 		return m_spotLightRadius; 
@@ -49,21 +44,25 @@ public:
 		return m_renderColor; 
 	}
 
-	virtual void setRenderColor(const ccColor4F& var){ 
-		m_renderColor = var; 
-	}
+	virtual void setRenderColor(const ccColor4F& var);
 
 	bool s_bInitialized;
 
-	static mSpotLight* spotLightWithRenderTexture(CCRenderTexture* texture, float radius, ccColor4F color); 
 	virtual void setRenderRect(float nx, float ny);
 	//virtual void draw();
-
+	virtual bool f_init(CCNode* cn_borad, int i_ld = 0);
+	bool f_refresh_circles();
 private:
-	bool initWithRenderTexture(CCRenderTexture* texture, float radius, ccColor4F color); 
+	CCSprite* m_StencilCircle;				//Always Generate once.
+	CCSprite* m_AkaruCircle;
+	CCSpriteBatchNode* csb_st;
+
+	CCNode* m_Board;
+
 	float x,y;
 	map<string,SpotInfo*> sls;				//添加多个光点备用
 
+	void generate_circle();					//Avalible only after f_init(). And empty if not using render texture.
 
 };  
   
