@@ -48,6 +48,7 @@ public:
 		MultiByteToWideChar(CP_ACP, 0, pszFileName, -1, (LPWSTR)pwcsName, nChars);
 
 		FindZipItem(hz, pwcsName, true, &cur, &ce);
+		delete pwcsName;
 		if(cur>-1)
 		{
 			*pSize = ce.unc_size;

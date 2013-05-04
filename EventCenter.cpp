@@ -155,3 +155,8 @@ void EventCenter::setBmCake( Cake* s /*= NULL*/ )
 {
 	m_bm_cake = s;
 }
+
+void EventCenter::purgeSharedEventCenter()
+{
+	CC_SAFE_DELETE(mSharedEventCenter);
+}

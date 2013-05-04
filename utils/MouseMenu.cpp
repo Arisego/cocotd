@@ -67,7 +67,7 @@ void MouseMenu::onExit()
 		m_eState = kCCMenuStateWaiting;
 		m_pSelectedItem = NULL;
 	}
-
+	CC_SAFE_RELEASE_NULL(lastto);
 	CCLayer::onExit();
 }
 
@@ -119,7 +119,7 @@ void MouseMenu::ccTouchEnded(CCTouch *touch, CCEvent* event)
         m_pSelectedItem->unselected();
         m_pSelectedItem->activate();
 		m_pSelectedItem = NULL;
-		lastto = NULL;
+		CC_SAFE_RELEASE_NULL(lastto);
     }
     m_eState = kCCMenuStateWaiting;
 }
@@ -171,7 +171,7 @@ void MouseMenu::update(float dt){
 			SoundManager::sharedSoundManager()->PlayLaserSFX();
 			m_pSelectedItem->unselected();
 			m_pSelectedItem = NULL;
-			lastto = NULL;
+			CC_SAFE_RELEASE_NULL(lastto);
 		}
 	}
 }

@@ -181,6 +181,7 @@ public:
 	static mControlSlider* mControlSlider::create(const char* bgFile, const char* progressFile, const char* thumbFile)
 	{
 		mControlSlider* pRet = new mControlSlider();
+		pRet->autorelease();
 
 		CCSprite *backgroundSprite      = CCSprite::create(bgFile);
 		CCSprite *progressSprite        = CCSprite::create(progressFile);

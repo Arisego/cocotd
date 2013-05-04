@@ -25,11 +25,14 @@ public:
 class ConfigManager
 {
 	static ConfigManager* mSharedConfigManager;
+
+
 	bool init();
 	CCDictionary* cvs;
 	CCDictionary* strtable;
 public:
 	static ConfigManager* sharedConfigManager();
+	static void purgeSharedConfigManager();
 	void LoadConfig();
 	void GetConfigV(CMS flag, int &val);
 	void GetConfigDV(CMS flag, int &val);

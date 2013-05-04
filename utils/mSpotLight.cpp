@@ -1,6 +1,6 @@
 #include "mSpotLight.h"
 
-//#define USING_CCRENDERTEX 
+#define USING_CCRENDERTEX 
 
 mSpotLight::mSpotLight()  
 {  

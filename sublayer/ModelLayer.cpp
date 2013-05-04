@@ -16,6 +16,7 @@ static const char s_Button[]			  = "Images/button.png";
 
 ModelLayer::ModelLayer(){
 	b_StateRunning = true;
+	mtTab = NULL;
 }
 
 ModelLayer::~ModelLayer(){
@@ -114,7 +115,8 @@ void ModelLayer::preQuit(){
 }
 
 void ModelLayer::c_quit_yes(CCObject* sender){
-	CCDirector::sharedDirector()->end();
+	
+	GameManager::purgeSharedGameManager();
 }
 
 void ModelLayer::c_quit_no(CCObject* sender){
@@ -204,7 +206,8 @@ void ModelLayer::buttonback(CCObject* sender){
 	switch(itag){
 	case 0:
 		{
-			GameManager::sharedGameManager()->noConfig();
+			
+			schedule(schedule_selector(ModelLayer::noConfig),0,1,0.1);
 			return;
 		}
 
@@ -276,6 +279,7 @@ void ModelLayer::Show_Content(){
 
 }
 
-void ModelLayer::noConfig(){
+void ModelLayer::noConfig(float dt){
 	m_clock = false;
+	GameManager::sharedGameManager()->noConfig();
 }

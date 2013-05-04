@@ -50,7 +50,9 @@ bool MenuScene::init()
 		FileIO* fi = new FileIO("Images/background.cop");
 		unsigned char* pBuffer = fi->getFileData("background.png",&filesize);
 		image->initWithImageData((void*)pBuffer, filesize, CCImage::kFmtPng);
+		delete pBuffer;
 		CCTextureCache::sharedTextureCache()->addUIImage(image,"Images/cabackground.png");	//Mask?
+		image->autorelease();
 		//CCSprite::createWithTexture(CCTextureCache::sharedTextureCache()->addUIImage(image,"Images/background.png"));
 		CC_SAFE_DELETE(fi);
 

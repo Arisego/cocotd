@@ -13,8 +13,9 @@ std::string ConvertToString(T value) {
 }
 
 ConfigManager::~ConfigManager(){
-	DBUtil::closeDB(); 
+	
 	cvs->release();
+	strtable->release();
 }
 
 ConfigManager* ConfigManager::sharedConfigManager(){
@@ -32,7 +33,7 @@ bool ConfigManager::init(){
 		cvs = new CCDictionary();
 		strtable = new CCDictionary();
 		LoadConfig();
-
+		DBUtil::closeDB(); 
 		return true;
 	} while (0);
 	return false;
@@ -40,32 +41,38 @@ bool ConfigManager::init(){
 
 void ConfigManager::LoadConfig(){
 	string sqlstr="select * from config_save";
-	vector<map<string,string>> vdata;
+	{
+		vector<map<string,string>> vdata;
 
-	vdata = DBUtil::getDataInfo(sqlstr,NULL);
-	int m_number = vdata.size();
+		vdata = DBUtil::getDataInfo(sqlstr,NULL);
+		int m_number = vdata.size();
 
-	for(int i = 0;i<m_number;i++){
-		
+		for(int i = 0;i<m_number;i++){
 
-		ConfigStruct* cs = new ConfigStruct();
-		cs->value = atof(((map<string,string>) vdata.at(i)).at("value").c_str());
-		cs->dvalue = atof(((map<string,string>) vdata.at(i)).at("dvalue").c_str());
-		
 
-		cvs->setObject(cs,atof(((map<string,string>) vdata.at(i)).at("id").c_str()));
-		
+			ConfigStruct* cs = new ConfigStruct();
+			cs->autorelease();
+			cs->value = atof(((map<string,string>) vdata.at(i)).at("value").c_str());
+			cs->dvalue = atof(((map<string,string>) vdata.at(i)).at("dvalue").c_str());
+
+
+			cvs->setObject(cs,atof(((map<string,string>) vdata.at(i)).at("id").c_str()));
+
+		}
+
+		sqlstr = "select * from str_table";
+	}
+	{
+		vector<map<string,string>> adata;
+
+		adata = DBUtil::getDataInfo(sqlstr,NULL);
+		int m_number = adata.size();
+
+		for(int i = 0;i<m_number;i++){
+			strtable->setObject(CCStringMake(((map<string,string>) adata.at(i)).at("content")),((map<string,string>) adata.at(i)).at("mask"));
+		}
 	}
 
-	sqlstr = "select * from str_table";
-	vdata.clear();
-	
-	vdata = DBUtil::getDataInfo(sqlstr,NULL);
-	m_number = vdata.size();
-
-	for(int i = 0;i<m_number;i++){
-		strtable->setObject(CCStringMake(((map<string,string>) vdata.at(i)).at("content")),((map<string,string>) vdata.at(i)).at("mask"));
-	}
 }
 
 void ConfigManager::GetConfigV(CMS flag, int &val){
@@ -81,11 +88,19 @@ void ConfigManager::GetConfigDV(CMS flag, int &val){
 }
 
 void ConfigManager::SetConfigV(int flag, int val){
+	DBUtil::initDB("save.db"); 
 	string sqlstr = "update config_save set value=" + ConvertToString(val) + " where id = " + ConvertToString(flag);
 	((ConfigStruct*) cvs->objectForKey(flag))->value = val;
 	DBUtil::updateData(sqlstr);
+	DBUtil::closeDB(); 
 }
 
 string ConfigManager::GetConfigS(const char* msk){
 	return ((CCString*) strtable->objectForKey(msk))->getCString();
+}
+
+void ConfigManager::purgeSharedConfigManager()
+{
+	CC_SAFE_DELETE(mSharedConfigManager);
+	
 }

@@ -40,6 +40,8 @@ public:
 	| b_re 是否是可移动的物体，需要被重新计算zorder
 	*/
 	Entiles();
+	~Entiles();
+
 	virtual void initFiles(const char *pszFileName, const CCRect& rect);			//Do not use this.It now calls initwithfile() and is not compatible with CCSpriteFrameCache. In fact you do not need an additional rect with SpriteFrameCache.
 	virtual void initFiles(const char *pszFileName);
 
@@ -61,8 +63,7 @@ public:
 	virtual void ELoad();
 	string GetFullName();
 	//////////////////////////////////////////////////////////////////////////
-	~Entiles(){
-	};
+
 
 
 };

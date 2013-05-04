@@ -49,6 +49,7 @@ public:
 	float f;
 
 	NFloat(float fv){
+		autorelease();
 		f = fv;
 	}
 };
@@ -66,17 +67,35 @@ public:
 	CCArray* scriptnodes; 
 	CCDictionary* mapscpnodes;
 
+	virtual void release(){
+		//CCObject::release();
+		if(m_uReference < 3)
+			delete this;
+		else
+			CCObject::release();
+	}
+
+	virtual CCObject* autorelease(){
+		return CCObject::autorelease();
+	}
+
 	Script(){
 		type = sUnknown;
 		m_snum = 0;
 		m_anum = 0;
 		attributes = NULL;
 		scriptnodes = NULL;
+		//autorelease();
 	}
 
 	~Script(){
+		if(attributes) attributes->removeAllObjects();
 		CC_SAFE_DELETE(attributes);
+
+		if(scriptnodes) scriptnodes->removeAllObjects();
 		CC_SAFE_DELETE(scriptnodes);
+
+		if(mapscpnodes) mapscpnodes->removeAllObjects();
 		CC_SAFE_DELETE(mapscpnodes);
 	}
 
@@ -113,23 +132,29 @@ class Scriptor {
 
 private:
 	FileIO* m_curfi;
+	Script* m_scWhole;
 	
 
 public:
 	CCArray* initcs;
-	CCArray* scripts;
+	CCArray* m_caScript;
 	CCDictionary* mapscps;
 	int sn,in;
 
 	Scriptor(){
+		m_scWhole = NULL;
 		initcs = NULL;
-		scripts = NULL;
+		m_caScript = NULL;
 		mapscps = NULL;
 	}
 
 	void re_init(){
+		if(mapscps) mapscps->removeAllObjects();
+		if(m_caScript) m_caScript->removeAllObjects();
+		if(initcs)	initcs->removeAllObjects();
+
 		CC_SAFE_RELEASE_NULL(initcs);
-		CC_SAFE_RELEASE_NULL(scripts);
+		CC_SAFE_RELEASE_NULL(m_caScript);
 		CC_SAFE_RELEASE_NULL(mapscps);
 	}
 
@@ -177,7 +202,7 @@ public:
 			
 			sn = 0;
 			in = 0;
-			dump_to_nodes(&doc);
+			m_scWhole = dump_to_nodes(&doc);
 			
 			return true;
 		} while (0);
@@ -201,7 +226,7 @@ public:
 			//CCLOG( "%s%s: value=[%s]", pIndent, pAttrib->Name(), pAttrib->Value());
 			if (pAttrib->QueryIntValue(&ival)==TIXML_SUCCESS)   
 			{
-				CCInteger* ci = new CCInteger(ival);
+				CCInteger* ci = CCInteger::create(ival);
 				dt->setObject(ci,pAttrib->Name());
 			}
 			else if (pAttrib->QueryDoubleValue(&dval)==TIXML_SUCCESS) 
@@ -211,7 +236,7 @@ public:
 			}
 			else 
 			{
-				CCString* sl = new CCString(pAttrib->Value());
+				CCString* sl = CCString::create(pAttrib->Value());
 				dt->setObject(sl,pAttrib->Name());
 				pAttrib->Value();
 				CCLOG("value pair:%s||%s||%s",pAttrib->Value(),pAttrib->Name(),sl->getCString());
@@ -335,10 +360,10 @@ public:
 			}	
 			if(k>0) {
 				if(!ct) ct = new CCDictionary();
-				ct->setObject(new CCInteger(k),"total");
+				ct->setObject(CCInteger::create(k),"total");
 			}else{
-				CC_SAFE_DELETE_ARRAY(ca);
-				CC_SAFE_DELETE(cd);
+				CC_SAFE_RELEASE_NULL(ca);
+				CC_SAFE_RELEASE_NULL(cd);
 			}
 		}
 
@@ -359,12 +384,14 @@ public:
 			}
 		case sUnknown:
 			{
+				tmps->release();
 				return NULL;
 			}
 		case sScriptPack:
 			{
-				scripts = ca;
+				m_caScript = ca;
 				sn = k + m;
+				tmps->scriptnodes = NULL;
 			}
 		case sList:
 			{
@@ -387,9 +414,19 @@ public:
 	}
 
 	~Scriptor(){
+		CC_SAFE_DELETE(m_scWhole);
+
+		if(mapscps) mapscps->removeAllObjects();
 		CC_SAFE_RELEASE_NULL(mapscps);
-		CC_SAFE_RELEASE_NULL(scripts);
+
+		if(m_caScript) m_caScript->removeAllObjects();
+		CC_SAFE_RELEASE_NULL(m_caScript);
+
+		if(initcs)	initcs->removeAllObjects();
 		CC_SAFE_RELEASE_NULL(initcs);
+		
+		
+		
 	}
 
 };

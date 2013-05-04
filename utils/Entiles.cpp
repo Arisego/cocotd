@@ -1,5 +1,11 @@
 #include "Entiles.h"
 
+Entiles::~Entiles()
+{
+	m_sprite->removeFromParent();
+	m_sprite->release();
+}
+
 Entiles::Entiles()
 {
 	autorelease();

@@ -14,9 +14,18 @@ TileMap::~TileMap(){
 		//EventCenter::sharedEventCenter()->setController(NULL);
 	CC_SAFE_DELETE(sp);
 
-	CC_SAFE_RELEASE_NULL(m_ea);
+ 	CC_SAFE_RELEASE_NULL(m_ea);
 	CC_SAFE_RELEASE_NULL(m_itemlist);
 	CC_SAFE_RELEASE_NULL(m_notuseditems);
+
+	if(colse){
+		for (vector<CollideInfo*>::iterator iter= colse->bc.begin();iter!= colse->bc.end();iter++)  
+		{
+			(*iter)->release();
+		}
+		colse->bc.clear();
+	}
+
 
 		CC_SAFE_DELETE(colse);
 		CC_SAFE_DELETE(_world);		

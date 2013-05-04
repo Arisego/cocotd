@@ -12,6 +12,8 @@ class EventCenter
 {
 public:
 	static EventCenter *sharedEventCenter();
+	static void purgeSharedEventCenter();
+
 	bool init();
 	static void ehandler(UINT message,WPARAM wParam, LPARAM lParam );
 	void setController(Controller* c = NULL);	//ÉèÖÃ¿ØÖÆÆ÷£¬µ÷¿ÕÖÃ¿Õ

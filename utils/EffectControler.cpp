@@ -62,7 +62,7 @@ void EffectControler::md_use_skill( InterfaceEffect* iv, int a_skill_id, CCObjec
 	//if(! (usecase&1)) exit(0x5003);
 	sp = new Scriptor();
 	sp->parse_string(t_ssm.at("side_effect"));
-	m_caLocks = sp->scripts;
+	m_caLocks = sp->m_caScript;
 	if(m_caLocks) m_caLocks->retain();
 	
 
@@ -74,7 +74,7 @@ void EffectControler::md_use_skill( InterfaceEffect* iv, int a_skill_id, CCObjec
 	sp->re_init();
 	sp->parse_string(m_sEffect);
 	CCLOG("Prepar ready for md_act_skill.");
-	m_Esp = sp->scripts;
+	m_Esp = sp->m_caScript;
 	m_Esp->retain();
 
 	iv->get_target();
@@ -223,8 +223,8 @@ void EffectControler::md_use_item( InterfaceEffect* iv, int a_item_id )
 	//if(! (usecase&1)) exit(0x5003);
 	sp = new Scriptor();
 	sp->parse_string(t_ssm.at("side_effect"));
-	m_caLocks = sp->scripts;
-	if(m_caLocks) m_caLocks->retain();
+	m_caLocks = sp->m_caScript;
+	//if(m_caLocks) m_caLocks->retain();
 
 
 	m_iTarget	=	 stoi(t_ssm.at("target"));	
@@ -235,9 +235,10 @@ void EffectControler::md_use_item( InterfaceEffect* iv, int a_item_id )
 	sp->re_init();
 	sp->parse_string(m_sEffect);
 	CCLOG("Prepar ready for md_act_item.");
-	m_Esp = sp->scripts;
-	if(m_Esp) m_Esp->retain();
-	else return;
+	m_Esp = sp->m_caScript;
+	//if(m_Esp) m_Esp->retain();
+	//else return;
+	if(!m_Esp) return;
 
 	if(iv) iv->get_target();
 	else {
@@ -256,4 +257,10 @@ void EffectControler::md_act_item( CCArray* tl )
 	m_iCurS = -1;
 	m_iSumS = m_Esp->count();
 	f_sp_gonext();
+}
+
+EffectControler::~EffectControler()
+{
+	//sp->re_init();
+	delete sp;
 }

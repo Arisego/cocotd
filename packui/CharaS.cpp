@@ -169,4 +169,11 @@ Chara* CharaS::getdispchara()
 	return getchara(0);												//Change default CharaS through CharaS, do not control it separately.
 }
 
+CharaS::~CharaS(){
+	if(m_caCharas){
+		m_caCharas->removeAllObjects();	
+	}
+	CC_SAFE_RELEASE_NULL(m_caCharas);
+}
+
 

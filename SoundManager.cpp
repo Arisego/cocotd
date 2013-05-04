@@ -31,6 +31,7 @@ SoundManager *SoundManager::sharedSoundManager()
 void SoundManager::purgeSharedSoundManager()
 {
     CC_SAFE_DELETE(mSharedSoundManager);
+	ALSingle::purgeSharedALSingle();
 
 }
 

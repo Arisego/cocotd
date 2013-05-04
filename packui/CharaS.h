@@ -33,6 +33,10 @@ public:
 		m_bIsDead = false;
 	}
 
+	~Chara(){
+		m_viSkills.clear();
+	}
+
 	int getvalue(string name){
 		return m_iiAttrs[name];
 	}
@@ -147,6 +151,8 @@ public:
 
 	Chara* getchara(int i);			//get a Chara with a stored integer flag. 0~5 maybe. Class outside of CharaS is not suppose to use chara_id.
 	Chara* getdispchara();			//get wm Chara. maybe you want a default one?
+
+	~CharaS();
 	
 };
 

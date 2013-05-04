@@ -41,7 +41,7 @@ public:
 	void c_quit_no(CCObject* sender);
 
 	void preConfig(int type, int flag, int tab = 0);
-	void noConfig();
+	void noConfig(float dt);
 	void Show_Content();
 	void Refresh_Button();
 	void Add_Button(const char* name,int tag);

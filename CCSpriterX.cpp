@@ -438,6 +438,7 @@ namespace SCMLHelper
 			CC_SAFE_DELETE(mTimelines[i]);
 
 		mTimelines.clear();
+		delete mMainline;
 
 	}
 
@@ -665,7 +666,7 @@ namespace SCMLHelper
 			CC_SAFE_DELETE(mAnimations[i]);
 
 		mAnimations.clear();
-
+		mAniNames.clear();
 	}
 
 
@@ -731,6 +732,7 @@ namespace SCMLHelper
 ///////////////////////////////////////////////////////////////////////////////////
 
 using namespace SCMLHelper;
+using namespace std;
 
 
 CCSpriterX::CCSpriterX()
@@ -743,6 +745,17 @@ CCSpriterX::CCSpriterX()
 
 CCSpriterX::~CCSpriterX()
 {
+	for(vector<Entity*>::iterator it = mEntities.begin(); it != mEntities.end(); ++it){
+		delete *it;
+	}
+
+	for(vector<Folder*>::iterator it = mFolders.begin(); it != mFolders.end(); ++it){
+		delete *it;
+	}
+
+	mEntities.clear();
+	mFolders.clear();
+	//mEntities::iterator
 }
 
 

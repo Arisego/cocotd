@@ -28,6 +28,8 @@ public:
 	int m_iTarget;
 
 	bool m_bSilent;
+
+	~EffectControler();
 protected:
 	Chara* m_src;
 	CCArray* m_tl;

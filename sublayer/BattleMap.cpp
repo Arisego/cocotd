@@ -269,7 +269,7 @@ void BattleMap::f_generateEnemy( int i )
 
 		EChesses* t_fij_ec = new EChesses();
 
-		t_fij_ec->load_chara_dbsp((Script*) t_scp->scripts->objectAtIndex(0));
+		t_fij_ec->load_chara_dbsp((Script*) t_scp->m_caScript->objectAtIndex(0));
 		CC_SAFE_DELETE(t_scp);
 		
 		t_fij_ec->psz	=	"grossinis_sister2.png";			//Test Only.

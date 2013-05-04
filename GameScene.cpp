@@ -68,7 +68,7 @@ GameScene::~GameScene(){
 	//CC_SAFE_DELETE(sp);
 	CC_SAFE_RELEASE_NULL(snapshot);
 	CC_SAFE_RELEASE_NULL(tMovie);
-	CCLOG(">GameScene Destruct.");
+	CCLOG(">GameScene Destruct.");				//ERR:122;
 }
 
 void cleanup(void *arg){  
@@ -94,7 +94,7 @@ void *initmusic(void *arg){
 	for(;i<mss->count();++i){
 		s = (Script*) mss->objectAtIndex(i);
 		if(s->getint("type") == 2) break;			// Initcs -- Type == 2 -- Music Initilize. 唯一
-		CC_SAFE_RELEASE_NULL(s);
+	//	CC_SAFE_RELEASE_NULL(s);
 	}
 	CCLOG(">T_Music:Preparing Buffer.");
 	CCArray* sss = s->scriptnodes;
@@ -119,7 +119,9 @@ void initImg(Script* sp){
 
 		unsigned char* pBuffer = fi->getFileData(t->getstring("copname"),&filesize);
 		image->initWithImageData((void*)pBuffer, filesize, CCImage::kFmtPng);
+		delete pBuffer;
 		ImageInfo *pImageInfo = new ImageInfo();
+		//pImageInfo->autorelease();
 
 		pImageInfo->image = image;
 		pImageInfo->imageType = CCImage::kFmtPng;		
@@ -162,7 +164,7 @@ void *initfiles(void *arg){
 	for(;i<mss->count();++i){
 		s = (Script*) mss->objectAtIndex(i);
 		if(s->getint("type") == 1) initImg(s);			// Initcs -- Type == 1 -- Png Pack. Multi.
-		CC_SAFE_RELEASE_NULL(s);
+		//CC_SAFE_RELEASE_NULL(s);
 	}
 
 
@@ -193,7 +195,7 @@ void GameScene::f_initover(){
 	this->removeChildByTag(tLySpalash,true);	//移除并清理splash层
 
 	m_pImages = Imgstack;
-	ScriptList = sp->scripts;
+	ScriptList = sp->m_caScript;
 	m_IScriptSum = sp->sn;
 	
 	//////////////////////////////////////////////////////////////////////////

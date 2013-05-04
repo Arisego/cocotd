@@ -63,7 +63,8 @@ GameScene *GameManager::sharedLogicCenter()
 
 void GameManager::purgeSharedGameManager()
 {
-	purgeSharedLogicCenter();
+	//purgeSharedLogicCenter();
+	CCDirector::sharedDirector()->end();
     CC_SAFE_DELETE(mSharedGameManager);
 
 }
@@ -108,6 +109,12 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
+	if(mdl) CC_SAFE_RELEASE_NULL(mdl);
+	SoundManager::purgeSharedSoundManager();	
+	ConfigManager::purgeSharedConfigManager();
+	EventCenter::purgeSharedEventCenter();
+	EffectControler::purgeSharedEffectControler();
+	CharaS::purgeSharedCharaS();
 }
 
 
@@ -147,7 +154,7 @@ void GameManager::runSceneWithId(SceneId id)
 		ALSingle::sharedALSingle()->KillALLoadedData();
 		
 
-		mdl->noConfig();
+		mdl->noConfig(0);
 		CC_SAFE_RELEASE_NULL(mdl);
 		ALSingle::sharedALSingle()->sc = newScene;
 		cs = newScene;
@@ -188,6 +195,7 @@ void GameManager::preQuit(){
 		(dynamic_cast<StatesManager*> (cs))->PreQuit();
 
 		ModelLayer* md = new ModelLayer();
+		md->autorelease();
 		cs->addChild(md,99);
 
 		if(md->m_qlock){
@@ -248,6 +256,7 @@ void GameManager::preConfig(int type, int flag, int tab){
 
 		if(!mdl) {
 			mdl = new ModelLayer();
+//			mdl->autorelease();				//Manual Control is implied.
 			cs->addChild(mdl);
 		}
 		mdl->preConfig(type,flag,tab);
@@ -258,7 +267,7 @@ void GameManager::preConfig(int type, int flag, int tab){
 
 void GameManager::noConfig(){
 	if(!mdl) return;
-	mdl->noConfig();
+	//mdl->noConfig();
 	mdl->removeFromParent();
 	CC_SAFE_RELEASE_NULL(mdl);
 	if(!cs) return;

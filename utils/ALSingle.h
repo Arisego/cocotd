@@ -94,22 +94,24 @@ public:
 	static map<string,ALuint> musicplayers;
 	string bgpsz;
 	
-	void CleanOgg(){
+	void CleanOgg(){			//
 		
 
 		map<string,Ogg_F>::iterator bt = oggs.begin();
 		for(;bt!=oggs.end();++bt){
 			ov_clear(bt->second.oggFile);
-			free(bt->second.pInfo);
+			delete bt->second.oggFile;
+			//free(bt->second.pInfo);
+			//delete bt->second.pInfo;
 		}
 		oggs.clear();
 
-		map<string,ALuint>::iterator it=musicplayers.begin();
-		for(;it!=musicplayers.end();++it){
-			ALuint t = it->second;
-			alDeleteBuffers(1, &t);
-		}
-		musicplayers.clear();
+		//map<string,ALuint>::iterator it=musicplayers.begin();
+		//for(;it!=musicplayers.end();++it){
+		//	ALuint t = it->second;
+		//	alDeleteBuffers(1, &t);
+		//}
+		//musicplayers.clear();
 	}
 
 	/* 开始播放 */
@@ -245,7 +247,7 @@ public:
 		if (f == NULL)  
 			return false;   
 
-		vorbis_info *pInfo;  
+		//vorbis_info *pInfo;  
 		OggVorbis_File *oggFile = new OggVorbis_File();  
 
 		// Try opening the given file  
@@ -253,10 +255,10 @@ public:
 		if ((err = ov_open(f, oggFile, NULL, 0)) != 0)  
 			return false;   
 
-		pInfo = ov_info(oggFile, -1);  
+		//pInfo = ov_info(oggFile, -1);  
 
 		ogg.oggFile = oggFile;
-		ogg.pInfo = pInfo;
+		ogg.pInfo = ov_info(oggFile, -1);
 		ogg.idle = true;
 		ogg.loop = true;	//loop是 默认行为
 
