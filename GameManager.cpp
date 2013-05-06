@@ -115,6 +115,7 @@ GameManager::~GameManager()
 	EventCenter::purgeSharedEventCenter();
 	EffectControler::purgeSharedEffectControler();
 	CharaS::purgeSharedCharaS();
+	StateCenter::purgeSharedStateCenter();
 }
 
 
@@ -268,6 +269,7 @@ void GameManager::preConfig(int type, int flag, int tab){
 void GameManager::noConfig(){
 	if(!mdl) return;
 	//mdl->noConfig();
+	mdl->m_clock = false;
 	mdl->removeFromParent();
 	CC_SAFE_RELEASE_NULL(mdl);
 	if(!cs) return;

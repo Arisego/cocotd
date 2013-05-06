@@ -9,8 +9,9 @@ MoviePlayer* MovieLayer::player = NULL;
 void MovieLayer::cleanupplayer(){
 	if(!player) return;
 	player->stop();
-
 	player->removeFromParent();
+	player->release();
+	
 	player = NULL;
 	psz.clear();
 	ALSingle::sharedALSingle()->SetMov(NULL);
@@ -31,6 +32,7 @@ void MovieLayer::Resume(){
 		player = new MoviePlayer();
 		player->setAnchorPoint(ccp(0,0));
 		addChild(player);
+		//player->autorelease();
 		ALSingle::sharedALSingle()->SetMov(player);
 	}
 	setVisible(true);
@@ -64,4 +66,9 @@ void MovieLayer::play_media()
 {
 	player->play(psz.c_str());
 	player->bStoped = true;
+}
+
+MovieLayer::~MovieLayer()
+{
+	cleanupplayer();
 }

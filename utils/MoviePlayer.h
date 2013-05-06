@@ -34,6 +34,7 @@ public:
     MoviePlayer();
 
 private:
+	CCTexture2D *texture;
 
     libvlc_instance_t *vlc;
     libvlc_media_player_t *vlc_player;

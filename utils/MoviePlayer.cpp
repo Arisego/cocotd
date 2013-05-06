@@ -36,12 +36,13 @@ vlc(0), vlc_player(0)
 
 MoviePlayer::~MoviePlayer()
 {
-    CCSprite::~CCSprite();
+    //CCSprite::~CCSprite();
+	texture->release();
     free(videobuf);
 
-    libvlc_media_player_stop(vlc_player);
-    libvlc_media_player_release(vlc_player);
-    libvlc_release(vlc);
+    //libvlc_media_player_stop(vlc_player);
+    //libvlc_media_player_release(vlc_player);
+    //libvlc_release(vlc);
 }
 
 bool MoviePlayer::init(void)
@@ -59,7 +60,7 @@ bool MoviePlayer::init(void)
     libvlc_video_set_callbacks(vlc_player, lock, unlock, display, NULL);
     libvlc_video_set_format(vlc_player, "RGBA", width, height, width << 2);
     
-    CCTexture2D *texture = new CCTexture2D();
+    texture = new CCTexture2D();
     texture->initWithData(videobuf, kCCTexture2DPixelFormat_RGBA8888, width, height, size);
     return initWithTexture(texture);
 }
@@ -87,6 +88,8 @@ void MoviePlayer::stop(void)
 {
     libvlc_media_player_stop(vlc_player);
 	libvlc_release(vlc);
+
+	unscheduleUpdate();
 	bStoped = true;
 }
 

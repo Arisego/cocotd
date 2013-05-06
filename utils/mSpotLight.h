@@ -63,6 +63,7 @@ private:
 	map<string,SpotInfo*> sls;				//添加多个光点备用
 
 	void generate_circle();					//Avalible only after f_init(). And empty if not using render texture.
+	void nouse();
 
 };  
   

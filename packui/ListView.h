@@ -139,6 +139,10 @@ public:
 		}
 	}
 
+	//virtual void retain(){
+	//	CCLOG("s");
+	//}
+
 };
 
 #endif

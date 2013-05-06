@@ -27,6 +27,8 @@ public:
 	void Resume();
 	void cleanupplayer();
 
+	~MovieLayer();
+
 	virtual void byTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
 	string psz;

@@ -18,6 +18,7 @@ class DBSource : public cocos2d::extension::CCTableViewDataSource
 
 public:
 	~DBSource(){
+		vdata.clear();
 		data->release();
 	}
 

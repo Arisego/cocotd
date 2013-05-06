@@ -33,6 +33,7 @@ bool StateCenter::init(){
 		m_cdItemList = new CCDictionary();			//Avoid Null Refrence.
 		g_charas = CharaS::sharedCharaS();
 
+		g_sp = NULL;
 		m_scTags = NULL;
 		m_bIsLoad = false;
 		return true;
@@ -503,6 +504,7 @@ CCDictionary* StateCenter::f_get_itemlist(int i)			//Group|| 1 ItemCanUsse || 4 
 	if(!ret){
 		ret = new CCDictionary();
 		m_cdItemList->setObject(ret,i);
+		ret->autorelease();
 	}
 	return ret;
 }
@@ -559,4 +561,13 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 void StateCenter::bback(CCObject* c){
 	t_ldb_cid->release();
 	CCLOG("maybe it will boneeded?");
+}
+
+StateCenter::~StateCenter()
+{
+	CC_SAFE_DELETE(g_sp);
+	if(m_cdItemList){
+		m_cdItemList->removeAllObjects();
+		m_cdItemList->release();
+	}
 }

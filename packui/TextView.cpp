@@ -91,3 +91,12 @@ void TextView::scrollViewDidScroll(CCScrollView *view)
 void TextView::scrollViewDidZoom(CCScrollView *view)
 {
 }
+
+TextView::~TextView()
+{
+	
+	EventCenter::sharedEventCenter()->setScroller(NULL);
+	pTableView->removeFromParent();
+
+	CC_SAFE_RELEASE_NULL(pTableView);
+}

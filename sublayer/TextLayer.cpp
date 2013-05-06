@@ -595,8 +595,7 @@ bool TextLayer::DerSelMenu(Script* ts){
 		for(int i=0;i<n;i++){
 			Script* tmp = (Script*) scrs->objectAtIndex(i);		//set more here if you want more.
 			CCMenuItemFont::setFontName("Marker Felt");
-			CCMenuItemFont *item6 = new CCMenuItemFont();
-			item6 = CCMenuItemFont::create(tmp->getstring("content"), this, menu_selector(TextLayer::menucallback));
+			CCMenuItemFont *item6 = CCMenuItemFont::create(tmp->getstring("content"), this, menu_selector(TextLayer::menucallback));
 			item6->setTag(tmp->getint("jump"));
 			tm->insertObject(item6,i);
 		}

@@ -31,7 +31,7 @@ void mSpotLight::setRenderColor(const ccColor4F& var){
 bool mSpotLight::f_init(CCNode* cn_borad,int i_ld){
 	do 
 	{
-		new CCPoint[1];
+		//new CCPoint[1];
 		m_iLaDep = i_ld;
 		m_Board = cn_borad;
 
@@ -98,7 +98,8 @@ void mSpotLight::generate_circle()
 	
 	if(m_AkaruCircle){
 		m_AkaruCircle->removeFromParent();
-		CC_SAFE_RELEASE_NULL(m_AkaruCircle);
+		m_AkaruCircle	=	NULL;
+		//CC_SAFE_RELEASE_NULL(m_AkaruCircle);
 	}
 	ccBlendFunc cbf = {GL_ZERO, GL_ONE_MINUS_SRC_ALPHA};
 
@@ -157,7 +158,8 @@ bool mSpotLight::f_refresh_circles()
 		CCLOG(">No need for circle");
 		if(m_AkaruCircle){
 			m_AkaruCircle->removeFromParent();
-			CC_SAFE_RELEASE_NULL(m_AkaruCircle);
+			m_AkaruCircle = NULL;
+			//CC_SAFE_RELEASE_NULL(m_AkaruCircle);
 		}
 		if(m_StencilCircle){
 			csb_st->removeAllChildren();
@@ -180,4 +182,9 @@ void mSpotLight::f_state_circle( bool st )
 	m_bAvalible = st;
 	cp_board->setVisible(m_bAvalible);
 	m_AkaruCircle->setVisible(m_bAvalible);
+}
+
+void mSpotLight::nouse()
+{
+	new CCPoint[1];
 }

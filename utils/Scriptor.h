@@ -49,7 +49,6 @@ public:
 	float f;
 
 	NFloat(float fv){
-		autorelease();
 		f = fv;
 	}
 };
@@ -85,11 +84,22 @@ public:
 		m_anum = 0;
 		attributes = NULL;
 		scriptnodes = NULL;
+		mapscpnodes = NULL;
 		//autorelease();
 	}
 
 	~Script(){
-		if(attributes) attributes->removeAllObjects();
+		//if(attributes) {
+		//	//CCDictElement* tcde;
+		//	//CCDICT_FOREACH(attributes,tcde){
+		//	//	if(tcde->getObject()->retainCount()>1)
+		//	//		tcde->getObject()->release();
+		//	//}
+		//	//attributes->removeAllObjects();
+		//	attributes->release();
+		//}
+
+
 		CC_SAFE_DELETE(attributes);
 
 		if(scriptnodes) scriptnodes->removeAllObjects();
@@ -198,11 +208,11 @@ public:
 			TiXmlDocument doc;
 			doc.Parse(buffer);
 			initcs = new CCArray();
-			mapscps = new CCDictionary();
+//			mapscps = new CCDictionary();
 			
 			sn = 0;
 			in = 0;
-			m_scWhole = dump_to_nodes(&doc);
+			dump_to_nodes(&doc);
 			
 			return true;
 		} while (0);
@@ -226,29 +236,34 @@ public:
 			//CCLOG( "%s%s: value=[%s]", pIndent, pAttrib->Name(), pAttrib->Value());
 			if (pAttrib->QueryIntValue(&ival)==TIXML_SUCCESS)   
 			{
-				CCInteger* ci = CCInteger::create(ival);
+				CCInteger* ci = new CCInteger(ival);
 				dt->setObject(ci,pAttrib->Name());
+				ci->release();
 			}
 			else if (pAttrib->QueryDoubleValue(&dval)==TIXML_SUCCESS) 
 			{
 				NFloat* fl = new NFloat(dval);
 				dt->setObject(fl,pAttrib->Name());
+				fl->release();
 			}
 			else 
 			{
-				CCString* sl = CCString::create(pAttrib->Value());
+				CCString* sl = new CCString(pAttrib->Value());
 				dt->setObject(sl,pAttrib->Name());
 				pAttrib->Value();
 				CCLOG("value pair:%s||%s||%s",pAttrib->Value(),pAttrib->Name(),sl->getCString());
+				sl->release();
 			}
 			i++;
 			pAttrib=pAttrib->Next();
 		}
 		if(i>0)	return dt;
-		else return NULL;
+		else CC_SAFE_RELEASE_NULL(dt);
+			
+		return NULL;
 	}
 
-	Script* dump_to_nodes( TiXmlNode* pParent, unsigned int indent = 0, ScriptType st = sUnknown )
+	Script* dump_to_nodes( TiXmlNode* pParent, unsigned int indent = 0, ScriptType st = sUnknown)
 	{
 		if ( !pParent ) return NULL;
 
@@ -264,7 +279,7 @@ public:
 		switch ( t )
 		{
 		case TiXmlNode::DOCUMENT:
-			CCLOG( "Document" );
+			CCLOG( "-Document" );
 			break;
 
 		case TiXmlNode::ELEMENT:
@@ -309,18 +324,22 @@ public:
 			break;
 
 		case TiXmlNode::DECLARATION:
-			CCLOG( "Declaration" );
+			CCLOG( "-Declaration" );
 			break;
 		default:
 			break;
 		}
-		CCLOG( "\n" );
+
+		bool t_bNeedRet = true;
 		int m = 0;
-		if(ct != NULL){													//至少保留total属性统计子节点个数方便读取，不提供的默认行为更加消耗资源
-			CCInteger* cod = (CCInteger*) ct->objectForKey("total");	//错误的配置文件在这里跳出的可能性极大
+		CCLOG("----One sccin.Indent:%d----",indent);
+		if(ct != NULL){													
+			CCInteger* cod = (CCInteger*) ct->objectForKey("total");	//a_这里只_读取script,_mapscp不_提供total属性。
 			if(NULL != cod)
 			{
-				int ccon = cod->getValue();								//不要给mapscript提供total类，对于dictionary而言没有优化意义
+				int ccon = cod->getValue();								
+				CCLOG("---Indent:%d||Total:%d---",indent,ccon);
+
 				ca = new CCArray(ccon);
 				 pChild = pParent->FirstChild();
 				for(;m<ccon;m++)
@@ -342,38 +361,53 @@ public:
 				if(tp == sMapscp){
 					Script* mtm = dump_to_nodes(pChild, indent+1, sNameNode);
 					cd->setObject(mtm,mtm->getstring("name"));
+					CCLOG("---Indent:%d||NT,sMapscp:%s---",indent,mtm->getstring("name"));
 					k++;
 				}else if(tp == sNameNode){
 					Script* mtm = dump_to_nodes(pChild, indent+1, sTypeNode);
 					cd->setObject(mtm,mtm->getint("type"));
+					CCLOG("---Indent:%d||NT,sNameNode:%d---",indent,mtm->getint("type"));
 					k++;
-				}else if(tp != sUnknown) 
+				}else if(tp != sUnknown)											//_以上为msp的读入
 				{
 					ca->insertObject(dump_to_nodes( pChild, indent+1, tp),k);
+					CCLOG("---Indent:%d||NT,sUnknown:%d---",indent,k);
 					k++;
 				}
 				else{
+					CCLOG("-Per sable Leak,sUnknown Node:%d",indent);
 					dump_to_nodes( pChild, indent+1, tp);
+					
 				}
 				
 				
 			}	
-			if(k>0) {
-				if(!ct) ct = new CCDictionary();
-				ct->setObject(CCInteger::create(k),"total");
-			}else{
-				CC_SAFE_RELEASE_NULL(ca);
-				CC_SAFE_RELEASE_NULL(cd);
-			}
+
 		}
 
+
 		Script* tmps = new Script();
-		tmps->attributes = ct;
-		tmps->scriptnodes = ca;
-		//tmps->m_anum = ct->count();		//如果节点没有属性的非登记节点将会出错。
+		if(k+m > 0) {
+			if(!ct) ct = new CCDictionary();
+			if(m==0){
+				CCInteger* t_i = new CCInteger(k);
+				ct->setObject(t_i,"total");
+				t_i->release();
+			}
+
+
+			tmps->scriptnodes = ca;
+			tmps->mapscpnodes = cd;
+		}else{							
+			CCLOG("-Leaf Node Detect");
+
+			CC_SAFE_RELEASE_NULL(ca);
+			CC_SAFE_RELEASE_NULL(cd);
+		}
+
 		tmps->m_snum = k + m;
+		tmps->attributes = ct;	
 		tmps->type = tp;
-		tmps->mapscpnodes = cd;
 
 		switch(tp){
 		case sFilePack:
@@ -384,12 +418,13 @@ public:
 			}
 		case sUnknown:
 			{
-				tmps->release();
+				CC_SAFE_RELEASE_NULL(tmps);
 				return NULL;
 			}
 		case sScriptPack:
 			{
 				m_caScript = ca;
+				//if(ca) ca->retain();
 				sn = k + m;
 				tmps->scriptnodes = NULL;
 			}
@@ -402,6 +437,10 @@ public:
 		case sMapscp:
 			{
 				mapscps = cd;
+				//if(cd) cd->retain();
+				tmps->mapscpnodes = NULL;
+				CC_SAFE_RELEASE_NULL(tmps);
+				return NULL;
 			}
 		default:
 			{

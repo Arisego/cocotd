@@ -38,6 +38,8 @@ public:
 
 	static StateCenter *sharedStateCenter();
 	static void purgeSharedStateCenter();
+	~StateCenter();
+
 	bool init();
 	bool m_bIsLoad;
 	Scriptor* g_sp;

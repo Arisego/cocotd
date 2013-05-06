@@ -65,7 +65,11 @@ Scriptor* sp;
 string fscp;
 
 GameScene::~GameScene(){
-	//CC_SAFE_DELETE(sp);
+
+	CC_SAFE_DELETE(sp);
+//	Imgstack->removeAllObjects();
+	CC_SAFE_RELEASE_NULL(Imgstack);
+
 	CC_SAFE_RELEASE_NULL(snapshot);
 	CC_SAFE_RELEASE_NULL(tMovie);
 	CCLOG(">GameScene Destruct.");				//ERR:122;
@@ -109,7 +113,7 @@ void *initmusic(void *arg){
 
 void initImg(Script* sp){
 	CCLOG(">InitImg. Thread. Begin.%s",sp->getstring("path"));
-	CCImage* image = new CCImage();
+	
 	unsigned long filesize;
 	FileIO* fi = new FileIO(sp->getstring("path"));
 
@@ -117,6 +121,7 @@ void initImg(Script* sp){
 		Script* t = (Script*) sp->scriptnodes->objectAtIndex(i);	//TODO:根据后缀名改变Image的读入类型
 		CCLOG(">>Inert Img. %s. Begin.", t->getstring("path"));
 
+		CCImage* image = new CCImage();
 		unsigned char* pBuffer = fi->getFileData(t->getstring("copname"),&filesize);
 		image->initWithImageData((void*)pBuffer, filesize, CCImage::kFmtPng);
 		delete pBuffer;
@@ -323,12 +328,7 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			pthread_t tid1;	
 			///thread moving to end?
 
-			err = pthread_create(&tid1,NULL,initfiles,(void *)1);  
 
-			if( err != 0){  
-				fprintf(stderr,"create thread1 failed: %s",strerror(err));  
-				exit(1);  
-			} 
 
 
 
@@ -364,6 +364,15 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			this->addChild(SplashLayer,100,tLySpalash);
 			//SoundManager::sharedSoundManager()->PlayMusic();
 			//SoundManager::sharedSoundManager()->PreLoadSrc("d");
+			//////////////////////////////////////////////////////////////////////////
+
+			//////////////////////////////////////////////////////////////////////////
+			err = pthread_create(&tid1,NULL,initfiles,(void *)1);  
+
+			if( err != 0){  
+				fprintf(stderr,"create thread1 failed: %s",strerror(err));  
+				exit(1);  
+			} 
 			//////////////////////////////////////////////////////////////////////////
 
 			m_StageState = 1;
@@ -495,7 +504,7 @@ void GameScene::e_tmpscript(CCArray* sl,int sum){
 }
 
 void GameScene::e_handlecurs(Script* s){
-	int t_sum = ((CCInteger*) s->attributes->objectForKey("total"))->getValue();
+	int t_sum = s->getint("total");
 	CCArray* acts = s->scriptnodes;
 	//CCLOG("script handle.");
 	for (int i = 0;i<t_sum;i++)		//multi here?

@@ -18,6 +18,10 @@ typedef struct _ImageInfo : public CCObject
 {
 	CCImage        *image;
 	CCImage::EImageFormat imageType;
+
+	~_ImageInfo(){
+		image->release();
+	}
 } ImageInfo;
 
 

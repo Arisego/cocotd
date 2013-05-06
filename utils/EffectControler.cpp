@@ -32,6 +32,7 @@ void EffectControler::purgeSharedEffectControler()
 bool EffectControler::init(){
 	do 
 	{
+		sp = NULL;
 		m_iState = -1;
 		m_caLocks = NULL;
 		m_Esp = NULL;
@@ -262,5 +263,5 @@ void EffectControler::md_act_item( CCArray* tl )
 EffectControler::~EffectControler()
 {
 	//sp->re_init();
-	delete sp;
+	CC_SAFE_DELETE(sp);
 }

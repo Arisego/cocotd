@@ -31,7 +31,9 @@ void Entiles::initFiles(const char *pszFileName, const CCRect& rect)
 
 void Entiles::initFiles(const char *pszFileName)
 {
+	CC_SAFE_RELEASE_NULL(m_sprite);
 	m_sprite = CCSprite::createWithSpriteFrameName(pszFileName);
+	m_sprite->retain();
 	m_sprite->setTag(9);
 	psz = pszFileName;
 }

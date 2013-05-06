@@ -20,9 +20,7 @@ private:
 	int m_iTag;
 
 public:
-	~TextView(){
-		EventCenter::sharedEventCenter()->setScroller(NULL);
-	}
+	~TextView();
 
 	void scroll_in(WPARAM wParam, LPARAM lParam){
 		//fwKeys = LOWORD(wParam);    // key flags

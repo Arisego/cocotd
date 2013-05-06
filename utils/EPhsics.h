@@ -17,6 +17,10 @@ public:
 	bool m_bMoving;		//moving
 	
 
+	//~EPhsics(){
+	//	Entiles::~Entiles();
+	//}
+
 	EPhsics(){
 		state = 0;
 		m_bMoving = false;

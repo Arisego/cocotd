@@ -498,6 +498,10 @@ public:
 		m_vTabs.push_back(tabc);
 	}
 
+	~INFTab(){
+		CC_SAFE_RELEASE_NULL(tv);
+	}
+
 	void Add_Button(string name, int tag, int a_infoid){
 		Container* tabc = new Container();
 
@@ -687,7 +691,10 @@ public:
 		CCDictionary* m_cid =  StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab);
 		string t_sMask;
 		CCDictElement* pElement = NULL;
-		if(!m_cid) return;					//TODO:物品列表为空时添加相应的显示
+		if(!m_cid) {			//TODO:物品列表为空时添加相应的显示
+			CC_SAFE_RELEASE_NULL(m_cid);
+			return;	
+		}				
 		CCDICT_FOREACH(m_cid,pElement)
 		{
 			t_sMask +=  CCString::createWithFormat("%d,",pElement->getIntKey())->getCString();
