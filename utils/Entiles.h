@@ -21,7 +21,7 @@ typedef enum{
 
 //所有地图实体的基类
 //保证实体类的单纯性，实体类不负责进行HUD显示，所有HUD相关事宜由ML和TM处理。
-class Entiles : public CCObject, public SimControl
+class Entiles : public CCNode, public SimControl
 {
 public:
 	b2Body *m_body;

@@ -100,13 +100,13 @@ public:
 		//}
 
 
-		CC_SAFE_DELETE(attributes);
+		CC_SAFE_RELEASE_NULL(attributes);
 
-		if(scriptnodes) scriptnodes->removeAllObjects();
-		CC_SAFE_DELETE(scriptnodes);
+		//if(scriptnodes) scriptnodes->removeAllObjects();
+		CC_SAFE_RELEASE_NULL(scriptnodes);
 
-		if(mapscpnodes) mapscpnodes->removeAllObjects();
-		CC_SAFE_DELETE(mapscpnodes);
+		//if(mapscpnodes) mapscpnodes->removeAllObjects();
+		CC_SAFE_RELEASE_NULL(mapscpnodes);
 	}
 
 	const char* getstring(const char* tag){
@@ -197,8 +197,8 @@ public:
 		{
 			CCLOG(">REad File Prepare...");
 			unsigned long filesize;
-			const char *path = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(fname);			//未打包
-			char *buffer = (char *)CCFileUtils::sharedFileUtils()->getFileData(path, "rb", &filesize);
+			string path = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(fname);			//未打包
+			char *buffer = (char *)CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &filesize);
 
 			CC_BREAK_IF(!buffer);
 			CCLOG(">Read over and scc");
@@ -455,13 +455,13 @@ public:
 	~Scriptor(){
 		CC_SAFE_DELETE(m_scWhole);
 
-		if(mapscps) mapscps->removeAllObjects();
+		//if(mapscps) mapscps->removeAllObjects();
 		CC_SAFE_RELEASE_NULL(mapscps);
 
-		if(m_caScript) m_caScript->removeAllObjects();
+		//if(m_caScript) m_caScript->removeAllObjects();
 		CC_SAFE_RELEASE_NULL(m_caScript);
 
-		if(initcs)	initcs->removeAllObjects();
+		//if(initcs)	initcs->removeAllObjects();
 		CC_SAFE_RELEASE_NULL(initcs);
 		
 		

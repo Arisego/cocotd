@@ -131,6 +131,7 @@ void CharaState::refresh_equlist()
 				t_eq->position	=	stoi(t_ssm.at("position"));
 
 				m_cdEquips->setObject(t_eq,item_id);
+				t_eq->release();
 
 				CCLOG(">Read for dquip with itemid:%d.", item_id);	
 			}
@@ -294,6 +295,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 					t_sMask +=  CCString::createWithFormat("%d,",*it)->getCString();
 					ItemCellData* t_icd	=	new ItemCellData(*it,0,0);
 					m_cid->setObject(t_icd,*it);
+					t_icd->release();
 				}
 				t_sMask.erase(t_sMask.length()-1);
 				CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
@@ -306,6 +308,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 					m_ldbEquList->setPosition(ccp(2,0));
 					m_ldbEquList->setContentSize(CCSizeMake(300,250));
 					r_inBox->addChild(m_ldbEquList);
+					m_ldbEquList->release();
 				}else{
 					CC_SAFE_RELEASE_NULL(m_ldbEquList);
 				}

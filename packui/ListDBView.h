@@ -33,6 +33,7 @@ public:
 	string m_sSql;									//Query String.
 
 	~ListDBSource(){
+		//CC_SAFE_RELEASE_NULL(m_caStData);
 		m_miiViDb.clear();
 
 		CCObject* tco;

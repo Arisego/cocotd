@@ -219,7 +219,9 @@ bool EBullet::SCTouch(b2Fixture* self, b2Fixture* tar,bool bLeave){
 	CCLOG(">Touched:%d.%d",tar_b->group_mask,tar_b->group_id);
 	if(tar_b->GetFullName() == m_sTarget) StopFollow();
 	if(group_id != tar_b->group_id){					//This makes bullet destroy itself when contact none player bodies.
-		delete(this);
+		retain();
+		removeFromParent();
+		delete this;
 		//delete(tar_b);
 		return false;
 	}

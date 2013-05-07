@@ -16,6 +16,7 @@ USING_NS_CC;
 
 MapLayer::~MapLayer(){
 	CCLOG(">MapLayer Destruct.");
+	
 	CC_SAFE_RELEASE_NULL(bm);
 	CC_SAFE_RELEASE_NULL(tm);
 	CC_SAFE_RELEASE_NULL(t_bm);
@@ -259,6 +260,7 @@ void MapLayer::get_target()
 				//m_sIcd->sum -= 1;				//[ATT]:The design has changed.
 				EffectControler::sharedEffectControler()->md_act_item(NULL);
 			}else{
+				if(m_caTList) CC_SAFE_RELEASE_NULL(m_caTList);
 				m_caTList	=	new CCArray();
 				if(m_ltb->mpChara) m_caTList->addObject(m_ltb->mpChara);			//Test Only.This check may not be needed.
 				EffectControler::sharedEffectControler()->md_act_item(m_caTList);

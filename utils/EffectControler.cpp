@@ -32,12 +32,13 @@ void EffectControler::purgeSharedEffectControler()
 bool EffectControler::init(){
 	do 
 	{
-		sp = NULL;
+		sp = new Scriptor();
 		m_iState = -1;
 		m_caLocks = NULL;
 		m_Esp = NULL;
 		m_bSilent = false;
-		
+		m_tl = NULL;
+
 		return true;
 	} while (0);
 	return false;
@@ -61,7 +62,8 @@ void EffectControler::md_use_skill( InterfaceEffect* iv, int a_skill_id, CCObjec
 	//int item_id	 =	 stoi(t_ssm.at("itemid"));			
 	//int usecase	 =	 stoi(t_ssm.at("usecase"));
 	//if(! (usecase&1)) exit(0x5003);
-	sp = new Scriptor();
+	//CC_SAFE_DELETE(sp);
+	sp->re_init();
 	sp->parse_string(t_ssm.at("side_effect"));
 	m_caLocks = sp->m_caScript;
 	if(m_caLocks) m_caLocks->retain();
@@ -132,8 +134,9 @@ void EffectControler::f_sp_gonext()
 void EffectControler::f_effect_over()			//Dont call it manually inside efc, call it from Implements for better action control.
 {
 	m_iState = 0;
-	miView->effect_over();	
-	sp->re_init(); //CC_SAFE_DELETE(sp);	//DONE:注意Scriptor多次使用过程中内存空间的释放 -> Scriptor已有reinit机制
+	if(miView) miView->effect_over();	
+	f_clear();
+	//sp->re_init(); //CC_SAFE_DELETE(sp);	//DONE:注意Scriptor多次使用过程中内存空间的释放 -> Scriptor已有reinit机制
 }
 
 void EffectControler::DerSP( Script* asp )
@@ -156,6 +159,7 @@ void EffectControler::DerSP( Script* asp )
 				StateCenter::sharedStateCenter()->f_add_item(t_sp,m_bSilent);
 				m_bSilent = false;
 				if(miView) miView->refresh_view();
+				else f_sp_gonext();
 				break;
 			}
 		case(sAction):
@@ -164,11 +168,13 @@ void EffectControler::DerSP( Script* asp )
 				CharaS::sharedCharaS()->load_chara(t_sp);
 				m_bSilent = false;
 				if(miView) miView->refresh_view();
+				else f_sp_gonext();
 				break;
 			}
 		case(sMapAction):
 			{
 				if(miView) miView->handlesp(t_sp);
+				else f_sp_gonext();
 				break;
 			}
 
@@ -222,10 +228,11 @@ void EffectControler::md_use_item( InterfaceEffect* iv, int a_item_id )
 	//int item_id	 =	 stoi(t_ssm.at("itemid"));			
 	//int usecase	 =	 stoi(t_ssm.at("usecase"));
 	//if(! (usecase&1)) exit(0x5003);
-	sp = new Scriptor();
+	//CC_SAFE_DELETE(sp);
+	sp->re_init();
 	sp->parse_string(t_ssm.at("side_effect"));
 	m_caLocks = sp->m_caScript;
-	//if(m_caLocks) m_caLocks->retain();
+	if(m_caLocks) m_caLocks->retain();
 
 
 	m_iTarget	=	 stoi(t_ssm.at("target"));	
@@ -237,9 +244,9 @@ void EffectControler::md_use_item( InterfaceEffect* iv, int a_item_id )
 	sp->parse_string(m_sEffect);
 	CCLOG("Prepar ready for md_act_item.");
 	m_Esp = sp->m_caScript;
-	//if(m_Esp) m_Esp->retain();
-	//else return;
-	if(!m_Esp) return;
+	if(m_Esp) m_Esp->retain();
+	else return;
+	//if(!m_Esp) return;
 
 	if(iv) iv->get_target();
 	else {

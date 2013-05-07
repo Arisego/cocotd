@@ -12,6 +12,7 @@
 
 TileMap::~TileMap(){
 		//EventCenter::sharedEventCenter()->setController(NULL);
+	removeAllChildren();
 	CC_SAFE_DELETE(sp);
 
  	CC_SAFE_RELEASE_NULL(m_ea);

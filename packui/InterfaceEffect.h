@@ -17,6 +17,14 @@ public:
 	virtual void handlesp(Script* sp){
 		
 	};		//handle it if you want.
+
+	InterfaceEffect(){
+		m_caTList = NULL;
+	}
+
+	~InterfaceEffect(){
+		CC_SAFE_DELETE(m_caTList);
+	}
 };
 
 #endif

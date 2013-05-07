@@ -71,8 +71,9 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 
 	Entiles* mte = new EBullet();
 	
-
+	addChild(mte);
 	mte->initFiles(mtca->getstring("psz"));				//动画来源
+	
 	mte->group_mask = mtca->getint("gmid");				//组掩码
 	mte->group_id = mtca->getint("giid");				//组标记
 	mte->state = mtca->getint("state");
@@ -115,7 +116,7 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 	}
 
 	//mte->m_sprite->setPosition(d);
-	mte->retain();
+	//mte->retain();
 	mte->name = mtca->getstring("name");				//Bullet name?
 	mte->group = mtca->getstring("group");				//Bullet group?
 
@@ -136,7 +137,7 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 
 	//m_itemlist->setObject(mte,CCString::createWithFormat("%s_%s",mtca->getstring("group"),mtca->getstring("name"))->getCString());
 	//m_ea->addObject(mte);
-	mte->m_sprite->retain();
+	//mte->m_sprite->retain();
 	//sheet->
 		addChild(mte->m_sprite);
 }
