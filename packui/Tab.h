@@ -329,6 +329,7 @@ public:
 
 		StateCenter::sharedStateCenter()->f_save_file(CCString::createWithFormat("save_%d",t_t)->getCString());		
 		((Container *) m_oLockSave)->removeFromParent();
+		m_oLockSave = NULL;
 		Add_Button(t_t);
 	}
 

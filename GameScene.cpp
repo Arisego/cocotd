@@ -436,9 +436,7 @@ void GameScene::Snap(){
 	//rtx->beginWithClear(0.5,1,1,0);
 	rtx->begin();
 
-	//glDisable(GL_STENCIL_TEST); // ½ûÓÃÄ£°å²âÊÔ
 	ml->snap();
-	;
 	visit();
 
 	rtx->end();
@@ -447,6 +445,7 @@ void GameScene::Snap(){
 	addChild(ml,tLyMap);
 	ml->aftersnap();
 	if(te) te->aftersnap();
+	
 	GameManager::sharedGameManager()->finisSave();
 	//snapshot = new CCImage();
 	snapshot = rtx->newCCImage();

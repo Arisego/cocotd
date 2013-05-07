@@ -41,8 +41,8 @@ public:
     {
 		CCLOG(">BYLayer_DEC");
 
-		m_pMenusClaimTouch->removeAllObjects();
-		m_pItemsClaimTouch->removeAllObjects();
+		//m_pMenusClaimTouch->removeAllObjects();
+		//m_pItemsClaimTouch->removeAllObjects();
 
         CC_SAFE_RELEASE_NULL( m_pItemsClaimTouch );
         CC_SAFE_RELEASE_NULL( m_pMenusClaimTouch );
