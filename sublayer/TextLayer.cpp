@@ -612,3 +612,19 @@ bool TextLayer::DerSelMenu(Script* ts){
 	}while(0);
 	return false;
 }
+
+void TextLayer::beforesnap()
+{
+	m_bSnap = cpn_textcn->isInverted();
+	cpn_textcn->setInverted(true);
+	cns_blocks->setVisible(false);
+	//cpn_textcn->retain();
+	//cpn_textcn->removeFromParentAndCleanup(false);
+}
+
+void TextLayer::aftersnap()
+{
+	//addChild(cpn_textcn);
+	cpn_textcn->setInverted(m_bSnap);
+	cns_blocks->setVisible(true);
+}

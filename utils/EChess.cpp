@@ -12,7 +12,9 @@ void EChesses::initFiles(const char *pszFileName, const CCRect& rect)
 
 void EChesses::initFiles(const char *pszFileName)
 {
+	CC_SAFE_RELEASE_NULL(m_sprite);
 	m_sprite = CCSprite::createWithSpriteFrameName(pszFileName);
+	m_sprite->retain();
 	psz = pszFileName;
 }
 
@@ -232,6 +234,7 @@ void EChesses::load_chara_dbsp( Script* sp )
 	m_pChara->m_iCharaID = i_id;
 
 	m_pChara->autorelease();
+	m_pChara->retain();
 
 	for(int j = 0;j<sp->m_snum;++j){
 		Script* t_cp = (Script*) sp->scriptnodes->objectAtIndex(j);
@@ -267,6 +270,12 @@ void EChesses::load_chara_dbsp( Script* sp )
 		}
 
 	}
+}
+
+EChesses::~EChesses()
+{
+	CC_SAFE_RELEASE_NULL(m_pChara);
+	CCLOG(">");
 }
 
 

@@ -32,6 +32,10 @@ public:
 	virtual void Resume();
 	virtual void Close();
 
+	bool m_bSnap;
+	void beforesnap();
+	void aftersnap();
+
 	float m_height,m_textwidth,m_avatarwidth;
 	char* font;
 	int fontsize, m_iTextcount;

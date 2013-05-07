@@ -428,6 +428,7 @@ void MapLayer::menu_back( CCObject* pSender )
 					t_sMask +=  CCString::createWithFormat("%d,",*it)->getCString();
 					ItemCellData* t_icd	=	new ItemCellData(*it,0,0);
 					m_cid->setObject(t_icd,*it);
+					t_icd->autorelease();
 				}
 				t_sMask.erase(t_sMask.length()-1);
 				CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
@@ -663,7 +664,6 @@ void MapLayer::script_over()
 				{
 					m_lpJudgement->removePin(t_ec->name);
 					bm->m_itemlist->removeObjectForKey(t_ec->name);
-					t_ec->~EChesses();
 					CCLOG(">Enemy Dead....Player Dead should not call like this, because the destruct of echess release the chara, may be you have to retain it while initing.");
 				}else{
 					++t_iEnemy;
@@ -728,4 +728,28 @@ void MapLayer::switch_to_walk()
 		m_iMLState = 1;
 		show_hud();
 	}
+}
+
+void MapLayer::beforesnap()
+{
+	retain();
+	removeFromParentAndCleanup(false);
+	if(!wm) return;
+	m_bSnap = wm->m_bAvalible;
+	wm->f_state_circle(false);
+}
+
+void MapLayer::aftersnap()
+{
+	release();
+	if(!wm) return;
+	wm->f_state_circle(m_bSnap);
+}
+
+void MapLayer::snap()
+{
+	if(!wm) return;
+	wm->visit();
+	if(m_IP) m_IP->visit();
+	if(m_ltb) m_ltb->visit();
 }

@@ -56,6 +56,7 @@ void LinePrior::addPin( Chara* a_chara, string s)
 	m_cdPins->setObject(t_lp,t_lp->name);
 
 	addChild(t_lp);
+	t_lp->autorelease();
 }
 
 void LinePrior::refresh_pin()

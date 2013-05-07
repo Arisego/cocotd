@@ -349,6 +349,8 @@ bool StateCenter::f_save_file(const char* psz){
 		fullPath = CCString::createWithFormat("save/%s.jpg",psz);
 		
 		GameManager::sharedLogicCenter()->snapshot->saveToFile(fullPath->getCString(),false);
+		myDocument->Clear();
+		delete myDocument;
 
 		return true;
 	} while (0);

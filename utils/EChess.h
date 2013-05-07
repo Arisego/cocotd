@@ -24,12 +24,12 @@ public:
 	MoveDirect m_mdV,m_mdH;
 
 	void onDestroy(){
-		m_sprite->removeFromParent();
+		//m_sprite->removeFromParent();
 		m_body->GetWorld()->DestroyBody(m_body);
-		m_pChara->release();
+		
 	}
 	
-
+	~EChesses();
 	EChesses(){
 		m_pChara = NULL;
 		state = 0;

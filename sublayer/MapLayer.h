@@ -28,6 +28,11 @@ class MapLayer : public BYLayerAncestor, public StateMachine, public InterfaceEf
 {
 
 public:
+	bool m_bSnap;
+	void snap();
+	void beforesnap();
+	void aftersnap();
+
 	~MapLayer();
 
 	void switch_to_battle(string s);		//Switch to battle.

@@ -240,6 +240,7 @@ void BattleMap::f_generateEnemy( int i )
 	vdata.clear();
 	m_sSql = CCString::createWithFormat("select * from enemy_list where id IN (%s)", t_mask.c_str())->getCString();
 	vdata = DBUtil::getDataInfo(m_sSql,NULL);
+	DBUtil::closeDB();
 
 	//Prepare to analysis enemy group data get from db.
 	m_miEnemis.clear();
@@ -267,28 +268,35 @@ void BattleMap::f_generateEnemy( int i )
 		Scriptor* t_scp = new Scriptor();
 		t_scp->parse_string(t_ssm.at("attr"));					//Sp stored in attr. This is to make the enemy always the same to Chara.
 
-		EChesses* t_fij_ec = new EChesses();
+		//EChesses* t_fij_ec = new EChesses();
 
-		t_fij_ec->load_chara_dbsp((Script*) t_scp->m_caScript->objectAtIndex(0));
-		CC_SAFE_DELETE(t_scp);
-		
-		t_fij_ec->psz	=	"grossinis_sister2.png";			//Test Only.
-		t_fij_ec->pos	=	ccp(10,10);
-		t_fij_ec->group_id = 0x02;
-		t_fij_ec->group_mask = 0x01;
 
-		t_fij_ec->m_pChara->m_sName		 =	 t_ssm.at("name");			//TODO:IN:PB: all the generated enemy may use the same chara(), if so put down this to next stage.
-		t_fij_ec->m_pChara->m_sPsz		 =	 t_ssm.at("psz");
-		t_fij_ec->m_pChara->m_iElement	 =	 stoi(t_ssm.at("element"));
-		t_fij_ec->m_pChara->retain();
+
+
+		//t_fij_ec->m_pChara->retain();
 
 		for(int j = 0; j<t_fi_sum; ++j){			//Generate the number that is needed.			
 
-			EChesses* t_fij_ecd = new EChesses(*t_fij_ec);
+			EChesses* t_fij_ecd = new EChesses();
+
+			t_fij_ecd->load_chara_dbsp((Script*) t_scp->m_caScript->objectAtIndex(0));
+
+
+			t_fij_ecd->psz	=	"grossinis_sister2.png";			//Test Only.
+			t_fij_ecd->pos	=	ccp(10,10);
+			t_fij_ecd->group_id = 0x02;
+			t_fij_ecd->group_mask = 0x01;
+
 			t_fij_ecd->name	=	CCString::createWithFormat("enemy_%d",j)->getCString();
 			m_itemlist->setObject(t_fij_ecd,t_fij_ecd->name);
+			//t_fij_ecd->autorelease();
+
+			t_fij_ecd->m_pChara->m_sName		 =	 t_ssm.at("name");			//TODO:IN:PB: all the generated enemy may use the same chara(), if so put down this to next stage.
+			t_fij_ecd->m_pChara->m_sPsz		 =	 t_ssm.at("psz");
+			t_fij_ecd->m_pChara->m_iElement	 =	 stoi(t_ssm.at("element"));
 		}
 
+		CC_SAFE_DELETE(t_scp);
 		CCLOG("Lock out.");
 	}	
 
@@ -298,6 +306,7 @@ void BattleMap::f_load_chara()
 {
 	EChesses* t_ec = new EChesses();
 	Chara* t_cca = CharaS::sharedCharaS()->getdispchara();					//Test: get dispchara() for test.
+	t_cca->retain();
 
 	t_ec->pos = ccp(17,17);
 	t_ec->group_id = 0x01;
@@ -394,6 +403,7 @@ void BattleMap::checkpoint(CCTouch* a_touch)
 	MyQueryCallback queryCallback;
 	_world->QueryAABB( &queryCallback, *aabb );
 	vector<b2Fixture*>::iterator iter;  
+	delete aabb;
 
 	m_eCurMouse = NULL;
 	float t_miny = rh;

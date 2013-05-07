@@ -74,7 +74,7 @@ GameScene::~GameScene(){
 	CC_SAFE_RELEASE_NULL(ScriptList);
 
 	CC_SAFE_RELEASE_NULL(snapshot);
-	CC_SAFE_RELEASE_NULL(tMovie);
+	
 	CCLOG(">GameScene Destruct.");				//ERR:122;
 }
 
@@ -306,6 +306,7 @@ bool GameScene::e_getscript(){
 }
 
 void GameScene::onExit(){
+	CC_SAFE_RELEASE_NULL(tMovie);
 	CCScene::onExit();
 }
 
@@ -423,6 +424,8 @@ void GameScene::Snap(){
 	//if(!m_bCanSnap) return;
 	CC_SAFE_RELEASE_NULL(snapshot);
 	ml->show_hud();
+	ml->beforesnap();
+	if(te) te->beforesnap();
 	GameManager::sharedGameManager()->prePareSave();
 
 	CCDirector::sharedDirector()->setNextDeltaTimeZero(true);
@@ -430,12 +433,20 @@ void GameScene::Snap(){
 	//CCLayerColor* whitePage = CCLayerColor::layerWithColor(ccc4(255, 255, 255, 0), winsize.width, winsize.height);
 	CCRenderTexture* rtx = CCRenderTexture::renderTextureWithWidthAndHeight(winsize.width, winsize.height);
 	rtx->setPosition(winsize.width / 2, winsize.height / 2);
-	//rtx->beginWithClear(1,1,1,0);
+	//rtx->beginWithClear(0.5,1,1,0);
 	rtx->begin();
-	CCDirector::sharedDirector()->getRunningScene()->visit();
+
+	//glDisable(GL_STENCIL_TEST); // ½ûÓÃÄ£°å²âÊÔ
+	ml->snap();
+	;
+	visit();
+
 	rtx->end();
 
 	ml->close_hud();
+	addChild(ml,tLyMap);
+	ml->aftersnap();
+	if(te) te->aftersnap();
 	GameManager::sharedGameManager()->finisSave();
 	//snapshot = new CCImage();
 	snapshot = rtx->newCCImage();

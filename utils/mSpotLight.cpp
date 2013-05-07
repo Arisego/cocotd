@@ -181,7 +181,7 @@ void mSpotLight::f_state_circle( bool st )
 
 	m_bAvalible = st;
 	cp_board->setVisible(m_bAvalible);
-	m_AkaruCircle->setVisible(m_bAvalible);
+	if(m_AkaruCircle) m_AkaruCircle->setVisible(m_bAvalible);
 }
 
 void mSpotLight::nouse()
