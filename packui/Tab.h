@@ -430,6 +430,10 @@ public:
 		m_vTabs.clear();
 		removeAllChildren();
 	}
+
+	~SLTab(){
+		CCLOG(">sltab dec");
+	}
 };
 
 class INFTab : public Tab
@@ -767,6 +771,7 @@ public:
 
 			clw->setTag(0x3333);
 			addChild(clw,3);
+			//clw->release();
 		}
 
 
@@ -789,12 +794,13 @@ public:
 			m_caTList->addObject(t_cs->getcontent());
 			int ti = ((CharaListView*) getChildByTag(0x3333))->m_iItemCount;
 
+			m_sIcd->sum--;
 			ldb->RefreshSingleItem(m_iItem,m_sIcd->sum);
 			CCLOG("[ECICS]>Target back, add to catlist&callc.");
 
 			EffectControler::sharedEffectControler()->md_act_item(m_caTList);
 
-			m_sIcd->sum--;
+			
 			if(m_sIcd->sum < 1) {							//
 				if(m_sIcd){
 					StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iItem);
@@ -852,6 +858,12 @@ public:
 	}
 
 	void CleanStates(){
+		CCNode* tcn = getChildByTag(0x3333);
+		if(tcn){
+			tcn->autorelease();
+		}
+
+
 		removeAllChildren();
 	}
 };
@@ -868,7 +880,7 @@ public:
 		removeAllChildren();
 
 		CharaListView* t_clv = new CharaListView();
-		t_clv->autorelease();
+		
 		t_clv->m_iCLVState = 1;
 		t_clv->init();
 		t_clv->setbegin(0);
@@ -876,6 +888,7 @@ public:
 		t_clv->setPosition(ccp(51,1));
 
 		addChild(t_clv);
+		t_clv->autorelease();
 	}
 
 	void ShowTab(int itab = -2){

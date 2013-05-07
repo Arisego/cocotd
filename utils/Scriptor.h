@@ -159,10 +159,6 @@ public:
 	}
 
 	void re_init(){
-		if(mapscps) mapscps->removeAllObjects();
-		if(m_caScript) m_caScript->removeAllObjects();
-		if(initcs)	initcs->removeAllObjects();
-
 		CC_SAFE_RELEASE_NULL(initcs);
 		CC_SAFE_RELEASE_NULL(m_caScript);
 		CC_SAFE_RELEASE_NULL(mapscps);

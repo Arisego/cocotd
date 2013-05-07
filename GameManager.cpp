@@ -110,12 +110,16 @@ GameManager::GameManager()
 GameManager::~GameManager()
 {
 	if(mdl) CC_SAFE_RELEASE_NULL(mdl);
+	InfoTab::purgeSharedInfoTab();
+
 	SoundManager::purgeSharedSoundManager();	
 	ConfigManager::purgeSharedConfigManager();
-	EventCenter::purgeSharedEventCenter();
+	
 	EffectControler::purgeSharedEffectControler();
 	CharaS::purgeSharedCharaS();
 	StateCenter::purgeSharedStateCenter();
+
+	EventCenter::purgeSharedEventCenter();
 }
 
 
@@ -155,7 +159,10 @@ void GameManager::runSceneWithId(SceneId id)
 		ALSingle::sharedALSingle()->KillALLoadedData();
 		
 
-		mdl->noConfig(0);
+		//mdl->noConfig(0);
+		if(mdl){
+			mdl->m_clock = false;
+		}
 		CC_SAFE_RELEASE_NULL(mdl);
 		ALSingle::sharedALSingle()->sc = newScene;
 		cs = newScene;

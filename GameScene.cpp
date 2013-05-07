@@ -43,6 +43,7 @@ bool GameScene::init()
         CC_BREAK_IF(! CCScene::init());
 		ml = NULL;
 		snapshot = NULL;
+		ScriptList = NULL;
 
 		m_StageState = 0;
 		CC_SAFE_RELEASE_NULL(Imgstack);
@@ -61,14 +62,16 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 bool initover;
 int sum, coun;
-Scriptor* sp;
+Scriptor* s_sp;
 string fscp;
 
 GameScene::~GameScene(){
 
-	CC_SAFE_DELETE(sp);
+	
 //	Imgstack->removeAllObjects();
-	CC_SAFE_RELEASE_NULL(Imgstack);
+	if(initover) 
+		CC_SAFE_RELEASE_NULL(Imgstack);
+	CC_SAFE_RELEASE_NULL(ScriptList);
 
 	CC_SAFE_RELEASE_NULL(snapshot);
 	CC_SAFE_RELEASE_NULL(tMovie);
@@ -82,8 +85,8 @@ void cleanup(void *arg){
 void *initscript(void *arg){ 
 	//pthread_mutex_lock(&mutex);
 	CCLOG(">T_Scrip Begin");
-	sp = new Scriptor();
-	sp->parse_file(fscp.c_str());
+	s_sp = new Scriptor();
+	s_sp->parse_file(fscp.c_str());
 	CCLOG(">T_Scrip End");
 	pthread_mutex_unlock(&mutex);
 	return ((void *)0); 
@@ -92,7 +95,7 @@ void *initscript(void *arg){
 void *initmusic(void *arg){ 
 	CCLOG(">T_Music:Begin.");
 	//SoundManager::sharedSoundManager()->PreLoadSrc("d");	
-	CCArray* mss = sp->initcs;
+	CCArray* mss = s_sp->initcs;
 	int i = 0;
 	Script* s;
 	for(;i<mss->count();++i){
@@ -117,6 +120,7 @@ void initImg(Script* sp){
 	unsigned long filesize;
 	FileIO* fi = new FileIO(sp->getstring("path"));
 
+	if(!Imgstack) Imgstack = new CCDictionary();
 	for(int i = 0;i<sp->m_snum;++i){
 		Script* t = (Script*) sp->scriptnodes->objectAtIndex(i);	//TODO:根据后缀名改变Image的读入类型
 		CCLOG(">>Inert Img. %s. Begin.", t->getstring("path"));
@@ -132,6 +136,7 @@ void initImg(Script* sp){
 		pImageInfo->imageType = CCImage::kFmtPng;		
 
 		Imgstack->setObject(pImageInfo,t->getstring("path"));	//TODO:根据脚本载入资源
+		pImageInfo->autorelease();
 
 		CCLOG(">>Inert Img. %s. End.", t->getstring("path"));
 	}
@@ -163,7 +168,7 @@ void *initfiles(void *arg){
 	pthread_mutex_lock(&mutex);
 	CCLOG(">PT_LOCK_PASS");
 	//Img Cache Begin.Use Png only.
-	CCArray* mss = sp->initcs;
+	CCArray* mss = s_sp->initcs;
 	int i = 0;
 	Script* s;
 	for(;i<mss->count();++i){
@@ -190,7 +195,6 @@ bool GameScene::f_cachetest(const char* rscMask){	//移动缓存并记录进map
 		CC_BREAK_IF(!img);
 
 		CCTextureCache::sharedTextureCache()->addUIImage(img->image,rscMask);
-		img->release();
 		m_pImages->removeObjectForKey(rscMask);
 	} while (0);
 	return true;
@@ -200,8 +204,10 @@ void GameScene::f_initover(){
 	this->removeChildByTag(tLySpalash,true);	//移除并清理splash层
 
 	m_pImages = Imgstack;
-	ScriptList = sp->m_caScript;
-	m_IScriptSum = sp->sn;
+	ScriptList = s_sp->m_caScript;
+	ScriptList->retain();
+	m_IScriptSum = s_sp->sn;
+	CC_SAFE_DELETE(s_sp);
 	
 	//////////////////////////////////////////////////////////////////////////
 	
@@ -218,7 +224,7 @@ void GameScene::f_initover(){
 	//从这里开始展开textlayer
 	ImageInfo *img = (ImageInfo *) m_pImages->objectForKey("Images/background.png");
 	CCTextureCache::sharedTextureCache()->addUIImage(img->image,"Images/background.png");
-	img->release();
+	m_pImages->removeObjectForKey("Images/background.png");
 
 	//背景层
 	bg = CCLayer::create();
@@ -311,7 +317,10 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 			origin = CCDirector::sharedDirector()->getVisibleOrigin();
 			initover = false;
-			Imgstack = new CCDictionary();
+
+			if(!Imgstack) Imgstack = new CCDictionary();
+			Imgstack->removeAllObjects();
+
 			m_pImages = NULL;
 
 			StateCenter* t_sc = StateCenter::sharedStateCenter();

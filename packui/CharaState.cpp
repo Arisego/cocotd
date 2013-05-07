@@ -6,6 +6,7 @@
 
 CharaState::~CharaState(){
 //	CC_SAFE_RELEASE_NULL(m_caTList);
+	//CC_SAFE_RELEASE_NULL(m_ldbEquList);
 	CC_SAFE_RELEASE_NULL(m_cdEquips);
 }
 
@@ -271,7 +272,10 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 		r_mb->addChild(r_inBox);
 	}
 
-	if(m_ldbEquList) m_ldbEquList->removeFromParent();		//m_ldbEquList should be reffreshed.
+	if(m_ldbEquList) {
+		m_ldbEquList->removeFromParent();		//m_ldbEquList should be reffreshed.
+		m_ldbEquList = NULL;
+	}
 	switch(m_iGroup){						//m_iCurE is now duplicate with m_iGroup, but some further differ might be needed by both side.
 	case(-1):
 		{
@@ -373,7 +377,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 						m_ldbEquList->setPosition(ccp(2,0));
 						m_ldbEquList->setContentSize(CCSizeMake(300,250));
 						r_inBox->addChild(m_ldbEquList);
-
+						m_ldbEquList->autorelease();
 
 
 					}else{

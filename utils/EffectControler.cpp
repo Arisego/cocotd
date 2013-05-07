@@ -127,6 +127,7 @@ void EffectControler::f_sp_gonext()
 	if(m_iCurS < m_iSumS){
 		f_sp_act();
 	}else{
+		
 		f_effect_over();
 	}
 }
@@ -135,7 +136,7 @@ void EffectControler::f_effect_over()			//Dont call it manually inside efc, call
 {
 	m_iState = 0;
 	if(miView) miView->effect_over();	
-	f_clear();
+	if(m_bSilent) f_clear();
 	//sp->re_init(); //CC_SAFE_DELETE(sp);	//DONE:注意Scriptor多次使用过程中内存空间的释放 -> Scriptor已有reinit机制
 }
 
@@ -157,7 +158,7 @@ void EffectControler::DerSP( Script* asp )
 		case(sItem):
 			{
 				StateCenter::sharedStateCenter()->f_add_item(t_sp,m_bSilent);
-				m_bSilent = false;
+				//m_bSilent = false;
 				if(miView) miView->refresh_view();
 				else f_sp_gonext();
 				break;
@@ -166,7 +167,7 @@ void EffectControler::DerSP( Script* asp )
 			{
 				CharaS::sharedCharaS()->m_bNotifate = !m_bSilent;
 				CharaS::sharedCharaS()->load_chara(t_sp);
-				m_bSilent = false;
+				//m_bSilent = false;
 				if(miView) miView->refresh_view();
 				else f_sp_gonext();
 				break;
@@ -270,5 +271,6 @@ void EffectControler::md_act_item( CCArray* tl )
 EffectControler::~EffectControler()
 {
 	//sp->re_init();
+	f_clear();
 	CC_SAFE_DELETE(sp);
 }

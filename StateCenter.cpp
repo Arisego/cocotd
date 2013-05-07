@@ -32,6 +32,7 @@ bool StateCenter::init(){
 	{
 		m_cdItemList = new CCDictionary();			//Avoid Null Refrence.
 		g_charas = CharaS::sharedCharaS();
+		t_ldb_cid = NULL;
 
 		g_sp = NULL;
 		m_scTags = NULL;
@@ -357,6 +358,9 @@ bool StateCenter::f_save_file(const char* psz){
 bool StateCenter::f_load_file(const char* psz){
 	do												//TODO:分离，让重生的gamescene自己来取。
 	{		//Move it to Load over.
+		CC_SAFE_DELETE(g_sp);
+		g_sp = NULL;
+
 		g_sp = new Scriptor();		
 		CCString* fullPath = CCString::createWithFormat("save/%s.xml",psz);
 		if(! g_sp->parse_file(fullPath->getCString())) break;
@@ -379,6 +383,7 @@ bool StateCenter::f_load_file(const char* psz){
 					m_iTJump	=	t->getint("tjump");
 					GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
 					m_scTags	=	t;
+					m_scTags->retain();
 					return true;
 				}
 			}
@@ -426,6 +431,9 @@ bool StateCenter::g_load_file(){
 			}
 		}
 	}
+
+	CC_SAFE_DELETE(g_sp);
+	g_sp = NULL;
 	return true;
 }
 
@@ -535,7 +543,9 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 			
 			ItemCellData* ticd = (ItemCellData*) t_caGItem->objectForKey(i_id);
 			ItemCellData* t_icd = new ItemCellData(i_id, tm->getint("sum"), tm->getint("lock"));
-			t_ldb_cid->setObject(t_icd,i_id);							//LDB.
+			t_ldb_cid->setObject(t_icd,i_id);			//LDB.
+			t_icd->autorelease();
+
 			t_sMask +=  CCString::createWithFormat("%d,",i_id)->getCString();			//保证item_id的唯一吧，双主键在这个地方确实有点麻烦
 
 			if(ticd){												//已有物体
@@ -552,20 +562,22 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 	//////////////////////////////////////////////////////////////////////////
 	if(bSilent) return;
 
-	t_ldb_cid->retain();
+	//t_ldb_cid->retain();
 	t_sMask.erase(t_sMask.length()-1);
 	CCString* t_csSql = CCString::createWithFormat("select itemid,name,icon from item_list where itemid IN (%s) union select itemid,name,icon from equip_list where itemid IN (%s)",t_sMask.c_str(),t_sMask.c_str());
 	InfoTab::sharedInfoTab()->showldb("item_added",this,menu_selector(StateCenter::bback),t_csSql->getCString(),t_ldb_cid);
 }
 
 void StateCenter::bback(CCObject* c){
-	t_ldb_cid->release();
+	CC_SAFE_RELEASE_NULL(t_ldb_cid);
 	CCLOG("maybe it will boneeded?");
 }
 
 StateCenter::~StateCenter()
 {
+	CC_SAFE_RELEASE_NULL(t_ldb_cid);
 	CC_SAFE_DELETE(g_sp);
+	CC_SAFE_RELEASE_NULL(m_scTags);
 	if(m_cdItemList){
 		m_cdItemList->removeAllObjects();
 		m_cdItemList->release();

@@ -33,7 +33,9 @@ public:
 	string m_sSql;									//Query String.
 
 	~ListDBSource(){
-		//CC_SAFE_RELEASE_NULL(m_caStData);
+		if(m_ICType == 1) {
+			CC_SAFE_RELEASE_NULL(m_caStData);
+		}
 		m_miiViDb.clear();
 
 		CCObject* tco;
