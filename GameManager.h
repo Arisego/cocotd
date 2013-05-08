@@ -16,6 +16,8 @@ public:
 	static void purgeSharedGameManager();
 	static void purgeSharedLogicCenter();
 	static bool mSceneChanged;
+
+	void fullPathFromRelativePath(const char *pszRelativePath,string &psz);			//提供一个线程安全版本的获取路径函数。
 	
 	static ModelLayer *mdl;
 	CCScene* cs;

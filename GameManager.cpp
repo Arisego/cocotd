@@ -299,3 +299,12 @@ void GameManager::finisSave()
 	if(mdl)	mdl->setVisible(true);
 	if(m_bInfo) InfoTab::sharedInfoTab()->setVisible(true);
 }
+
+void GameManager::fullPathFromRelativePath( const char *pszRelativePath,string &psz )
+{
+	psz.clear();
+	do 
+	{
+		psz = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pszRelativePath);
+	} while (psz.length() == 0);
+}
