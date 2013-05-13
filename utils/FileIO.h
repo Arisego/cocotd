@@ -28,7 +28,13 @@ public:
 		unsigned long filesize;
 		pass = pw;
 
-		std::string path = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(filename);
+		std::string path;
+		do 
+		{
+			path.clear();
+			path= CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(filename);
+		} while (path.length() < 1);
+		
 		char *buffer = (char *)CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &filesize);
 
 		hz = OpenZip(buffer, filesize,pass);
