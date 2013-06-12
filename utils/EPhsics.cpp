@@ -22,11 +22,19 @@ void EPhsics::lin(){
 			{
 				switch ( direc )
 				{
+#if (WM_TYPE == MAP_TYPE_ISO)
 				case MS_LEFT:  desiredVel = b2Vec2(-4,2); break;
 				case MS_STOP:  desiredVel =  b2Vec2(0,0); break;
 				case MS_RIGHT: desiredVel =  b2Vec2(4,-2); break;
 				case MS_UP: desiredVel = b2Vec2(4,2); break;
 				case MS_DOWN: desiredVel = b2Vec2(-4,-2); break;
+#else
+				case MS_LEFT:  desiredVel = b2Vec2(-4,0); break;
+				case MS_STOP:  desiredVel =  b2Vec2(0,0); break;
+				case MS_RIGHT: desiredVel =  b2Vec2(4,0); break;
+				case MS_UP: desiredVel = b2Vec2(0,4); break;
+				case MS_DOWN: desiredVel = b2Vec2(0,-4); break;
+#endif
 				}
 
 				break;
@@ -89,6 +97,7 @@ void EPhsics::SCTarget(SimControl* tar){		//不会更新目标的位置，如果有这种需求可
 }
 
 void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
+#if (WM_TYPE == MAP_TYPE_ISO)
 	float fac;
 	//[FOLLWOINGDEBUG]CCLOG(">decide:%f,%f,%f,%f.",cur.x,cur.y,tar.x,tar.y);
 	if(abs(cur.x - tar.x)<0.01){
@@ -147,6 +156,67 @@ void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
 
 		}
 	}
+
+#else
+	float fac;
+	//[FOLLWOINGDEBUG]CCLOG(">decide:%f,%f,%f,%f.",cur.x,cur.y,tar.x,tar.y);
+	if(abs(cur.x - tar.x)<0.01){
+		if(cur.y < tar.y){
+			direc = MS_UP;
+			fac = tar.y - cur.y;
+
+			//[FOLLWOINGDEBUG]CCLOG("up:%f",fac);
+			if(fac < SLOW_ZONE){
+				bv = b2Vec2(0,4 * fac);
+			}else{
+				bv = b2Vec2(0,4);
+			}
+
+		}else if(cur.y > tar.y){
+			direc = MS_DOWN;		
+			fac =cur.y - tar.y;
+			//[FOLLWOINGDEBUG]CCLOG("down:%f",fac);
+			if(fac < SLOW_ZONE){
+				bv = b2Vec2(0, -4 * fac);
+			}else{
+				bv = b2Vec2(0,-4);
+			}
+		}
+
+		if(fac<0.01){
+			bv = b2Vec2(0,0);
+			direc = MS_STOP;
+			m_bMoving = false;
+		}
+
+
+	}else{
+		if(cur.x > tar.x){
+			direc = MS_UP;
+			fac = cur.x - tar.x ;
+
+			//[FOLLWOINGDEBUG]CCLOG("left:%f",fac);
+			if(fac < SLOW_ZONE){
+				bv = b2Vec2(-4 * fac,0);
+			}else{
+				bv = b2Vec2(-4,0);
+			}
+
+		}else if(cur.x < tar.x){
+			direc = MS_RIGHT;
+			fac = tar.x - cur.x;
+
+			//[FOLLWOINGDEBUG]CCLOG("right:%f",fac);
+			if(fac < SLOW_ZONE){
+				bv = b2Vec2(4 * fac, 0);
+			}else{
+				bv = b2Vec2(4,0);
+			}
+
+
+		}
+	}
+#endif
 }
 
 bool EPhsics::SCContact(b2Fixture* self, b2Fixture* tar,bool bLeave){			//如果需要在这里维护Contact list.

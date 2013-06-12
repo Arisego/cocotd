@@ -87,6 +87,7 @@ void MoviePlayer::play(const char *path)
 void MoviePlayer::stop(void)
 {
     libvlc_media_player_stop(vlc_player);
+	libvlc_media_player_release(vlc_player);			//BugFix: Manualy Release VLC_Player.
 	libvlc_release(vlc);
 
 	unscheduleUpdate();

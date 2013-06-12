@@ -16,9 +16,12 @@ USING_NS_CC;
 
 MapLayer::~MapLayer(){
 	CCLOG(">MapLayer Destruct.");
-	
+
+	removeAllChildren();
+
 	CC_SAFE_RELEASE_NULL(bm);
-	CC_SAFE_RELEASE_NULL(tm);
+	CC_SAFE_RELEASE_NULL(wm);
+
 	CC_SAFE_RELEASE_NULL(t_bm);
 	CC_SAFE_RELEASE_NULL(m_ldb);
 	CC_SAFE_RELEASE_NULL(m_lpJudgement);

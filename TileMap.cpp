@@ -28,8 +28,8 @@ TileMap::~TileMap(){
 	}
 
 
-		CC_SAFE_DELETE(colse);
-		CC_SAFE_DELETE(_world);		
+	CC_SAFE_DELETE(colse);
+	CC_SAFE_DELETE(_world);		
 
 }
 
@@ -209,7 +209,7 @@ bool TileMap::init()
 
 	//3. b2world初始化
 	//////////////////////////////////////////////////////////////////////////
-
+#if (WM_TYPE == MAP_TYPE_ISO )
 	float r = (ms.width + ms.height) / 2;
 	rw = r * ts.width;
 	rh = r * ts.height;
@@ -223,8 +223,17 @@ bool TileMap::init()
 	dy = rh-mapHeight;
 	x0 -= dx;
 	y0 -= dy;
+#else
+	rw	= ms.width	* ts.width;
+	rh	= ms.height	* ts.height;
+	x0	= 0;
+	y0	= 0;
+	dtx	= ts.width / 2;
+	dty	= ts.height / 2;
+	dx	= 0;
+	dy	= 0;
 
-
+#endif
 
 	b2Vec2 gravity = b2Vec2(0.0f, 0.0f);  
 
@@ -246,12 +255,18 @@ bool TileMap::init()
 
 
 	b2Vec2 vs[4];
+#if (WM_TYPE == MAP_TYPE_ISO )
 	vs[0].Set((ms.height * ts.width/2 -dx)/ PTM_RATIO, (rh - dy) / PTM_RATIO);
 	vs[1].Set((rw - dx) / PTM_RATIO, (ms.height * ts.height/2 - dy) / PTM_RATIO);
 	vs[2].Set((ms.width * ts.width/2 - dx) / PTM_RATIO, -dy/PTM_RATIO);
 	vs[3].Set(-dx/PTM_RATIO, (ms.width * ts.height/2 - dy )/ PTM_RATIO);
+#else
+	vs[0].Set(0, 0);
+	vs[1].Set(0, rh/PTM_RATIO);
+	vs[2].Set(rw/PTM_RATIO, rh/PTM_RATIO);
+	vs[3].Set(rw/PTM_RATIO, 0);
 
-
+#endif
 	chain.CreateLoop(vs, 4);
 
 	Entiles* kted = new Entiles();
@@ -459,7 +474,9 @@ m_debugDraw->SetFlags(flags);
 
 	//5. 载入地图物品 - TMX
 	//////////////////////////////////////////////////////////////////////////
-
+	// Block:
+	// 0 --	name radio
+	// 1 -- (block only)
 
 
 	CCTMXLayer* blocks = m_tilemap->layerNamed("Block");
@@ -623,12 +640,23 @@ CCPoint TileMap::m_checkPoint(CCPoint c){
 
 CCPoint TileMap::m_getTilec(CCPoint c){	//坐标转换 --> iso
 	CCSize ts = m_tilemap->getTileSize();
+#if (WM_TYPE == MAP_TYPE_ISO )
 	return ccp(( (c.x - x0) / ts.width) + ( (y0 - c.y) / ts.height), ( (x0 - c.x) / ts.width) + ( (y0 - c.y) / ts.height));
+#else
+	return ccp(c.x / ts.width,(rh - c.y - ts.height) /ts.height);
+#endif	
+	
 }
 
 CCPoint TileMap::m_getViewc(CCPoint c){	//iso tile --> screen base
 	CCSize ts = m_tilemap->getTileSize();
+	
+#if (WM_TYPE == MAP_TYPE_ISO )		
 	return ccp(x0 + ((c.x - c.y) * ts.width) / 2 , y0 - ((c.x + c.y) * ts.height) / 2);
+#else		
+	return ccp(c.x* ts.width ,rh - c.y * ts.height - ts.height);
+#endif		
+
 }
 
 float TileMap::round(float r) {
@@ -780,7 +808,7 @@ void TileMap::update(float dt)
 void TileMap::b_click()
 {
 	if(!cancontrol || !CharaS::sharedCharaS()->getdispchara()) return;
-	GameManager::sharedLogicCenter()->ml->switch_to_battle("myiso");
+	GameManager::sharedLogicCenter()->ml->switch_to_battle("ortbattle");
 }
 
 void TileMap::test_disable_all_entiles()

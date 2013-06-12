@@ -12,8 +12,6 @@
 #include "utils/Controller.h"
 #include "byeven/BYCocos.h"
 
-#include "GLES-Render.h"
-//#define DEBUGDRAW				//调试输出开关
 
 /*
 |	移动地图控制层  -- MapLayer控制
@@ -23,6 +21,11 @@
 
 
 //#include "GameManager.h"
+
+#include "Macros.h"
+#include "GLES-Render.h"
+
+
 
 USING_NS_CC;
 
@@ -121,6 +124,7 @@ public:
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
+
 	void onEnter();
 
 	CCSpriteBatchNode *sheet;
