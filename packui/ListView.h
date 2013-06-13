@@ -32,10 +32,10 @@ public:
 			CCNode* t_par = this->getParent();
 
 
-			CCScale9Sprite* c9s = CCScale9Sprite::create("Images/scroll_line.png"); 
-			c9s->setContentSize(CCSize(2,t_sbbh));
+			CCSprite* c9s = CCSprite::create("Images/scroll_line.png"); 
+			c9s->setTextureRect(CCRectMake(0,0,2,t_sbbh));
 			c9s->setAnchorPoint(ccp(0,0));
-			c9s->setPosition(m_tViewSize.width - 4 , 10);
+			c9s->setPosition(ccp(m_tViewSize.width - 4 , 10));
 			t_par->addChild(c9s);
 
 			CC_SAFE_RELEASE_NULL(pSb);
