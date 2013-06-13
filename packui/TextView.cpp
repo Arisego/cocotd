@@ -22,10 +22,12 @@ bool TextView::init()
 
 		CC_BREAK_IF( !CCLayer::init() );
 		CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
-		init_data(width,m_iTag);
+		
+		//数据初始化
+		init_data(width - 8,m_iTag);
 		pTableView = new ListView();
 		pTableView->setDataSource(this);
-		pTableView->initWithViewSize(CCSizeMake(width, height));
+		pTableView->initWithViewSize(CCSizeMake(width-8, height));
 		pTableView->setDirection(kCCScrollViewDirectionVertical);
 		pTableView->setPosition(CCPointZero);
 		pTableView->setDelegate(this);
@@ -36,8 +38,8 @@ bool TextView::init()
 		setoffset(ccp(0,0));
 		pTableView->setBounceable(false);
 		EventCenter::sharedEventCenter()->setScroller(this);
-		
 
+		pTableView->f_generate_scrollbar();
 
 		bRet = true;
 	}while(0);
@@ -86,6 +88,7 @@ CCTableViewCell* TextView::tableCellAtIndex(CCTableView *table, unsigned int idx
 
 void TextView::scrollViewDidScroll(CCScrollView *view)
 {
+	CCPoint cs = pTableView->getContentOffset();
 }
 
 void TextView::scrollViewDidZoom(CCScrollView *view)
@@ -99,4 +102,5 @@ TextView::~TextView()
 	pTableView->removeFromParent();
 
 	CC_SAFE_RELEASE_NULL(pTableView);
+	removeAllChildren();
 }

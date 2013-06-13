@@ -35,8 +35,6 @@ bool ListDBView::init()
 		pTableView->setBounceable(false);
 		EventCenter::sharedEventCenter()->setScroller(this);
 
-
-
 		bRet = true;
 	}while(0);
 

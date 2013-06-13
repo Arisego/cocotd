@@ -22,6 +22,7 @@ public:
 class Scroller
 {
 public: 
+
 	virtual void scroll_in(WPARAM wParam, LPARAM lParam) = 0;
 };
 

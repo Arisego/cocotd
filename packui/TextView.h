@@ -17,6 +17,8 @@ class TextView : public cocos2d::CCLayer, public DBSource, public cocos2d::exten
 private:
 	float width,height;
 	ListView* pTableView;
+
+
 	int m_iTag;
 
 public:
