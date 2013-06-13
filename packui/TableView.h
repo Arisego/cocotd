@@ -77,11 +77,13 @@ public:
 	}
 
 	// µ÷ÕûÏÔÊ¾
-	void scrollViewDidScroll(CCScrollView* view)
+	virtual void scrollViewDidScroll(CCScrollView* view)
 	{
 		CCPoint offset = ccpMult(this->getContentOffset(), -1);
 
 		if(pSb) pSb->setPosition(ccp(m_tViewSize.width-6,offset.y * mfS_factor + 10));
+
+		CCTableView::scrollViewDidScroll(view);
 	}
 
 	virtual void update(float fDelta);
