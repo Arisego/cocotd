@@ -357,11 +357,11 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			SplashLayer->setTouchEnabled(false);
 
 			CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
-			CCSpriteBatchNode *sheet = CCSpriteBatchNode::create("sprite/monster.png");
-			cache->addSpriteFramesWithFile("sprite/monster.plist");
+			CCSpriteBatchNode *sheet = CCSpriteBatchNode::create("sprite/gongbin.png");
+			cache->addSpriteFramesWithFile("sprite/gongbin.plist");
 			SplashLayer->addChild(sheet);
 			CCSpriterX *animator;
-			animator = CCSpriterX::create("sprite/Example.SCML");
+			animator = CCSpriterX::create("sprite/gongbin.SCML");
 
 
 			animator->setPosition(ccp(400, 100));

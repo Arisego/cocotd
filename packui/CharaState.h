@@ -10,6 +10,11 @@
 #include "packui/CharaS.h"
 #include "packui/InterfaceEffect.h"
 
+/*
+	CharaState
+	<用于单个角色的显示
+	<longstate和listdns分别对应简略和详细模式。ministate只被用于小的charalistview
+*/
 
 class CharaState : public Container, public InterfaceEffect
 {

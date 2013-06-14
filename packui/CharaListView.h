@@ -4,6 +4,11 @@
 #include "packui/CharaState.h"
 #include "packui/CharaS.h"
 
+/*
+	CharaListView
+	<用于显示角色列表。
+	<Prepare_xxx作转换动画控制
+*/
 class CharaListView : public BYLayerDescendant
 {
 public:

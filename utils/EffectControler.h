@@ -9,6 +9,17 @@
 USING_NS_CC;
 using namespace std;
 
+/*
+	EffectControler
+	<负责技能和物品的特效播放管理
+	<注意，这个单例是负责对实现了特效播放接口的对象进行管理的，并不实际负责特效播放。
+	<目前同一时间只能播放一种特效，并不是所有的地图效果都是特效，本单例主要用于技能特效的播放。
+	<为了保证同时播放多个特效，考虑不作为单例运行。
+	<[TODO]通过包装回调来控制播放是否结束。
+	<[TODO]interface_添加input_query来保证并行和用户输入之间的冲突
+	<[TODO]interface_为了保证可暂停性，所有的特效保存在统一的节点下
+
+*/
 class EffectControler
 {
 public:

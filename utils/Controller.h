@@ -34,6 +34,11 @@ public:
 	virtual void c_press() = 0;				//调用
 };
 
+/*
+	Cake
+	<[未实现]同时拥有多层处理的事件管理类
+
+*/
 class Cake
 {
 public:

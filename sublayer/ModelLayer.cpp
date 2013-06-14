@@ -13,6 +13,7 @@ USING_NS_CC_EXT;
 
 static const char s_MenuItem[]            = "Images/menuitemsprite.png";
 static const char s_Button[]			  = "Images/button.png";
+static const char s_ConfigBack[]		  = "Images/config_back.png";
 
 ModelLayer::ModelLayer(){
 	b_StateRunning = true;
@@ -162,8 +163,10 @@ void ModelLayer::preConfig(int type, int flag, int tab){
 	Refresh_Button();
 	Show_Content();
 
-	CCScale9Sprite* nback = CCScale9Sprite::create("Images/config_back.png"); 
-	nback->setContentSize(CCSize(800,600));
+	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+
+	CCScale9Sprite* nback = CCScale9Sprite::create(s_ConfigBack); 
+	nback->setContentSize(winSize);
 	nback->setAnchorPoint(ccp(0,0));
 	nback->setOpacity(199);
 	addChild(nback,-1);

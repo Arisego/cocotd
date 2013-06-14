@@ -192,7 +192,7 @@ void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
 
 	}else{
 		if(cur.x > tar.x){
-			direc = MS_UP;
+			direc = MS_LEFT;
 			fac = cur.x - tar.x ;
 
 			//[FOLLWOINGDEBUG]CCLOG("left:%f",fac);

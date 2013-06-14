@@ -23,7 +23,12 @@ using namespace std;
 #define MENUTAG 3000
 
 
-/** maplayer负责对tilemap层进行控制和管理 */
+/*
+	Map layer
+	<负责对tilemap以及hud进行控制和管理 
+	<[TODO] 添加战役地图模式支持
+
+*/
 class MapLayer : public BYLayerAncestor, public StateMachine, public InterfaceEffect, public Cake
 {
 

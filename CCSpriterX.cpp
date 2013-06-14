@@ -826,7 +826,7 @@ CCSprite *CCSpriterX::getSprite(int folderId, int fileId)		//FN:通过文件夹和文件
 
 bool CCSpriterX::initWithFile(const char *filename)
 {
-	initWithSpriteFrameName("head_1.png");
+	initWithSpriteFrameName("gb-up-stand-1.png");
 	setOpacity(0);
 
 	mCurrEntity = 0;

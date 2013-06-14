@@ -302,9 +302,10 @@ void GameManager::finisSave()
 
 void GameManager::fullPathFromRelativePath( const char *pszRelativePath,string &psz )
 {
-	psz.clear();
+	
 	do 
 	{
+		psz.clear();
 		psz = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pszRelativePath);
 	} while (psz.length() == 0);
 }

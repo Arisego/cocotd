@@ -36,11 +36,19 @@ void EChesses::lin(){
 			{
 				switch ( direc )
 				{
+#if (WM_TYPE == MAP_TYPE_ISO)
 				case MS_LEFT:  desiredVel = b2Vec2(-4,2); break;
 				case MS_STOP:  desiredVel =  b2Vec2(0,0); break;
 				case MS_RIGHT: desiredVel =  b2Vec2(4,-2); break;
 				case MS_UP: desiredVel = b2Vec2(4,2); break;
 				case MS_DOWN: desiredVel = b2Vec2(-4,-2); break;
+#else
+				case MS_LEFT:  desiredVel = b2Vec2(-4,0); break;
+				case MS_STOP:  desiredVel =  b2Vec2(0,0); break;
+				case MS_RIGHT: desiredVel =  b2Vec2(4,0); break;
+				case MS_UP: desiredVel = b2Vec2(0,4); break;
+				case MS_DOWN: desiredVel = b2Vec2(0,-4); break;
+#endif
 				}
 
 				break;
@@ -117,7 +125,8 @@ void EChesses::SCTarget(SimControl* tar){		//²»»á¸üÐÂÄ¿±êµÄÎ»ÖÃ£¬Èç¹ûÓÐÕâÖÖÐèÇó¿
 	m_sTarget = ((Entiles*) tar)->GetFullName();
 }
 
-void EChesses::DecideDirect(CCPoint cur,b2Vec2 &bv){				//TODO: modify it to make bullet goto target directly through the map.
+void EChesses::DecideDirect(CCPoint cur,b2Vec2 &bv){				//TODO: modify it to realize bullet following.
+#if (WM_TYPE == MAP_TYPE_ISO)
 	switch(m_mdH)
 	{
 	case(MS_DOWN):
@@ -177,6 +186,68 @@ void EChesses::DecideDirect(CCPoint cur,b2Vec2 &bv){				//TODO: modify it to mak
 	bv = b2Vec2(0,0);
 	direc = MS_STOP;
 	state = -1;
+#else
+	switch(m_mdH)
+	{
+	case(MS_DOWN):
+		{
+			if(cur.y > tar.y) 
+			{
+				bv = b2Vec2(0,0);
+				m_mdH = MS_STOP;
+				break;
+			}else{
+				bv = VS_DOWN;
+				direc = MS_DOWN;	
+			}
+			return;
+		}
+	case(MS_UP):
+		{
+			if(tar.y > cur.y){
+				bv = b2Vec2(0,0);
+				m_mdH = MS_STOP;
+				break;
+			}else{
+				bv = VS_UP;
+				direc = MS_UP;
+			}
+			return;
+		}
+	}
+
+	switch(m_mdV){
+	case(MS_LEFT):
+		{
+			if(tar.x > cur.x){
+				bv = b2Vec2(0,0);
+				m_mdV = MS_STOP;
+				break;
+			}else{
+				bv = VS_LEFT;
+				direc = m_mdV;
+			}
+			return;
+		}
+	case(MS_RIGHT):
+		{
+			if(cur.x > tar.x){
+				bv = b2Vec2(0,0);
+				m_mdV = MS_STOP;
+				break;
+			}else{
+				bv = VS_RIGHT;
+				direc = m_mdV;
+			}
+			return;
+		}
+	}
+
+	bv = b2Vec2(0,0);
+	direc = MS_STOP;
+	state = -1;
+#endif
+
 }
 
 

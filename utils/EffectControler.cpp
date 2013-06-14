@@ -145,17 +145,17 @@ void EffectControler::DerSP( Script* asp )
 	for(int i = 0; i<asp->m_snum; ++i){
 		Script* t_sp = (Script*) asp->scriptnodes->objectAtIndex(i);
 		switch(t_sp->type){
-		case(sChange):
+		case(sChange):		/* <改变数值：对象为已经登记的源或/和目标 */
 			{
 				DerChange(t_sp);
 				break;
 			}
-		case(sShowText):
+		case(sShowText):	
 			{
 				miView->show_text(t_sp->getstring("content"));
 				break;
 			}
-		case(sItem):
+		case(sItem):	/* <给予物品 */
 			{
 				StateCenter::sharedStateCenter()->f_add_item(t_sp,m_bSilent);
 				//m_bSilent = false;

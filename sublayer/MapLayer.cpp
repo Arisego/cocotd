@@ -503,6 +503,9 @@ void MapLayer::f_init_battle()
 	
 	bm->m_controller = NULL;
 
+	CC_SAFE_RELEASE_NULL(m_lpJudgement);
+	CC_SAFE_RELEASE_NULL(m_etClock);
+
 	m_lpJudgement	=	new LinePrior();				//while bm is release, the two component should also be released null.
 	m_etClock		=	new ElementTicker();
 
