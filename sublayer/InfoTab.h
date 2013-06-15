@@ -31,12 +31,17 @@ public:
 	static void purgeSharedInfoTab();
 
 	virtual void showinfo(string s);
+	/* <转接需要的内部事件 */
 	virtual void selectrediret(CCObject* pSender);
+
 	virtual void eatout(CCObject* pSender);
 	virtual void showselect(string s, vector<string> sellis, CCObject* target, SEL_MenuHandler selector);
 	virtual bool byTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
 	virtual void showsteper(string s, CCObject* target, SEL_MenuHandler selector,int sum = 0);
 	virtual void showldb(string s, CCObject* target, SEL_MenuHandler selector, string sql, CCDictionary* a_icd, int type = 0);
+
+	/* [TO]<角色的属性技能面板 */
+	virtual void showcharasav(int a_iId,CCObject* target, SEL_MenuHandler selector);
 
 	void stepchanged(CCObject *sender, CCControlEvent controlEvent);;
 	

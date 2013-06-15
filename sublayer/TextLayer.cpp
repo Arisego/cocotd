@@ -92,7 +92,7 @@ void TextLayer::onEnter()
 	layer1->ignoreAnchorPointForPosition(false);
 	addChild(layer1, 1);
 
-	m_Label = CCLabelTTF::create("", "fonts/msyhbd.ttf", 24, CCSize(m_textwidth, m_height), kCCTextAlignmentLeft);
+	m_Label = CCLabelTTF::create("", FNT_AVG_TTF, 24, CCSize(m_textwidth, m_height), kCCTextAlignmentLeft);
 	mSingeWidth = 24;
 	m_Label->setPosition(CCPointZero);
 	m_Label->setAnchorPoint(CCPointZero);

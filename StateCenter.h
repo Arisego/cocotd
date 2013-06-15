@@ -10,6 +10,7 @@
 #include <map>
 #include "utils/Scriptor.h"
 #include "packui/CharaS.h"
+#include "Macros.h"
 
 using namespace std;
 

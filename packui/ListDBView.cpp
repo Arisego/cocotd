@@ -96,3 +96,38 @@ void ListDBView::scrollViewDidScroll(CCScrollView *view)
 void ListDBView::scrollViewDidZoom(CCScrollView *view)
 {
 }
+
+ListDBView::ListDBView()
+{
+	pTableView = NULL;
+}
+
+ListDBView::ListDBView( float w,float h, string s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid /*= 0*/ )
+{
+	{
+		width = w;
+		height = h;
+
+		//m_iTag = t;
+		m_sSql = s;
+
+		cWidth = width;
+		cHeight = 25;
+		m_caStData = a_ca;
+
+		m_pListener = target;
+		m_pfnSelector = selector;
+		m_bIsEnabled = true;
+
+		m_ICType = tid;
+
+		pTableView = NULL;
+		//init();
+	}
+}
+
+ListDBView::~ListDBView()
+{
+	EventCenter::sharedEventCenter()->setScroller(NULL);
+	if(pTableView) pTableView->removeFromParent();
+}

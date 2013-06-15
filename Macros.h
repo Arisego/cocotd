@@ -22,8 +22,19 @@
 #define VS_DOWN		 b2Vec2(0,-4)
 #endif
 
-
 //Debug Draw on Map
 #define DEBUGDRAW				
+
+//UI Type
+#define CHARA_TD_TYPE 0		//Original
+#define CHARA_TO_TYPE 1		//TO_USE
+
+#define  CHARA_TYPE 1
+
+//constant values
+#define FNT_ENG_NUM "fonts/TO_eng_num.fnt"
+#define FNT_UI_TTF "fonts/FZSZJW.TTF"		//new
+#define FNT_AVG_TTF "fonts/FZSZJW.TTF"
+#define FNT_UI_LABEL "fonts/FZSZJW.TTF"		//old
 
 #endif

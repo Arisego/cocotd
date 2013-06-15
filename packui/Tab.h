@@ -19,7 +19,7 @@
 #include "packui/CharaListView.h"
 #include "utils/EffectControler.h"
 #include "packui/InterfaceEffect.h"
-
+#include "Macros.h"
 
 USING_NS_CC_EXT;
 using namespace std;
@@ -45,6 +45,7 @@ public:
 	}
 };
 
+/* <配置 */
 class ConfigTab : public Tab{
 private:
 	//std::vector<Container*> vcv;
@@ -261,6 +262,7 @@ public:
 	}
 };
 
+/* <档案 */
 class SLTab : public Tab{
 private:
 	std::vector<Container*> m_vTabs;
@@ -587,6 +589,7 @@ public:
 	}
 };
 
+/* <物品 */
 class PACTab : public Tab, public InterfaceEffect		//Package Tab ||
 {
 private:
@@ -637,7 +640,7 @@ public:
 
 		m_clt = CCLabelTTF::create();
 		m_clt->setAnchorPoint(ccp(0,1));
-		m_clt->setFontName( "fonts/STHUPO.TTF");
+		m_clt->setFontName( FNT_UI_LABEL);
 		m_clt->setDimensions(CCSizeMake(250,0));
 		m_clt->setFontSize(20);
 		m_clt->setPosition(ccp(450,450));
@@ -725,6 +728,7 @@ public:
 		RefreshButton();
 	}
 
+	/* <功能按钮 */
 	void buttonback(CCObject* pSender){
 		int itag = ((Container *) pSender)->getTag();
 		switch(itag){
@@ -742,6 +746,7 @@ public:
 		RefreshButton();
 	}
 	//////////////////////////////////////////////////////////////////////////
+	// InterfaceView
 
 	virtual void get_target(){
 		int t_iTarget = EffectControler::sharedEffectControler()->m_iTarget;		//TODO: chech if it is 0

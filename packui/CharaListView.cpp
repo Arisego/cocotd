@@ -1,6 +1,9 @@
 #include "CharaListView.h"
 #include "packui/CharaS.h"
 #include "packui/ConfigManager.h"
+#include "sublayer/InfoTab.h"
+
+#include "Macros.h"
 
 #define ANIMATE_TIME_VAL 0.1
 
@@ -143,9 +146,13 @@ void CharaListView::CharasCBack( CCObject* pSender )
 	case(1):
 		{
 			m_iCurs = t_iTag;
+#if (CHARA_TYPE == CHARA_TD_TYPE)
 			PrepareSingle();
 			m_iCLVState = 2;
 			RefreshLR();
+#elif (CHARA_TYPE == CHARA_TO_TYPE)			//TO<弹出属性界面
+			InfoTab::sharedInfoTab()->showcharasav(m_iCurs,this,menu_selector(CharaListView::PopupBack));
+#endif
 			break;
 		}
 	case(2):
@@ -235,4 +242,10 @@ void CharaListView::showtargettext(string s, int type){
 void CharaListView::seticc( int i )
 {
 	m_iItemCount = i;
+}
+
+void CharaListView::PopupBack( CCObject* pSender )
+{	
+	setbegin(((CCNode*) pSender)->getTag());
+	RefreshList();
 }

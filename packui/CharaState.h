@@ -58,8 +58,19 @@ public:
 	void RefreshEBtns();			//Refresh EQU list. Control by m_iCurE. Data stored in m_cdEquips. It's button list, not m_ldbEquList.
 
 	void show_content();
+
+	/* 
+		<右下角ldb返回控制，
+			group = -1	:<技能的点击
+			default		:<装备切换
+	*/
 	void ItemBack(CCObject* pSender);
 	void eqBack(CCObject* pSender);			//One of the EQU is clicked, prepare for change & call show_listndis(). || 0~6 for normal eq back && -1 for Ski request.
+	
+	/* 
+		<物品使用弹出的返回接口 
+			tag<0 为窗口取消
+	*/
 	void useItemB(CCObject* pSender);
 	void showEquDiffer();			//TODO:Show out the differs.
 	void changeEqui(CCObject* pSender);				//The EQUIP has changed.

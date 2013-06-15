@@ -3,6 +3,7 @@
 #include "GameManager.h"
 #include "packui/MouseController.h"
 #include "packui/ListDBView.h"
+#include "packui/TOChara.h"
 
 
 static const char s_Button[]			  = "Images/button.png";
@@ -56,7 +57,7 @@ void InfoTab::showinfo(string s){
 
 	float m_textwidth = 300;
 
-	CCLabelTTF *m_Text = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
+	CCLabelTTF *m_Text = CCLabelTTF::create(s.c_str(), FNT_UI_LABEL, 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_height+5));
 	m_height += m_Text->getContentSize().height;
@@ -88,6 +89,7 @@ void InfoTab::Add_Button(const char* name,int tag){
 	//m_vBtns.push_back(tabc);
 }
 
+/* <显示弹出选项 */
 void InfoTab::showselect(string s, vector<string> sellis, CCObject* target, SEL_MenuHandler selector){
 	setTouchEnabled(true);
 	m_bIsSimple = false;
@@ -115,7 +117,7 @@ void InfoTab::showselect(string s, vector<string> sellis, CCObject* target, SEL_
 	m_fHeight += 35;
 	//////////////////////////////////////////////////////////////////////////
 	float m_textwidth = 300;
-	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), "fonts/STHUPO.TTF", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
+	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), FNT_UI_LABEL, 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_fHeight+5));
 	m_fHeight += m_Text->getContentSize().height;
@@ -177,6 +179,7 @@ void InfoTab::activate(CCObject* pSender){
 	}
 }
 
+/* <显示提示文字 */
 void InfoTab::showbmfl(string s,CCObject* target, SEL_MenuHandler selector,string fls){
 	setTouchEnabled(true);
 	m_bIsSimple = false;
@@ -212,7 +215,7 @@ void InfoTab::showbmfl(string s,CCObject* target, SEL_MenuHandler selector,strin
 
 	//////////////////////////////////////////////////////////////////////////
 	float m_textwidth = 300;
-	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), "fonts/STHUPO.TTF", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
+	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), FNT_UI_LABEL, 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_fHeight+5));
 	m_fHeight += m_Text->getContentSize().height;
@@ -233,6 +236,7 @@ void InfoTab::showbmfl(string s,CCObject* target, SEL_MenuHandler selector,strin
 	GameManager::sharedGameManager()->showinfo();
 }
 
+/* <Stepper个数统计 */
 void InfoTab::showsteper(string s, CCObject* target, SEL_MenuHandler selector,int sum /* = 0 */)
 {
 	setTouchEnabled(true);
@@ -283,7 +287,7 @@ void InfoTab::showsteper(string s, CCObject* target, SEL_MenuHandler selector,in
 
 	//////////////////////////////////////////////////////////////////////////
 	float m_textwidth = 300;
-	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), "fonts/STHUPO.TTF", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
+	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), FNT_UI_LABEL, 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_fHeight+5));
 	m_fHeight += m_Text->getContentSize().height;
@@ -314,6 +318,7 @@ void InfoTab::stepchanged( CCObject *sender, CCControlEvent controlEvent )
 	//m_pDisplayValueLabel->setString(CCString::createWithFormat("%0.02f", (float)pControl->getValue())->getCString());	
 }
 
+/* <显示一个列表 */
 void InfoTab::showldb( string s, CCObject* target, SEL_MenuHandler selector, string sql, CCDictionary* a_icd, int type /*= 0*/ )
 {
 	setTouchEnabled(true);
@@ -355,7 +360,7 @@ void InfoTab::showldb( string s, CCObject* target, SEL_MenuHandler selector, str
 	m_fHeight += 88;
 	//////////////////////////////////////////////////////////////////////////
 	float m_textwidth = 300;
-	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), "fonts/STHUPO.TTF", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
+	CCLabelTTF *m_Text = CCLabelTTF::create(ConfigManager::sharedConfigManager()->GetConfigS(s.c_str()).c_str(), FNT_UI_LABEL, 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_fHeight+5));
 	m_fHeight += m_Text->getContentSize().height;
@@ -379,4 +384,35 @@ void InfoTab::showldb( string s, CCObject* target, SEL_MenuHandler selector, str
 void InfoTab::eatout( CCObject* pSender )
 {
 	return;
+}
+
+/* <TO角色信息表 */
+void InfoTab::showcharasav( int a_iId,CCObject* target, SEL_MenuHandler selector )
+{
+	setTouchEnabled(true);
+	m_bIsSimple = false;
+	m_iType = 10;
+
+	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
+	mb = new BYLayerDescendant();
+	mb->autorelease();
+	mb->setAnchorPoint(CCPointZero);
+	mb->setPosition(CCPointZero);
+	
+	//////////////////////////////////////////////////////////////////////////
+	TOChara* m_toc = new TOChara(a_iId,this,menu_selector(InfoTab::selectrediret));
+	m_toc->setAnchorPoint(CCPointZero);
+	m_toc->setPosition(CCPointZero);
+	mb->addChild(m_toc);
+
+
+	//////////////////////////////////////////////////////////////////////////
+
+	this->addChild(mb);
+
+	m_pListener = target;
+	m_pfnSelector = selector;
+	m_bIsEnabled = true;
+
+	GameManager::sharedGameManager()->showinfo();
 }

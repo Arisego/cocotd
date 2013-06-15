@@ -21,7 +21,7 @@ void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 	t_cs->setPosition(ccp(1,1));
 	addChild(t_cs);
 
-	CCLabelTTF* t_ct = CCLabelTTF::create(name.c_str(), "fonts/STHUPO.TTF", 20,CCSize(w,0), kCCTextAlignmentLeft);
+	CCLabelTTF* t_ct = CCLabelTTF::create(name.c_str(), FNT_UI_LABEL, 20,CCSize(w,0), kCCTextAlignmentLeft);
 	t_ct->setAnchorPoint(ccp(0,0));
 	t_ct->setPosition(ccp(31,1));
 	addChild(t_ct);

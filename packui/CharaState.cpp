@@ -164,9 +164,9 @@ void CharaState::refresh_equlist()
 			Equip* t_e = (Equip*) m_cdEquips->objectForKey(mpChara->m_miiEquips[i]);
 			CCLabelTTF* t_clt;
 			if(t_e)
-				t_clt = CCLabelTTF::create(t_e->name.c_str(),"fonts/STHUPO.TTF",18);
+				t_clt = CCLabelTTF::create(t_e->name.c_str(),FNT_UI_LABEL,18);
 			else
-				t_clt = CCLabelTTF::create("NONE","fonts/STHUPO.TTF",18);
+				t_clt = CCLabelTTF::create("NONE",FNT_UI_LABEL,18);
 
 			t_clt->setAnchorPoint(CCPointZero);
 			t_clt->setPosition(ccp(1,1));
@@ -219,7 +219,7 @@ void CharaState::show_all()		//显示所有内容
 
 	m_tDis = CCLabelTTF::create();
 	m_tDis->setAnchorPoint(ccp(0,1));
-	m_tDis->setFontName( "fonts/STHUPO.TTF");
+	m_tDis->setFontName( FNT_UI_LABEL);
 	m_tDis->setDimensions(CCSizeMake(200,0));
 	m_tDis->setFontSize(20);
 	m_tDis->setPosition(ccp(151,280));

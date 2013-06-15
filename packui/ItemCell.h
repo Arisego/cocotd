@@ -1,5 +1,6 @@
 #ifndef __ITEM_CELL_H__
 #define __ITEM_CELL_H__
+#include "Macros.h"
 
 /*
 *	用于显示物品等项目的基本元素。

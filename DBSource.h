@@ -5,6 +5,7 @@
 #include "cocos-ext.h"
 #include "DBUtil.h"
 #include "StateCenter.h"
+#include "Macros.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -57,7 +58,7 @@ public:
 
 				string s = t_ssm.at("content");
 				CCLOG(">Content:%s.",s.c_str());
-				CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 24,CCSize(rw,0), kCCTextAlignmentLeft);
+				CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), FNT_UI_LABEL, 24,CCSize(rw,0), kCCTextAlignmentLeft);
 				tlt->retain();
 
 				m_plength.push_back(tlt->getContentSize().height);

@@ -46,4 +46,17 @@ public:
 
 };
 
+/*
+	CharaTab
+	<角色属性设置界面
+*/
+class CharaTab
+{
+public:
+	virtual void i_press() = 0;
+	virtual void j_press() = 0;
+	virtual void k_press() = 0;
+	virtual void l_press() = 0;
+};
+
 #endif

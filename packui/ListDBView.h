@@ -181,38 +181,15 @@ protected:
 	}
 
 public:
-	~ListDBView(){
-		EventCenter::sharedEventCenter()->setScroller(NULL);
-		pTableView->removeFromParent();
-//		removeAllChildren();
-//		data->removeAllObjects();
-//		CC_SAFE_RELEASE_NULL(data);
-	}
+	~ListDBView();
+	ListDBView();
 
 	void scroll_in(WPARAM wParam, LPARAM lParam){
 		float zDelta = (short) HIWORD(wParam);    // wheel rotation
 		scrolldis(-zDelta);
 	}
 	//[IN] 构造
-	ListDBView(float w,float h, string s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0){
-		width = w;
-		height = h;
-
-		//m_iTag = t;
-		m_sSql = s;
-
-		cWidth = width;
-		cHeight = 25;
-		m_caStData = a_ca;
-
-		m_pListener = target;
-		m_pfnSelector = selector;
-		m_bIsEnabled = true;
-
-		m_ICType = tid;
-
-		//init();
-	}
+	ListDBView(float w,float h, string s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0);
 	//[IN] 滚动相应的距离
 	void scrolldis(float dis);
 	//[IN] 设置偏移量，ccp(0,y);

@@ -117,7 +117,7 @@ void ItemPicker::show_item(){
 	m_bcItem->addChild(t_cs);
 
 
-	CCLabelTTF* t_ct = CCLabelTTF::create(a_icd->name.c_str(), "fonts/STHUPO.TTF", 18,CCSize(IP_WIDTH,0), kCCTextAlignmentLeft);
+	CCLabelTTF* t_ct = CCLabelTTF::create(a_icd->name.c_str(),FNT_UI_LABEL, 18,CCSize(IP_WIDTH,0), kCCTextAlignmentLeft);
 	t_ct->setAnchorPoint(ccp(0,0));
 	t_ct->setPosition(ccp(1,21));
 	t_ct->setTag(0x9a);
