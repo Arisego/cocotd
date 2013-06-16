@@ -1,4 +1,8 @@
 #include "Container.h"
+#include "Macros.h"
+
+#define COLOUR_HOVER ccc3(212,193,176)
+#define COLOUR_NORMAL ccc3(215,169,119)
 
 Container::Container(){
 	autorelease();
@@ -139,8 +143,9 @@ void Container::initwithPsz(const char* s_MenuItem,const char* s_Title,float wid
 	spriteNormal->setPosition(ccp(0,0));
 	addChild(spriteNormal);
 
-	labelAtlas = CCLabelBMFont::create(s_Title, "fonts/CocoTd.fnt");
+	labelAtlas = CCLabelBMFont::create(s_Title, FNT_CHN);
 	labelAtlas->setPosition(ccp(width/2,height/2));
+	labelAtlas->setColor(COLOUR_NORMAL);
 	addChild(labelAtlas,1);
 
 	m_obContentSize.width = width;
@@ -164,8 +169,9 @@ void Container::initString(const char* s_Title,float width,float height,string c
 
 	initwithPre(c9img,width,height);
 
-	labelAtlas = CCLabelBMFont::create(s_Title, "fonts/CocoTd.fnt");
+	labelAtlas = CCLabelBMFont::create(s_Title, FNT_CHN);
 	labelAtlas->setPosition(ccp(width/2,height/2));
+	labelAtlas->setColor(COLOUR_NORMAL);
 	this->addChild(labelAtlas,1);
 
 	m_obContentSize.width = width;
@@ -174,6 +180,45 @@ void Container::initString(const char* s_Title,float width,float height,string c
 	m_pfnSelector = selector;
 	m_bIsEnabled = true;
 }
+
+
+void Container::initwithNode( const char* s_Title,CCNode* aNormal,CCNode* aHover,CCNode* aSelect,CCNode* aDisable,float width,float height)
+{
+
+	spriteNormal = aNormal;
+	spriteNormal->setContentSize(CCSize(width,height));
+	spriteNormal->setAnchorPoint(ccp(0,0));
+	if(spriteNormal) addChild(spriteNormal);
+
+	spriteHover = aHover;
+	spriteHover->setContentSize(CCSize(width,height));
+	spriteHover->setAnchorPoint(ccp(0,0));
+	spriteHover->setVisible(false);
+	if(spriteHover) addChild(spriteHover);
+
+	spriteDisable = aDisable;
+	spriteDisable->setContentSize(CCSize(width,height));
+	spriteDisable->setAnchorPoint(ccp(0,0));
+	spriteDisable->setVisible(false);
+	if(spriteDisable) addChild(spriteDisable);
+
+	spriteSelected = aSelect;
+	spriteSelected->setContentSize(CCSize(width,height));
+	spriteSelected->setAnchorPoint(ccp(0,0));
+	spriteSelected->setVisible(false);
+	if(spriteSelected) addChild(spriteSelected);
+
+	labelAtlas = CCLabelBMFont::create(s_Title, FNT_CHN);
+	labelAtlas->setPosition(ccp(width/2,height/2));
+	labelAtlas->setColor(COLOUR_NORMAL);
+	this->addChild(labelAtlas,1);
+
+	m_obContentSize.width = width;
+	m_obContentSize.height = height;
+
+	m_bIsEnabled = true;
+}
+
 
 void Container::onDisable(){
 	if(C_STATE_DISABLE == m_iState) return;
@@ -199,17 +244,18 @@ void Container::onSelect(){
 
 void Container::onNormal(){
 	if(C_STATE_NORMAL == m_iState || !m_bIsEnabled) return;
+	CC_SAFE_RELEASE_NULL(mLasto);
 	m_iState = C_STATE_NORMAL;
-	labelAtlas->setColor(ccWHITE);
+	labelAtlas->setColor(COLOUR_NORMAL);
 	SpriteRefresh();
 }
 
 void Container::SpriteRefresh(){
 	m_bIsEnabled = (m_iState != C_STATE_DISABLE);
-	spriteHover->setVisible(m_iState == C_STATE_HOVERD);
-	spriteNormal->setVisible(m_iState == C_STATE_NORMAL);
-	spriteSelected->setVisible(m_iState == C_STATE_SELECT);
-	spriteDisable->setVisible(m_iState == C_STATE_DISABLE);
+	if(spriteHover) spriteHover->setVisible(m_iState == C_STATE_HOVERD);
+	if(spriteNormal) spriteNormal->setVisible(m_iState == C_STATE_NORMAL);
+	if(spriteSelected) spriteSelected->setVisible(m_iState == C_STATE_SELECT);
+	if(spriteDisable) spriteDisable->setVisible(m_iState == C_STATE_DISABLE);
 }
 
 void Container::setactivator( CCObject* target, SEL_MenuHandler selector )
@@ -234,7 +280,7 @@ void Container::setOpacity( GLubyte opacity )
 
 void Container::setstringnull()
 {
-	labelAtlas = CCLabelBMFont::create("", "fonts/CocoTd.fnt");
+	labelAtlas = CCLabelBMFont::create("", FNT_CHN);
 	labelAtlas->setPosition(CCPointZero);
 	labelAtlas->setVisible(false);
 	addChild(labelAtlas,1);

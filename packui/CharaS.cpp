@@ -63,6 +63,8 @@ void CharaS::load_chara(Script* ts){
 		ticd->autorelease();
 		m_caCharas->setObject(ticd,i_id);
 		m_viCharas.push_back(i_id);
+		ticd->m_viiELock.assign(5,0);
+		ticd->m_viiESum.assign(5,0);
 
 		for(int j = 0;j<t->m_snum;++j){
 			Script* t_cp = (Script*) t->scriptnodes->objectAtIndex(j);
@@ -80,9 +82,13 @@ void CharaS::load_chara(Script* ts){
 				}
 			case(1):
 				{
+					int t_ii;
 					for(int k = 0; k<t_cp->m_snum;++k){
 						Script* t_kcp = (Script*) t_cp->scriptnodes->objectAtIndex(k);
-						ticd->m_miiEquips.insert(pair<int,int>(t_kcp->getint("name"),t_kcp->getint("value")));
+						t_ii = t_kcp->getint("name");
+						ticd->m_miiEquips.insert(pair<int,int>(t_ii,t_kcp->getint("value")));
+						ticd->m_viiELock[t_ii] = t_kcp->getint("lock");
+						ticd->m_viiESum[t_ii] = t_kcp->getint("sum");
 					}
 					break;
 				}

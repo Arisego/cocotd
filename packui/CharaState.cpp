@@ -4,6 +4,7 @@
 #include "utils/EffectControler.h"
 #include "packui/CharaListView.h"
 
+
 CharaState::~CharaState(){
 //	CC_SAFE_RELEASE_NULL(m_caTList);
 	//CC_SAFE_RELEASE_NULL(m_ldbEquList);

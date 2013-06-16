@@ -19,6 +19,7 @@ public:
 	void setController(Controller* c = NULL);	//…Ë÷√øÿ÷∆∆˜£¨µ˜ø’÷√ø’
 	void setScroller(Scroller* s = NULL);
 	void setSelector(Selector* s = NULL);
+	void SetCharaTab(CharaTab* s = NULL);
 
 	void setBmCake(Cake* s = NULL);
 
@@ -35,6 +36,8 @@ private:
 	static Selector* mSelector;
 
 	static Cake* m_bm_cake;
+
+	static CharaTab* mCharaTab;
 
 };
 

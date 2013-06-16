@@ -11,6 +11,8 @@ struct Equip : CCObject
 	string name;
 	string discript;
 	int position;
+
+	int lock,sum;
 };
 
 class Chara : public CCObject
@@ -21,6 +23,10 @@ public:
 
 	int m_iElement;
 	map<int,int> m_miiEquips;		//for equipments
+	/* TO */
+	vector<int> m_viiESum;
+	vector<int> m_viiELock;
+
 	map<string,int> m_iiAttrs;		//for attributes
 	vector<int> m_viSkills;			//for skills,change this to map if group is needed.
 

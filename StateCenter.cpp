@@ -218,11 +218,15 @@ bool StateCenter::f_save_file(const char* psz){
 					TiXmlElement *LockElement = new TiXmlElement("lock");
 					PngElement->LinkEndChild(LockElement);
 					LockElement->SetAttribute("type",1);
+					int ti;
 					for(map<int,int>::iterator it = t_icad->m_miiEquips.begin(); it != t_icad->m_miiEquips.end(); ++it){
 						TiXmlElement *LockElement1 = new TiXmlElement("lock");
 						LockElement->LinkEndChild(LockElement1);
-						LockElement1->SetAttribute("name",it->first);
+						ti	= it->first;
+						LockElement1->SetAttribute("name",ti);
 						LockElement1->SetAttribute("value",it->second);
+						LockElement1->SetAttribute("lock",t_icad->m_viiELock[ti]);
+						LockElement1->SetAttribute("sum",t_icad->m_viiESum[ti]);
 					}
 				}
 

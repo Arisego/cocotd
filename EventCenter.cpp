@@ -10,6 +10,8 @@ Selector* EventCenter::mSelector = NULL;			//关心事件 q e c	 ||	切换选择器
 
 Cake* EventCenter::m_bm_cake = NULL;				//右键
 
+CharaTab* EventCenter::mCharaTab = NULL;			// <角色面板
+
 
 EventCenter::~EventCenter(){
 	CCEGLView* eglView = CCEGLView::sharedOpenGLView();
@@ -58,10 +60,12 @@ void EventCenter::handlekeydown(WPARAM wParam, LPARAM lParam){
 	if( !(lParam & 0x40000000) ){
 		switch(wParam){
 		case 87:
+			if(mCharaTab) mCharaTab->w_press();
 			if(!mController) return;
 			mController->w_press();
 			break;						 
 		case 83:
+			if(mCharaTab) mCharaTab->s_press();
 			if(!mController) return;
 			mController->s_press();
 			break;
@@ -159,4 +163,9 @@ void EventCenter::setBmCake( Cake* s /*= NULL*/ )
 void EventCenter::purgeSharedEventCenter()
 {
 	CC_SAFE_DELETE(mSharedEventCenter);
+}
+
+void EventCenter::SetCharaTab( CharaTab* s /*= NULL*/ )
+{
+	mCharaTab = s;
 }

@@ -33,7 +33,8 @@
 
 //constant values
 #define FNT_ENG_NUM "fonts/TO_eng_num.fnt"
-#define FNT_UI_TTF "fonts/FZSZJW.TTF"		//new
+#define FNT_CHN		"fonts/CocoTd.fnt"
+#define FNT_UI_TTF "fonts/STHUPO.TTF"		//new
 #define FNT_AVG_TTF "fonts/FZSZJW.TTF"
 #define FNT_UI_LABEL "fonts/FZSZJW.TTF"		//old
 

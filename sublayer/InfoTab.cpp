@@ -401,6 +401,7 @@ void InfoTab::showcharasav( int a_iId,CCObject* target, SEL_MenuHandler selector
 	
 	//////////////////////////////////////////////////////////////////////////
 	TOChara* m_toc = new TOChara(a_iId,this,menu_selector(InfoTab::selectrediret));
+	m_toc->autorelease();
 	m_toc->setAnchorPoint(CCPointZero);
 	m_toc->setPosition(CCPointZero);
 	mb->addChild(m_toc);
