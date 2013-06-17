@@ -93,7 +93,7 @@ protected:
 	//void registerWithTouchDispatcher();
 	int m_iSUseCase;
 
-	ListDBView* m_ldb;
+	ListDBView<ItemCell>* m_ldb;
 	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map
 	int m_iFuncType;
 

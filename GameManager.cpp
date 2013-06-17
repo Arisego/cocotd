@@ -92,6 +92,7 @@ bool GameManager::init()
         bRet = true;
 		mSceneChanged = false;
 		m_bInfo = false;
+		m_bQuit = false;
 		NextPara.clear();
 
     } while (0);
@@ -104,6 +105,7 @@ bool GameManager::init()
 GameManager::GameManager()
 {
 	cs = NULL;
+
 }
 
 
@@ -212,6 +214,7 @@ void GameManager::preQuit(){
 			md->preQuit();
 		}
 		
+		m_bQuit = true;
 		if(mdl) mdl->setTouchEnabled(false);
 		if(m_bInfo) {
 			InfoTab::sharedInfoTab()->m_bIsEnabled = false;
@@ -222,6 +225,7 @@ void GameManager::preQuit(){
 }
 
 void GameManager::noQuit(){
+	m_bQuit = false;
 	if(!cs) return;
 	if(cs){
 		if(!mdl) {
@@ -242,7 +246,7 @@ void GameManager::noQuit(){
 
 void GameManager::goConfig(){
 	if(!cs) return;
-	if(cs){
+	if(cs&&!m_bInfo&&!m_bQuit){
 		if(!mdl) {
 			StatesManager* scs = (dynamic_cast<StatesManager*> (cs));
 			if(!scs) return; 

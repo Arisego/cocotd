@@ -15,7 +15,7 @@ USING_NS_CC;
 USING_NS_CC_EXT;
 using namespace std;
 
-class ListDBSource : public cocos2d::extension::CCTableViewDataSource
+template <class T = ItemCell> class ListDBSource : public cocos2d::extension::CCTableViewDataSource
 {
 protected:
 	map<int,map<string,string>> m_missDbData;		//Data Detail Read From DB.
@@ -72,33 +72,46 @@ public:
 			return ret;//exit(0x5004);		//ERROR: Reading a null result from database. Exit in debug.
 		}
 		//
+		
 		m_iNumber = m_caStData->count();			//TODO:Firstly read it from SC please.
 		data = CCArray::createWithCapacity(m_iNumber);
 		for(int i = 0;i<m_number;i++){
 			map<string,string> t_ssm = (map<string,string>) vdata.at(i);
 			int item_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
-			m_miiViDb[item_id] = i;							//方便查找？
+			m_miiViDb[item_id] = i;							//方便查找
 
 			CCLOG(">Read for item id:%d.", item_id);
-
-			string s = t_ssm.at("name");
-			CCLOG(">Item Name:%s.",s.c_str());
-			
-			ItemCellData* ticd = (ItemCellData*) m_caStData->objectForKey(item_id);
-			ticd->name		 = s;
-			ticd->icon_mask	 = t_ssm.at("icon");
-
-			ItemCell* tic = new ItemCell(cWidth, cHeight, m_ICType, ticd);
-			tic->setTag(item_id);
-			//tic->autorelease();
-				//CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 24,CCSize(rw,0), kCCTextAlignmentLeft);
-				//tlt->retain();
-
-			data->addObject(tic);		
 		}
 		
+		if(m_number<1) ret = false;	//Something is wrong.
+		else {
+			ret = true;
+
+			int item_id;
+			ItemCellData* ticd = NULL;
+			CCDictElement* ticde = NULL;
+			CCDICT_FOREACH(m_caStData,ticde){
+				ticd = (ItemCellData*) ticde->getObject();
+
+				item_id = m_miiViDb[ticd->type_id];
+				map<string,string> t_ssm = (map<string,string>) vdata.at(item_id);
+				string s = t_ssm.at("name");
+				CCLOG(">Item Name:%s.",s.c_str());
+					
+				ticd->name		 = s;
+				ticd->icon_mask	 = t_ssm.at("icon");
+
+				T* tic = new T(cWidth, cHeight, m_ICType, ticd);
+				tic->setTag(ticde->getIntKey());
+				//tic->autorelease();
+					//CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 24,CCSize(rw,0), kCCTextAlignmentLeft);
+					//tlt->retain();
+
+				data->addObject(tic);		
+			}
+		}
 		data->retain();
-		ret = true;
+		
 		return ret;
 		
 	}
@@ -106,7 +119,7 @@ public:
 	virtual void RefreshSingleItem(int id, int value){
 		
 		int ti = m_miiViDb[id];		//Find the cell real id.
-		ItemCell* tci = (ItemCell*) data->objectAtIndex(ti);
+		T* tci = (T*) data->objectAtIndex(ti);
 		//ItemCellData* ticd = (ItemCellData*) m_caStData->objectForKey(id);
 		CCLOG(">Change the cid:%d,%d.", id, value);
 		//ticd->sum = value;
@@ -115,7 +128,7 @@ public:
 
 	virtual void SetSelect(int id){
 		int ti = m_miiViDb[id];		//Find the cell real id.
-		//ItemCell* tci = (ItemCell*) data->objectAtIndex(ti);
+		//T* tci = (T*) data->objectAtIndex(ti);
 		cellselect(ti);
 	}
 
@@ -139,10 +152,10 @@ public:
 	void cellhover(int idx){
 		if(moto != idx){
 			if(moto>-1) 
-				((ItemCell*) data->objectAtIndex(moto))->onNormal();
+				((T*) data->objectAtIndex(moto))->onNormal();
 			moto = idx;
 			if(moto>-1)
-				((ItemCell*) data->objectAtIndex(moto))->onHover();
+				((T*) data->objectAtIndex(moto))->onHover();
 		}
 	}
 
@@ -150,15 +163,23 @@ public:
 	void cellselect(int idx){
 		if(smoto != idx){
 			if(smoto>-1) 
-				((ItemCell*) data->objectAtIndex(smoto))->setNormal();
+				((T*) data->objectAtIndex(smoto))->setNormal();
 			smoto = idx;
-			((ItemCell*) data->objectAtIndex(smoto))->onSelect();
+			((T*) data->objectAtIndex(smoto))->onSelect();
 		}
 	}
 
 };
 
-class ListDBView : public cocos2d::CCLayer, public ListDBSource, public cocos2d::extension::CCTableViewDelegate, public Scroller
+
+/*
+	ListDBView
+	<用于列表显示的页面
+	<目前[装备]物品列表的主键不再是item_id，在使用时注意区分，因为item_id究竟是不是在作为主键并不重要，关心item_id的类需要修改为自己去读取item_idB
+	<ListDBView回调的CCTableViewCell里面有tag为1234的ItemCell，可以用于读取详细状态
+	<ListDBView的sqlMask发生了更改，如果出现空列表参照ToPopup进行修改。
+*/
+template <class T = ItemCell> class ListDBView : public cocos2d::CCLayer, public ListDBSource<T>, public cocos2d::extension::CCTableViewDelegate, public Scroller
 {
 private:
 	float width,height;
@@ -181,35 +202,172 @@ protected:
 	}
 
 public:
-	~ListDBView();
-	ListDBView();
+
+	ListDBView()
+	{
+		pTableView = NULL;
+	}
+
+	ListDBView( float w,float h, const char* s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0 )
+	{
+		{
+			width = w;
+			height = h;
+
+			//m_iTag = t;
+			m_sSql = s;
+
+			cWidth = width;
+			cHeight = 25;
+			m_caStData = a_ca;
+
+			m_pListener = target;
+			m_pfnSelector = selector;
+			m_bIsEnabled = true;
+
+			m_ICType = tid;
+
+			pTableView = NULL;
+			//init();
+		}
+	}
+
+	~ListDBView()
+	{
+		EventCenter::sharedEventCenter()->setScroller(NULL);
+		if(pTableView) pTableView->removeFromParent();
+	}
+
+
+	void scrolldis(float dis){
+		pTableView->setContentOffset(ccp(0,pTableView->getContentOffset().y + dis));
+	}
+
+	void setoffset(CCPoint offset){
+		pTableView->setContentOffset(ccp(offset.x,offset.y + height - pTableView->getContainer()->getContentSize().height));
+	}
+
+	bool init()
+	{
+		bool bRet = false;
+		do
+		{
+			//width = 400;
+			//height = 300;
+
+			CC_BREAK_IF( !CCLayer::init() );
+			CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
+			CC_BREAK_IF(!init_data());
+			pTableView = new TableView();
+			pTableView->autorelease();
+			pTableView->setDataSource(this);
+			pTableView->initWithViewSize(CCSizeMake(width, height));
+			pTableView->setDirection(kCCScrollViewDirectionVertical);
+			pTableView->setPosition(CCPointZero);
+			pTableView->setDelegate(this);
+			pTableView->setVerticalFillOrder(kCCTableViewFillTopDown);
+			pTableView->f_init();
+			this->addChild(pTableView);
+			pTableView->reloadData();
+			//pTableView->setContentOffset(ccp(0,height - pTableView->getContainer()->getContentSize().height));
+			setoffset(ccp(0,0));
+			pTableView->setBounceable(false);
+			EventCenter::sharedEventCenter()->setScroller(this);
+
+			pTableView->f_generate_scrollbar();
+
+			bRet = true;
+		}while(0);
+
+		return bRet;
+	}
+
+
+	void tableCellTouched(CCTableView* table, CCTableViewCell* cell)
+	{
+		//CCLOG("cell touched at index: %i", cell->getIdx());
+		cellselect(cell->getIdx());
+		activate(cell);
+	}
+
+
+
+	CCSize cellSizeForTable(CCTableView *table)
+	{
+		return CCSizeMake(cWidth, cHeight);
+	}
+
+	//[]Read Cell out from data(CCArray of CCLabelTTF)
+	// Error Raise here always result from a null data read in init.
+	CCTableViewCell* tableCellAtIndex(CCTableView *table, unsigned int idx)
+	{
+		//CCString *pString = CCString::createWithFormat("%d", idx);
+
+		CCTableViewCell *pCell = new CCTableViewCell();
+
+		pCell->autorelease();
+		T *pLabel = (T*) data->objectAtIndex(idx);
+		pLabel->setPosition(CCPointZero);
+		pLabel->setAnchorPoint(CCPointZero);
+		pCell->setTag(pLabel->getTag());
+
+		//pLabel->setTag(123);
+
+		if(pLabel->getParent() != NULL)
+			return (CCTableViewCell *) pLabel->getParent();
+		else{
+			//pLabel->retain();
+			pCell->addChild(pLabel);
+		}
+
+
+
+
+		return pCell;
+	}
+
+
+
+	void scrollViewDidScroll(CCScrollView *view)
+	{
+	}
+
+	void scrollViewDidZoom(CCScrollView *view)
+	{
+	}
 
 	void scroll_in(WPARAM wParam, LPARAM lParam){
 		float zDelta = (short) HIWORD(wParam);    // wheel rotation
 		scrolldis(-zDelta);
 	}
-	//[IN] 构造
-	ListDBView(float w,float h, string s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0);
-	//[IN] 滚动相应的距离
-	void scrolldis(float dis);
-	//[IN] 设置偏移量，ccp(0,y);
-	virtual void setoffset(CCPoint offset);
 
-	virtual bool init();  
+	//~ListDBView();
+	//ListDBView();
 
-	virtual void scrollViewDidScroll(cocos2d::extension::CCScrollView* view);
 
-	virtual void scrollViewDidZoom(cocos2d::extension::CCScrollView* view);
+	////[IN] 构造
+	//// ListDBView(float w,float h, string s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0);
+	////[IN] 滚动相应的距离
+	//void scrolldis(float dis);
+	////[IN] 设置偏移量，ccp(0,y);
+	//virtual void setoffset(CCPoint offset);
 
-	//处理触摸事件
-	virtual void tableCellTouched(cocos2d::extension::CCTableView* table, cocos2d::extension::CCTableViewCell* cell);
-	//每一项的宽度和高度
-	virtual cocos2d::CCSize cellSizeForTable(cocos2d::extension::CCTableView *table);
-	//生成列表每一项的内容
-	virtual cocos2d::extension::CCTableViewCell* tableCellAtIndex(cocos2d::extension::CCTableView *table, unsigned int idx);
+	//virtual bool init();  
+
+	//virtual void scrollViewDidScroll(cocos2d::extension::CCScrollView* view);
+
+	//virtual void scrollViewDidZoom(cocos2d::extension::CCScrollView* view);
+
+	////处理触摸事件
+	//virtual void tableCellTouched(cocos2d::extension::CCTableView* table, cocos2d::extension::CCTableViewCell* cell);
+	////每一项的宽度和高度
+	//virtual cocos2d::CCSize cellSizeForTable(cocos2d::extension::CCTableView *table);
+	////生成列表每一项的内容
+	//virtual cocos2d::extension::CCTableViewCell* tableCellAtIndex(cocos2d::extension::CCTableView *table, unsigned int idx);
 	////一共多少项
 	//virtual unsigned int numberOfCellsInTableView(cocos2d::extension::CCTableView *table);
 
 };
+
 
 #endif

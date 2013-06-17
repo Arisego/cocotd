@@ -74,6 +74,8 @@ GameScene::~GameScene(){
 	CC_SAFE_RELEASE_NULL(ScriptList);
 
 	CC_SAFE_RELEASE_NULL(snapshot);
+//	CC_SAFE_RELEASE_NULL(tMovie);
+//	ALSingle::purgeSharedALSingle();
 	
 	CCLOG(">GameScene Destruct.");				//ERR:122;
 }
@@ -243,7 +245,7 @@ void GameScene::f_initover(){
 	e_TextAuto = false;
 	//
 	tMovie = new MovieLayer();
-	//tMovie->autorelease();
+	tMovie->autorelease();
 	AddState(tMovie);
 	this->addChild(tMovie,tLyMovie);
 
@@ -306,7 +308,7 @@ bool GameScene::e_getscript(){
 }
 
 void GameScene::onExit(){
-	CC_SAFE_RELEASE_NULL(tMovie);
+//	CC_SAFE_RELEASE_NULL(tMovie);
 	CCScene::onExit();
 }
 

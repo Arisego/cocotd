@@ -19,6 +19,8 @@ ALSingle::~ALSingle()
 	KillALData();
 	alDeleteSources(1,&bgm_player);
 	CleanOgg();
+
+	ConfigManager::purgeSharedConfigManager();
 }
 
 

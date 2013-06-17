@@ -71,4 +71,5 @@ void MovieLayer::play_media()
 MovieLayer::~MovieLayer()
 {
 	cleanupplayer();
+	ALSingle::purgeSharedALSingle();
 }

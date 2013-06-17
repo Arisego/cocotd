@@ -594,17 +594,20 @@ class PACTab : public Tab, public InterfaceEffect		//Package Tab ||
 {
 private:
 	int m_iTab;
-	ListDBView* ldb;
+	ListDBView<ItemCell>* ldb;
 	CCLabelTTF* m_clt;
 	vector<Container*> m_vBtns;
+
 	int m_iItem;
+	int m_iIndex;
 
 	ItemCellData* m_sIcd;		//member select item cell data.
 
 public:
 	void itemback(CCObject* sender){
-		m_iItem = ((Container *) sender)->getTag();
-		m_sIcd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->objectForKey(m_iItem);
+		m_iIndex = ((Container *) sender)->getTag();
+		m_sIcd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->objectForKey(m_iIndex);
+		m_iItem = m_sIcd->type_id;
 		m_clt->setString(ldb->getdiscrip(m_iItem).c_str());
 		RefreshButton();
 		CCLOG(">itemselect");
@@ -679,7 +682,7 @@ public:
 		m_sIcd->sum = m_sIcd->sum - di;
 		
 		if(m_sIcd->sum == 0){
-			StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iItem);
+			StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iIndex);
 			m_iItem = 0;
 			reinitldb();
 		}else{
@@ -703,15 +706,16 @@ public:
 			CC_SAFE_RELEASE_NULL(m_cid);
 			return;	
 		}				
+		
 		CCDICT_FOREACH(m_cid,pElement)
 		{
-			t_sMask +=  CCString::createWithFormat("%d,",pElement->getIntKey())->getCString();
+			t_sMask +=  CCString::createWithFormat("%d,",((ItemCellData*) pElement->getObject())->type_id)->getCString();
 		}
 		if(t_sMask.length()<1) return;
 		t_sMask.erase(t_sMask.length()-1);
 
 		CCString* t_csSql = CCString::createWithFormat("select * from item_list where groupid = %d and itemid IN (%s)",m_iTab,t_sMask.c_str());
-		ldb = new ListDBView(444,444, t_csSql->getCString(),m_cid, this,menu_selector(PACTab::itemback));
+		ldb = new ListDBView<ItemCell>((float)444,(float)444, t_csSql->getCString(),m_cid,(CCObject*) this,menu_selector(PACTab::itemback));
 		if(ldb->init()){
 			
 			ldb->setAnchorPoint(ccp(0,1));
@@ -719,7 +723,10 @@ public:
 			ldb->setContentSize(CCSizeMake(444,444));
 			mb->addChild(ldb);
 
-			if(m_iItem >0) ldb->SetSelect(m_iItem);
+			if(m_iItem >0) {
+				ldb->SetSelect(m_iItem);
+				m_clt->setString(ldb->getdiscrip(m_iItem).c_str());
+			}
 		}else{
 			CC_SAFE_RELEASE_NULL(ldb);
 		}
@@ -809,7 +816,7 @@ public:
 			
 			if(m_sIcd->sum < 1) {							//
 				if(m_sIcd){
-					StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iItem);
+					StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iIndex);
 					m_iItem = 0;
 					reinitldb();
 					m_sIcd = NULL;
@@ -822,7 +829,7 @@ public:
 
 	virtual void refresh_view(){
 		if(m_sIcd->sum == 0){
-			StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iItem);
+			StateCenter::sharedStateCenter()->f_get_itemlist(m_iTab)->removeObjectForKey(m_iIndex);
 			m_iItem = 0;
 		}
 		reinitldb();

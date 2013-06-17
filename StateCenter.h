@@ -61,6 +61,7 @@ public:
 	
 	Script* m_scTags;
 
+	/* <载入物品 */
 	void f_load_item(Script* ts);
 	void f_add_item(Script* ts, bool bSilent = false);				//丢弃和使用物品没有加入统一的接口里面来 = =，因为每次只会针对一个物品进行操作所以就由操作者自行处理了。
 

@@ -27,7 +27,7 @@ protected:
 	LifeBar* lbhp;
 	LifeBar* lbmp;
 
-	ListDBView* m_ldbEquList;		//m_ldbEquList -> Equ List
+	ListDBView<ItemCell>* m_ldbEquList;		//m_ldbEquList -> Equ List
 	CCLabelTTF* m_tDis;		//member TTF description
 
 	float m_x,m_y;

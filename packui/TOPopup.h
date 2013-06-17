@@ -15,7 +15,7 @@ public:
 
 	void ItemBack(CCObject* pSender);
 private:
-	ListDBView* m_ldbEquList;
+	ListDBView<ItemCell>* m_ldbEquList;
 };
 
 

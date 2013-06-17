@@ -436,7 +436,7 @@ void MapLayer::menu_back( CCObject* pSender )
 				t_sMask.erase(t_sMask.length()-1);
 				CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
 
-				m_ldb = new ListDBView(300,250, t_csSql->getCString(),m_cid, this,menu_selector(MapLayer::ItemBack),1);
+				m_ldb = new ListDBView<ItemCell>(300,250, t_csSql->getCString(),m_cid, this,menu_selector(MapLayer::ItemBack),1);
 				if(m_ldb->init()){
 					m_ldb->setPosition(ccp(2,0));
 					m_ldb->setContentSize(CCSizeMake(300,250));

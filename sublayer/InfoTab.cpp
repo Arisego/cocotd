@@ -345,7 +345,7 @@ void InfoTab::showldb( string s, CCObject* target, SEL_MenuHandler selector, str
 	m_fHeight += 35;
 	//////////////////////////////////////////////////////////////////////////	
 	
-	ListDBView* ldb = new ListDBView(300,88, sql.c_str(),a_icd, this,menu_selector(InfoTab::eatout));
+	ListDBView<ItemCell>* ldb = new ListDBView<ItemCell>(300,88, sql.c_str(),a_icd, this,menu_selector(InfoTab::eatout));
 	if(ldb->init()){
 		ldb->setAnchorPoint(ccp(0,0));
 		ldb->setPosition(ccp(-150,m_fHeight));

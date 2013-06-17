@@ -19,7 +19,7 @@ void TableView::update(float fDelta)
 		int index = f_offsettoidx(point);
 		//[TVMes] CCLOG("[TVMes]>Update|idx:%d...",index);
 		if(index>-1)
-			((ListDBSource*) m_pDataSource)->cellhover(index);
+			((ListDBSource<>*) m_pDataSource)->cellhover(index);
 		//fds = 0;
 	}/*else{
 		fds += fDelta;

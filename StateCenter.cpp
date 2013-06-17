@@ -493,22 +493,27 @@ void StateCenter::f_load_item( Script* ts )
 {
 	CC_SAFE_RELEASE_NULL(m_cdItemList);				//TODO:所有的icd都没有被释放，autorelease机制是否在CCObject上运行呢？
 	m_cdItemList = new CCDictionary();
+	int t_gid;
 	for(int i = 0; i<ts->m_snum; ++i){
 		Script* t = (Script*) ts->scriptnodes->objectAtIndex(i);
 		CCDictionary* t_caGItem = new CCDictionary();
+		t_gid = t->getint("group");
+
 
 		for(int j = 0; j<t->m_snum; ++j){
 			Script* tm = (Script*) t->scriptnodes->objectAtIndex(j);
 			CCLOG(">Read for item:%d",tm->getint("item"));
 
 			int i_id = tm->getint("item");
-			ItemCellData* ticd = new ItemCellData(i_id, tm->getint("sum"), tm->getint("lock"));
+			ItemCellData* ticd = new ItemCellData(i_id, tm->getint("sum"), tm->getint("lock"));	
 			ticd->autorelease();
-			t_caGItem->setObject(ticd,i_id);
+			t_caGItem->setObject(ticd,j + i /* *10000 */);			//[TO_CHANGE] <不再将item_id作为索引，作分离处理。
 
 		}
+
+
 		t_caGItem->autorelease();
-		m_cdItemList->setObject(t_caGItem,t->getint("group"));
+		m_cdItemList->setObject(t_caGItem,t_gid);
 	}
 }
 
@@ -530,6 +535,8 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 
 	t_ldb_cid = new CCDictionary();						//LDB用缓存列表
 	string t_sMask;
+	CCDictionary* t_iicdCir = new CCDictionary();
+
 
 	for(int i = 0; i<ts->m_snum; ++i){								//gruop
 		Script* t = (Script*) ts->scriptnodes->objectAtIndex(i);
@@ -540,6 +547,7 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 			t_caGItem->autorelease();
 		}
 
+		
 		for(int j = 0; j<t->m_snum; ++j){							//item
 			Script* tm = (Script*) t->scriptnodes->objectAtIndex(j);
 			CCLOG(">Read for item:%d",tm->getint("item"));
@@ -547,25 +555,42 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 			int i_id = tm->getint("item");
 
 			
-			ItemCellData* ticd = (ItemCellData*) t_caGItem->objectForKey(i_id);
+			//ItemCellData* ticd = (ItemCellData*) t_caGItem->objectForKey(i_id);
 			ItemCellData* t_icd = new ItemCellData(i_id, tm->getint("sum"), tm->getint("lock"));
 			t_ldb_cid->setObject(t_icd,i_id);			//LDB.
 			t_icd->autorelease();
 
 			t_sMask +=  CCString::createWithFormat("%d,",i_id)->getCString();			//保证item_id的唯一吧，双主键在这个地方确实有点麻烦
+			t_iicdCir->setObject(t_icd,i_id);
+
+		}
+		
+		int t_max = 0;
+		CCDictElement* cde = NULL;
+		vector<ItemCellData*> t_vi;
+
+		CCDICT_FOREACH(t_caGItem,cde){
+			t_max = max(t_max,cde->getIntKey());
+
+			ItemCellData* t_icd = (ItemCellData*) cde->getObject();
+			ItemCellData* ticd = (ItemCellData*) t_iicdCir->objectForKey(t_icd->type_id);
 
 			if(ticd){												//已有物体
-				ticd->sum = ticd->sum + tm->getint("sum");		//lock is of no use for adding item
-			}else{
-				ticd = new ItemCellData(i_id, tm->getint("sum"), tm->getint("lock"));
-				t_caGItem->setObject(ticd,i_id);
-				ticd->autorelease();
-			}			
+				t_icd->sum = t_icd->sum + ticd->sum;		//lock is of no use for adding item
+				t_iicdCir->removeObjectForKey(t_icd->type_id);
+			}
 
 		}
 
+		CCDICT_FOREACH(t_iicdCir,cde){
+			++t_max;
+			t_caGItem->setObject(cde->getObject(),t_max);
+		}
+		t_iicdCir->removeAllObjects();
 	}
 	//////////////////////////////////////////////////////////////////////////
+	CC_SAFE_RELEASE_NULL(t_iicdCir);
+
 	if(bSilent) return;
 
 	//t_ldb_cid->retain();

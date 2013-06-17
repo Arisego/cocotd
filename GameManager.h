@@ -43,6 +43,7 @@ public:
 	void noQuit();
 
 	bool m_bInfo;
+	bool m_bQuit;
 	void showinfo();
 	void dismissinifo();
 

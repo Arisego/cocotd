@@ -28,6 +28,9 @@ public:
 	void cleanupplayer();
 
 	~MovieLayer();
+	MovieLayer(){
+		int t = 0;
+	}
 
 	virtual void byTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 

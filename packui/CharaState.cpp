@@ -307,7 +307,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 
 				
 				CC_SAFE_RELEASE_NULL(m_ldbEquList);
-				m_ldbEquList = new ListDBView(300,250, t_csSql->getCString(),m_cid, this,menu_selector(CharaState::ItemBack),1);
+				m_ldbEquList = new ListDBView<ItemCell>(300,250, t_csSql->getCString(),m_cid, this,menu_selector(CharaState::ItemBack),1);
 				if(m_ldbEquList->init()){
 					m_ldbEquList->setAnchorPoint(ccp(0,1));
 					m_ldbEquList->setPosition(ccp(2,0));
@@ -372,7 +372,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 					CCString* t_csSql = CCString::createWithFormat("select * from equip_list where itemid IN (%s) and position = %d", t_sMask.c_str(), m_icurE);
 
 					CC_SAFE_RELEASE_NULL(m_ldbEquList);
-					m_ldbEquList = new ListDBView(300,250, t_csSql->getCString(),t_caEqui, this,menu_selector(CharaState::ItemBack),2);
+					m_ldbEquList = new ListDBView<ItemCell>(300,250, t_csSql->getCString(),t_caEqui, this,menu_selector(CharaState::ItemBack),2);
 					if(m_ldbEquList->init()){
 						m_ldbEquList->setAnchorPoint(ccp(0,1));
 						m_ldbEquList->setPosition(ccp(2,0));
