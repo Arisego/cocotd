@@ -38,4 +38,7 @@
 #define FNT_AVG_TTF "fonts/FZSZJW.TTF"
 #define FNT_UI_LABEL "fonts/FZSZJW.TTF"		//old
 
+#define COLOUR_HOVER ccc3(212,193,176)
+#define COLOUR_NORMAL ccc3(215,169,119)
+
 #endif

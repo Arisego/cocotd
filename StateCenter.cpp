@@ -534,16 +534,19 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 	if(!m_cdItemList) m_cdItemList = new CCDictionary();			//防止列表为空
 
 	t_ldb_cid = new CCDictionary();						//LDB用缓存列表
-	string t_sMask;
+	
 	CCDictionary* t_iicdCir = new CCDictionary();
 
 
 	for(int i = 0; i<ts->m_snum; ++i){								//gruop
+		
 		Script* t = (Script*) ts->scriptnodes->objectAtIndex(i);
-		CCDictionary* t_caGItem = (CCDictionary*) m_cdItemList->objectForKey(t->getint("group"));
+		int t_groupid = t->getint("group");
+
+		CCDictionary* t_caGItem = (CCDictionary*) m_cdItemList->objectForKey(t_groupid);
 		if(!t_caGItem) {
 			t_caGItem = new CCDictionary();
-			m_cdItemList->setObject(t_caGItem,t->getint("group"));
+			m_cdItemList->setObject(t_caGItem,t_groupid);
 			t_caGItem->autorelease();
 		}
 
@@ -560,7 +563,7 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 			t_ldb_cid->setObject(t_icd,i_id);			//LDB.
 			t_icd->autorelease();
 
-			t_sMask +=  CCString::createWithFormat("%d,",i_id)->getCString();			//保证item_id的唯一吧，双主键在这个地方确实有点麻烦
+			m_sShowMask +=  CCString::createWithFormat("%d,",i_id)->getCString();			//保证item_id的唯一吧，双主键在这个地方确实有点麻烦
 			t_iicdCir->setObject(t_icd,i_id);
 
 		}
@@ -569,18 +572,21 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 		CCDictElement* cde = NULL;
 		vector<ItemCellData*> t_vi;
 
-		CCDICT_FOREACH(t_caGItem,cde){
-			t_max = max(t_max,cde->getIntKey());
+		if(t_groupid != 4){																//[TO_CHANGE]group = 4 <不叠加
+			CCDICT_FOREACH(t_caGItem,cde){
+				t_max = max(t_max,cde->getIntKey());
 
-			ItemCellData* t_icd = (ItemCellData*) cde->getObject();
-			ItemCellData* ticd = (ItemCellData*) t_iicdCir->objectForKey(t_icd->type_id);
+				ItemCellData* t_icd = (ItemCellData*) cde->getObject();
+				ItemCellData* ticd = (ItemCellData*) t_iicdCir->objectForKey(t_icd->type_id);
 
-			if(ticd){												//已有物体
-				t_icd->sum = t_icd->sum + ticd->sum;		//lock is of no use for adding item
-				t_iicdCir->removeObjectForKey(t_icd->type_id);
+				if(ticd){												//已有物体
+					t_icd->sum = t_icd->sum + ticd->sum;		//lock is of no use for adding item
+					t_iicdCir->removeObjectForKey(t_icd->type_id);
+				}
+
 			}
-
 		}
+
 
 		CCDICT_FOREACH(t_iicdCir,cde){
 			++t_max;
@@ -594,10 +600,17 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 	if(bSilent) return;
 
 	//t_ldb_cid->retain();
-	t_sMask.erase(t_sMask.length()-1);
-	CCString* t_csSql = CCString::createWithFormat("select itemid,name,icon from item_list where itemid IN (%s) union select itemid,name,icon from equip_list where itemid IN (%s)",t_sMask.c_str(),t_sMask.c_str());
+	m_sShowMask.erase(m_sShowMask.length()-1);
+
+}
+
+
+void StateCenter::f_add_item_show()
+{
+	CCString* t_csSql = CCString::createWithFormat("select itemid,name,icon from item_list where itemid IN (%s) union select itemid,name,icon from equip_list where itemid IN (%s)",m_sShowMask.c_str(),m_sShowMask.c_str());
 	InfoTab::sharedInfoTab()->showldb("item_added",this,menu_selector(StateCenter::bback),t_csSql->getCString(),t_ldb_cid);
 }
+
 
 void StateCenter::bback(CCObject* c){
 	CC_SAFE_RELEASE_NULL(t_ldb_cid);

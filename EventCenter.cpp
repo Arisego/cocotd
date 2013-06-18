@@ -3,6 +3,7 @@
 
 #include "GameManager.h"
 
+
 EventCenter* EventCenter::mSharedEventCenter = NULL;
 Controller* EventCenter::mController = NULL;		//关心事件 w s a d z || 地图基础控制
 Scroller* EventCenter::mScroller = NULL;			//关心事件 鼠标滚轮	 || 
@@ -16,6 +17,7 @@ CharaTab* EventCenter::mCharaTab = NULL;			// <角色面板
 EventCenter::~EventCenter(){
 	CCEGLView* eglView = CCEGLView::sharedOpenGLView();
 	eglView->setAccelerometerKeyHook(NULL);
+
 }
 
 EventCenter* EventCenter::sharedEventCenter(){
@@ -135,6 +137,8 @@ bool EventCenter::init(){
 	{
 		CCEGLView* eglView = CCEGLView::sharedOpenGLView();
 		eglView->setAccelerometerKeyHook(ehandler);
+
+		m_vScrolls.clear();
 		
 
 		return true;
@@ -147,7 +151,18 @@ void EventCenter::setController(Controller* c){
 }
 
 void EventCenter::setScroller(Scroller* s /* = NULL */){
-	mScroller = s;
+	if(s){
+		m_vScrolls.push_back(mScroller);
+		mScroller = s;
+	}else{
+		int vs = m_vScrolls.size();
+		if(vs>1) {
+			mScroller = m_vScrolls.at(m_vScrolls.size()-1);
+			m_vScrolls.pop_back();
+		}
+	}
+
+	
 }
 
 void EventCenter::setSelector( Selector* s /*= NULL*/ )

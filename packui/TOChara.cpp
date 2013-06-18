@@ -46,7 +46,7 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	mSp_av->setAnchorPoint(CCPointZero);
 	mSp_av->setPosition(ccp(403,0));
 	mSp_av->setVisible(false);
-	addChild(mSp_av);
+	addChild(mSp_av,13);
 
 	mSp_sa = CCSprite::create("Images/ui_tab_chara_sa.png");
 	mSp_sa->setAnchorPoint(CCPointZero);
@@ -59,7 +59,7 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	CCSprite* m_SpFrame = CCSprite::create("Images/ui_tab_chara_bg.png");
 	m_SpFrame->setAnchorPoint(CCPointZero);
 	m_SpFrame->setPosition(ccp(0,0));
-	addChild(m_SpFrame,11);
+	addChild(m_SpFrame,14);
 
 	RefreshData(a_iCharaID);
 	RefreshView(1);

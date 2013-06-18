@@ -24,6 +24,7 @@ void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 	CCLabelTTF* t_ct = CCLabelTTF::create(name.c_str(), FNT_UI_LABEL, 20,CCSize(w,0), kCCTextAlignmentLeft);
 	t_ct->setAnchorPoint(ccp(0,0));
 	t_ct->setPosition(ccp(31,1));
+	t_ct->setColor(COLOUR_NORMAL);
 	addChild(t_ct);
 	switch(type)
 	{
@@ -32,6 +33,7 @@ void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 			labelAtlas = CCLabelBMFont::create(CCString::createWithFormat("%d",a_icd->sum)->getCString(), "fonts/CocoTd.fnt");
 			labelAtlas->setAnchorPoint(ccp(0,0));
 			labelAtlas->setPosition(ccp(w-50,1));
+			labelAtlas->setColor(COLOUR_NORMAL);
 			addChild(labelAtlas);
 			break;
 		}
@@ -45,6 +47,7 @@ void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 			labelAtlas = CCLabelBMFont::create(CCString::createWithFormat("%d/%d",a_icd->lock,a_icd->sum)->getCString(), "fonts/CocoTd.fnt");
 			labelAtlas->setAnchorPoint(ccp(0,0));
 			labelAtlas->setPosition(ccp(w-50,1));
+			labelAtlas->setColor(COLOUR_NORMAL);
 
 			addChild(labelAtlas);	
 			if(a_icd->sum == a_icd->lock)			//All Equip is Equipped.

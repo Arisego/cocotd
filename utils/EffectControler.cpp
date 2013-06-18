@@ -157,10 +157,13 @@ void EffectControler::DerSP( Script* asp )
 			}
 		case(sItem):	/* <¸øÓèÎïÆ· */
 			{
+				
 				StateCenter::sharedStateCenter()->f_add_item(t_sp,m_bSilent);
 				//m_bSilent = false;
 				if(miView) miView->refresh_view();
 				else f_sp_gonext();
+
+				if(!m_bSilent) StateCenter::sharedStateCenter()->f_add_item_show();
 				break;
 			}
 		case(sAction):

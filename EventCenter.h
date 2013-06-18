@@ -8,6 +8,9 @@
 #ifndef __EVENT_CENTER_H__
 #define __EVENT_CENTER_H__
 
+USING_NS_CC;
+using std::vector;
+
 class EventCenter 
 {
 public:
@@ -28,6 +31,8 @@ public:
 	static void handlerightm(WPARAM wParam, LPARAM lParam);
 
 	~EventCenter();
+
+	vector<Scroller*> m_vScrolls;
 
 private:
 	static EventCenter* mSharedEventCenter;

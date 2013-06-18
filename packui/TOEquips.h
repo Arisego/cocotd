@@ -12,8 +12,14 @@ class TOEquips : public Container
 {
 private:
 	CCLabelTTF* mLT_Name;
+	CCLabelBMFont* mLB_NJFront;
+	CCLabelBMFont* mLB_NJBack;
 
 public:
+	virtual void onNormal();
+	virtual void onHover();
+	virtual void onSelect();
+	virtual void onDisable();
 
 	//////////////////////////////////////////////////////////////////////////
 	Equip* eq;

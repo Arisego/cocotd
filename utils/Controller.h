@@ -19,10 +19,9 @@ public:
 	//virtual void esc_press() = 0;				//菜单按钮		-->	菜单弹出由EventCenter统一控制
 };
 
-class Scroller
+class Scroller 
 {
 public: 
-
 	virtual void scroll_in(WPARAM wParam, LPARAM lParam) = 0;
 };
 

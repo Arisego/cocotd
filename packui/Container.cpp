@@ -1,8 +1,6 @@
 #include "Container.h"
 #include "Macros.h"
 
-#define COLOUR_HOVER ccc3(212,193,176)
-#define COLOUR_NORMAL ccc3(215,169,119)
 
 Container::Container(){
 	autorelease();
@@ -230,7 +228,7 @@ void Container::onDisable(){
 void Container::onHover(){			
 	if(C_STATE_HOVERD == m_iState || !m_bIsEnabled) return;
 	m_iState = C_STATE_HOVERD;
-	labelAtlas->setColor(ccRED);
+	labelAtlas->setColor(COLOUR_HOVER);
 	SpriteRefresh();
 
 }
