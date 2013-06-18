@@ -26,7 +26,7 @@ public:
 	}
 
 
-	void f_generate_scrollbar(){
+	void f_generate_scrollbar(string a_sScrolBase = "Images/scrollbar"){
 		//Generate the scrolling bar.
 		CCSize cs = getContentSize();
 		if(cs.height > m_tViewSize.height)		//只有容器小于内容时才需要
@@ -37,15 +37,19 @@ public:
 			float t_sblh = m_tViewSize.height * mfS_factor;
 			CCNode* t_par = this->getParent();
 
-
-			CCSprite* c9s = CCSprite::create("Images/scroll_line.png"); 
+			string ts;
+			ts = a_sScrolBase;
+			ts.append("_line.png");
+			CCSprite* c9s = CCSprite::create(ts.c_str()); 
 			c9s->setTextureRect(CCRectMake(0,0,2,t_sbbh));
 			c9s->setAnchorPoint(ccp(0,0));
 			c9s->setPosition(ccp(m_tViewSize.width - 4 , 10));
 			t_par->addChild(c9s);
 
 			CC_SAFE_RELEASE_NULL(pSb);
-			pSb = CCSprite::create("Images/scrollbar_normal.png");
+			ts = a_sScrolBase;
+			ts.append("_normal.png");
+			pSb = CCSprite::create(ts.c_str());
 			pSb->setTextureRect(CCRectMake(0,0,6,t_sblh));
 			pSb->setAnchorPoint(CCPointZero);
 			pSb->setPosition(ccp(m_tViewSize.width-6,t_sbbh + 10 - t_sblh));

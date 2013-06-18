@@ -65,6 +65,7 @@ void EffectControler::md_use_skill( InterfaceEffect* iv, int a_skill_id, CCObjec
 	//CC_SAFE_DELETE(sp);
 	sp->re_init();
 	sp->parse_string(t_ssm.at("side_effect"));
+	CC_SAFE_RELEASE_NULL(m_caLocks);
 	m_caLocks = sp->m_caScript;
 	if(m_caLocks) m_caLocks->retain();
 	
@@ -75,6 +76,7 @@ void EffectControler::md_use_skill( InterfaceEffect* iv, int a_skill_id, CCObjec
 	miView		=	 iv;
 
 	sp->re_init();
+	CC_SAFE_RELEASE_NULL(m_Esp);
 	sp->parse_string(m_sEffect);
 	CCLOG("Prepar ready for md_act_skill.");
 	m_Esp = sp->m_caScript;
@@ -235,6 +237,7 @@ void EffectControler::md_use_item( InterfaceEffect* iv, int a_item_id )
 	//CC_SAFE_DELETE(sp);
 	sp->re_init();
 	sp->parse_string(t_ssm.at("side_effect"));
+	CC_SAFE_RELEASE_NULL(m_caLocks);
 	m_caLocks = sp->m_caScript;
 	if(m_caLocks) m_caLocks->retain();
 
@@ -247,6 +250,7 @@ void EffectControler::md_use_item( InterfaceEffect* iv, int a_item_id )
 	sp->re_init();
 	sp->parse_string(m_sEffect);
 	CCLOG("Prepar ready for md_act_item.");
+	CC_SAFE_RELEASE_NULL(m_Esp);
 	m_Esp = sp->m_caScript;
 	if(m_Esp) m_Esp->retain();
 	else return;

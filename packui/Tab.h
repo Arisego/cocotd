@@ -763,7 +763,7 @@ public:
 		}else{
 			mb->m_bIsEnabled = false;													//disable mb event.
 
-
+			CC_SAFE_RELEASE_NULL(m_caTList);
 			m_caTList	=	new CCArray();												//DONE:it's cleared by ec every effect.
 
 			removeChildByTag(0x3333);

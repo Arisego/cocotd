@@ -184,6 +184,7 @@ template <class T = ItemCell> class ListDBView : public cocos2d::CCLayer, public
 private:
 	float width,height;
 	TableView* pTableView;
+	string ms_ScrollBase;
 	//int m_iTag;				//tag is for group id ? < sqlstring 
 
 protected:
@@ -208,7 +209,7 @@ public:
 		pTableView = NULL;
 	}
 
-	ListDBView( float w,float h, const char* s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0 )
+	ListDBView( float w,float h, const char* s, CCDictionary* a_ca, CCObject* target, SEL_MenuHandler selector,int tid = 0,const char* sc ="Images/scrollbar" )
 	{
 		{
 			width = w;
@@ -216,6 +217,7 @@ public:
 
 			//m_iTag = t;
 			m_sSql = s;
+			ms_ScrollBase = sc;
 
 			cWidth = width;
 			cHeight = 25;
@@ -274,7 +276,7 @@ public:
 			pTableView->setBounceable(false);
 			EventCenter::sharedEventCenter()->setScroller(this);
 
-			pTableView->f_generate_scrollbar();
+			pTableView->f_generate_scrollbar(ms_ScrollBase);
 
 			bRet = true;
 		}while(0);
