@@ -81,6 +81,9 @@ bool GameManager::init()
 	bool bRet = false;
     do 
     {
+//#if !defined(COCOS2D_DEBUG) || COCOS2D_DEBUG == 0
+		CCFileUtils::sharedFileUtils()->setPopupNotify(false);
+//#endif
 		//系统变量的初始化
 		System::Init();
 
@@ -133,7 +136,6 @@ void GameManager::runSceneWithId(SceneId id)
 	mCurrentStage = NULL;
 
 	ALSingle::sharedALSingle()->StopAll();
-	
 
 	switch (id)
 	{

@@ -96,7 +96,7 @@ void ModelLayer::preQuit(){
 	
 
 	float m_textwidth = 300;
-	CCLabelBMFont* m_Text = CCLabelBMFont::create(ConfigManager::sharedConfigManager()->GetConfigS("pre_quit").c_str(), "fonts/CocoTd.fnt");
+	CCLabelBMFont* m_Text = CCLabelBMFont::create(ConfigManager::sharedConfigManager()->GetConfigS("pre_quit").c_str(), FNT_CHN);
 	//CCLabelTTF *m_Text = CCLabelTTF::create(, "fonts/simhei.ttf", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_height));

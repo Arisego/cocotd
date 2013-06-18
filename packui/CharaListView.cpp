@@ -40,7 +40,7 @@ bool CharaListView::init(){
 
 			
 			if(m_iMiniType == 1){
-				m_ic = CCLabelBMFont::create(CCString::createWithFormat("%d",m_iItemCount)->getCString(),"fonts/CocoTd.fnt");
+				m_ic = CCLabelBMFont::create(CCString::createWithFormat("%d",m_iItemCount)->getCString(),FNT_CHN);
 				m_ic->setAnchorPoint(CCPointZero);
 				m_ic->setPosition(240,t_y);
 				addChild(m_ic);
@@ -230,7 +230,7 @@ void CharaListView::showtargettext(string s, int type){
 
 	removeChildByTag(0x299);
 
-	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),"fonts/CocoTd.fnt");
+	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),FNT_CHN);
 	c_ttlbmf->setAnchorPoint(CCPointZero);
 	c_ttlbmf->setPosition(ccp(t_x ,10));
 	c_ttlbmf->setTag(0x299);

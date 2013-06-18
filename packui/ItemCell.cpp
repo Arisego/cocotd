@@ -5,6 +5,11 @@ ItemCell::ItemCell(float w, float h, int type, ItemCellData* a_icd)
 	f_init(w,h,type,a_icd);
 }
 
+ItemCell::ItemCell()
+{
+	;
+}
+
 void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 	removeAllChildren();
 
@@ -30,7 +35,7 @@ void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 	{
 	case(0):
 		{
-			labelAtlas = CCLabelBMFont::create(CCString::createWithFormat("%d",a_icd->sum)->getCString(), "fonts/CocoTd.fnt");
+			labelAtlas = CCLabelBMFont::create(CCString::createWithFormat("%d",a_icd->sum)->getCString(), FNT_CHN);
 			labelAtlas->setAnchorPoint(ccp(0,0));
 			labelAtlas->setPosition(ccp(w-50,1));
 			labelAtlas->setColor(COLOUR_NORMAL);
@@ -44,7 +49,7 @@ void ItemCell::f_init(float w, float h, int type, ItemCellData* a_icd){
 		}
 	case(2):
 		{
-			labelAtlas = CCLabelBMFont::create(CCString::createWithFormat("%d/%d",a_icd->lock,a_icd->sum)->getCString(), "fonts/CocoTd.fnt");
+			labelAtlas = CCLabelBMFont::create(CCString::createWithFormat("%d/%d",a_icd->lock,a_icd->sum)->getCString(), FNT_CHN);
 			labelAtlas->setAnchorPoint(ccp(0,0));
 			labelAtlas->setPosition(ccp(w-50,1));
 			labelAtlas->setColor(COLOUR_NORMAL);

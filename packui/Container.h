@@ -89,7 +89,9 @@ public:
 
 	virtual void setOpacity(GLubyte opacity);
 	virtual void setstringnull();
-	void setstring(string s);
+	virtual void setstring(string s);	//Change the string.
+
+	virtual void f_setstring(){};			//Set the string with int.
 
 };
 

@@ -572,7 +572,7 @@ void StateCenter::f_add_item( Script* ts, bool bSilent)
 		CCDictElement* cde = NULL;
 		vector<ItemCellData*> t_vi;
 
-		if(t_groupid != 4){																//[TO_CHANGE]group = 4 <不叠加
+		if(t_groupid != 4){																//[TO_CHANGE]group = 4 <特别的不进行叠加
 			CCDICT_FOREACH(t_caGItem,cde){
 				t_max = max(t_max,cde->getIntKey());
 
@@ -627,3 +627,19 @@ StateCenter::~StateCenter()
 		m_cdItemList->release();
 	}
 }
+
+//void StateCenter::f_insert_item(int aid,int agroup, ItemCellData* aicd )
+//{
+//	if(!m_cdItemList) m_cdItemList = new CCDictionary();			//防止列表为空
+//
+//	CCDictionary* t_caGItem = (CCDictionary*) m_cdItemList->objectForKey(agroup);
+//	if(!t_caGItem) {
+//		t_caGItem = new CCDictionary();
+//		m_cdItemList->setObject(t_caGItem,agroup);
+//		t_caGItem->autorelease();
+//	}
+//
+//	//Group == 4 || <装备切换	
+//	t_caGItem->setObject(aicd,aid);
+//
+//}

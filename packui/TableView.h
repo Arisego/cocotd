@@ -17,7 +17,7 @@ protected:
 	CCTouch* lasttouch;
 
 private:
-	CCSprite* pSb;	//ScrollBar
+	CCScale9Sprite* pSb;	//ScrollBar
 	float mfS_factor;
 
 public:
@@ -49,8 +49,9 @@ public:
 			CC_SAFE_RELEASE_NULL(pSb);
 			ts = a_sScrolBase;
 			ts.append("_normal.png");
-			pSb = CCSprite::create(ts.c_str());
-			pSb->setTextureRect(CCRectMake(0,0,6,t_sblh));
+			pSb = CCScale9Sprite::create(ts.c_str());
+			pSb->setContentSize(CCSize(6,t_sblh));
+			//pSb->setTextureRect(CCRectMake(0,0,6,t_sblh));
 			pSb->setAnchorPoint(CCPointZero);
 			pSb->setPosition(ccp(m_tViewSize.width-6,t_sbbh + 10 - t_sblh));
 

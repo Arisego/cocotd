@@ -917,7 +917,7 @@ bool BattleMap::arange_target( int a_type )
 void BattleMap::show_text(EChesses* a_ec,string s)
 {
 
-	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),"fonts/CocoTd.fnt");
+	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),FNT_CHN);
 	c_ttlbmf->setAnchorPoint(CCPointZero);
 	c_ttlbmf->setVertexZ(a_ec->m_sprite->getVertexZ());
 	c_ttlbmf->setPosition(a_ec->m_sprite->getPosition());

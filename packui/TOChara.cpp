@@ -17,14 +17,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-void TOChara::activate( CCObject* pSender )
-{
-	if (m_pListener && m_pfnSelector)
-	{
-		(m_pListener->*m_pfnSelector)(pSender);
-	}
-}
-
 TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 {
 	EventCenter::sharedEventCenter()->SetCharaTab(this);
@@ -60,6 +52,8 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	m_SpFrame->setAnchorPoint(CCPointZero);
 	m_SpFrame->setPosition(ccp(0,0));
 	addChild(m_SpFrame,14);
+
+	setactivator(target,selector);
 
 	RefreshData(a_iCharaID);
 	RefreshView(1);
@@ -145,17 +139,8 @@ void TOChara::RefreshData( int Id )
 /* <所有的控件将会被更新,注意添加更新保护以减少操作次数 */
 void TOChara::ShowAV()
 {
-	CCDictElement*	 pCde = NULL;
-	string			 t_name;
-	CCLabelBMFont*	 t_clbm = NULL;
 
-	CCDICT_FOREACH(m_cdBmNum,pCde){
-		t_name = pCde->getStrKey();
-		t_clbm = (CCLabelBMFont*) pCde->getObject();
-
-		t_clbm->setString(CCString::createWithFormat("%d",g_chara->getvalue(t_name))->getCString());
-	}
-
+	f_refresh_cur_data();
 	clt->setString(g_chara->m_sName.c_str());
 	
 	CC_SAFE_RELEASE_NULL(mSpStand);
@@ -275,12 +260,14 @@ bool TOChara::RefreshEquip( int anewi )
 
 void TOChara::EquipPop()
 {
-	m_Topop = new TOPopup(500,400);
+	m_Topop = new TOPopup(305,235);
 	m_Topop->autorelease();
 	m_Topop->refresh_ldb(m_iCurrentEuip);
-	m_Topop->setAnchorPoint(CCPointZero);
-	m_Topop->setPosition(ccp(0,0));
+	m_Topop->setAnchorPoint(ccp(0,0));
+	m_Topop->setPosition(ccp(130,25));
+	m_Topop->setactivator(this,menu_selector(TOChara::EquipChange));
 	addChild(m_Topop,20);
+	eq_mb->m_bIsEnabled = false;
 
 }
 //////////////////////////////////////////////////////////////////////////
@@ -305,5 +292,64 @@ void TOChara::w_press()
 	if(m_iCurrentEuip<0) m_iCurrentEuip = 5;
 	RefreshEquip((m_iCurrentEuip+4)%5);
 
+}
+
+void TOChara::EquipChange( CCObject* pSender )
+{
+	int titag = ((CCNode*) pSender)->getTag();
+	switch (titag)
+	{
+	case -4:			// <卸掉装备
+		break;
+	default:			// <切换
+		ItemCellData* ticd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(4)->objectForKey(titag);
+		TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
+		
+		//Tye to get the equip from m_cdEqups,if none,generate one.How ever the data should be flush into g_chara_m_iis.
+		int t_newid = ticd->type_id;
+		Equip* t_e = (Equip*) m_cdEquips->objectForKey(t_newid);
+		if(!t_e){
+			t_e = new Equip();
+			m_Topop->inform(t_e);
+		}
+		//t_e->id = t_newid;
+		t_e->lock = ticd->lock;
+		t_e->sum = ticd->sum;
+
+		g_chara->calDiffer(ttoec->eq->effect,m_Topop->m_sEffect);
+		g_chara->aplyDiffer();
+
+		ticd->type_id	= ttoec->eq->id;
+		ticd->lock		= ttoec->eq->lock;
+		ticd->sum		= ttoec->eq->sum;
+
+		f_refresh_cur_data();
+			
+		g_chara->m_miiEquips[m_iCurrentEuip] = t_e->id;
+		g_chara->m_viiELock[m_iCurrentEuip] = t_e->lock;
+		g_chara->m_viiESum[m_iCurrentEuip] = t_e->sum;
+		m_vEBtns[m_iCurrentEuip]->setcontent(t_e);
+
+
+
+
+
+		//StateCenter::sharedStateCenter()->f_insert_item(titag,4,);
+		break;
+	}
+}
+
+void TOChara::f_refresh_cur_data()
+{
+	CCDictElement*	 pCde = NULL;
+	string			 t_name;
+	CCLabelBMFont*	 t_clbm = NULL;
+
+	CCDICT_FOREACH(m_cdBmNum,pCde){
+		t_name = pCde->getStrKey();
+		t_clbm = (CCLabelBMFont*) pCde->getObject();
+
+		t_clbm->setString(CCString::createWithFormat("%d",g_chara->getvalue(t_name))->getCString());
+	}
 }
 

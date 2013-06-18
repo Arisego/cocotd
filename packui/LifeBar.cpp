@@ -1,4 +1,5 @@
 #include "LifeBar.h"
+#include "Macros.h"
 
 LifeBar::LifeBar(string psz, int m){
 	max = m;
@@ -14,14 +15,14 @@ LifeBar::LifeBar(string psz, int m){
 	m_cpt->setOpacity(100);
 	addChild(m_cpt);
 
-	m_clbBase = CCLabelBMFont::create(CCString::createWithFormat("/%d",max)->getCString(), "fonts/CocoTd.fnt");
+	m_clbBase = CCLabelBMFont::create(CCString::createWithFormat("/%d",max)->getCString(), FNT_CHN);
 	m_clbBase->setAnchorPoint(CCPointZero);
 	m_clbBase->setPosition(ccp(50,-2));
 	addChild(m_clbBase,1);
 
-	//m_clbVal = CCLabelBMFont::create(CCString::createWithFormat("%d",max)->getCString(), "fonts/CocoTd.fnt");
+	//m_clbVal = CCLabelBMFont::create(CCString::createWithFormat("%d",max)->getCString(), FNT_CHN);
 	m_clbVal = CCLabelBMFont::create();
-	m_clbVal->setFntFile("fonts/CocoTd.fnt");
+	m_clbVal->setFntFile(FNT_CHN);
 	m_clbVal->setAnchorPoint(ccp(1,0));
 	m_clbVal->setPosition(ccp(50,-2));
 	addChild(m_clbVal,1);

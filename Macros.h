@@ -40,5 +40,6 @@
 
 #define COLOUR_HOVER ccc3(212,193,176)
 #define COLOUR_NORMAL ccc3(215,169,119)
+#define COLOUR_SELECT ccc3(249,185,113)
 
 #endif

@@ -26,7 +26,9 @@ protected:
 	float rw,cHeight,cWidth;
 
 	vector<map<string,string>> vdata;
-	map<int,int> m_miiViDb;
+	map<int,int> m_miiViDb;				//map item_id to db_idx
+	map<int,int> m_miiViDi;				//map view_id to item_id
+	map<int,int> m_miiViDs;				//map sour_id to view_id
 
 public:
 	int m_ICType;									// 0 --> view of Item | 1 --> view of Skill | 2 --> view of Equip
@@ -87,14 +89,18 @@ public:
 		else {
 			ret = true;
 
-			int item_id;
+			int item_db_idx;
+			int t_ci = 0;
 			ItemCellData* ticd = NULL;
 			CCDictElement* ticde = NULL;
 			CCDICT_FOREACH(m_caStData,ticde){
 				ticd = (ItemCellData*) ticde->getObject();
 
-				item_id = m_miiViDb[ticd->type_id];
-				map<string,string> t_ssm = (map<string,string>) vdata.at(item_id);
+				item_db_idx = m_miiViDb[ticd->type_id];
+				map<string,string> t_ssm = (map<string,string>) vdata.at(item_db_idx);
+				m_miiViDi[t_ci] = ticd->type_id;
+				m_miiViDs[ticde->getIntKey()] = t_ci;
+
 				string s = t_ssm.at("name");
 				CCLOG(">Item Name:%s.",s.c_str());
 					
@@ -106,7 +112,7 @@ public:
 				//tic->autorelease();
 					//CCLabelTTF* tlt = CCLabelTTF::create(s.c_str(), "fonts/STHUPO.TTF", 24,CCSize(rw,0), kCCTextAlignmentLeft);
 					//tlt->retain();
-
+				++t_ci;
 				data->addObject(tic);		
 			}
 		}
@@ -116,9 +122,10 @@ public:
 		
 	}
 
+	/* [IN] view_id please. */
 	virtual void RefreshSingleItem(int id, int value){
-		
-		int ti = m_miiViDb[id];		//Find the cell real id.
+		//int ti = id;
+		int ti = m_miiViDs[id];		//Find the cell real id.
 		T* tci = (T*) data->objectAtIndex(ti);
 		//ItemCellData* ticd = (ItemCellData*) m_caStData->objectForKey(id);
 		CCLOG(">Change the cid:%d,%d.", id, value);
@@ -126,20 +133,27 @@ public:
 		tci->f_setsum(value);
 	}
 
+	/* [IN] view_id please */
 	virtual void SetSelect(int id){
-		int ti = m_miiViDb[id];		//Find the cell real id.
+		//int ti = id;
+		int ti = m_miiViDs[id];		//Find the cell real id.
 		//T* tci = (T*) data->objectAtIndex(ti);
 		cellselect(ti);
 	}
 
+	/* [IN] src_id */
 	string getdiscrip(int ti){
-		int i = m_miiViDb[ti];
+		int i = m_miiViDs[ti];
+		i = m_miiViDi[i];
+		i  = m_miiViDb[i];
 		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
 		return t_ssm.at("discription");
 	}
 
 	string getval(string name,int ti){
-		int i = m_miiViDb[ti];
+		int i = m_miiViDs[ti];
+		i = m_miiViDi[i];
+		i  = m_miiViDb[i];
 		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
 		return t_ssm.at(name);
 	}

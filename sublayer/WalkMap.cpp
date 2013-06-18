@@ -34,7 +34,7 @@ void WalkMap::show_text(string s)
 {
 	++mt_iCount;
 
-	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),"fonts/CocoTd.fnt");
+	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),FNT_CHN);
 	c_ttlbmf->setAnchorPoint(CCPointZero);
 	c_ttlbmf->setVertexZ(m_controller->m_sprite->getVertexZ());
 	c_ttlbmf->setPosition(m_controller->m_sprite->getPosition());

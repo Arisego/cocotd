@@ -92,6 +92,7 @@ public:
 		}
 	}
 
+	/* item_effect_1:原装备 || item_effect_2:目标装备 */
 	void calDiffer( string item_effect_1, string item_effect_2 )
 	{
 		//string test = "atk 1 def 2 mag 3";

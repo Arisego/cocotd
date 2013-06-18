@@ -236,7 +236,7 @@ void Container::onHover(){
 void Container::onSelect(){
 	if(C_STATE_SELECT == m_iState || !m_bIsEnabled) return;
 	m_iState = C_STATE_SELECT;
-	labelAtlas->setColor(ccORANGE);
+	labelAtlas->setColor(COLOUR_SELECT);
 	SpriteRefresh();
 }
 

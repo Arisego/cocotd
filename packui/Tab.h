@@ -95,7 +95,7 @@ public:
 		cm->GetConfigV(CM_FULLSCREEN,v);
 		s = cm->GetConfigS("full_screen");
 
-		CCLabelBMFont* labelAtlas = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* labelAtlas = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		mControlSwith *switchControl = new mControlSwith();
 		switchControl->initWithMaskSprite(
 			CCSprite::create("extensions/switch-mask.png"),
@@ -121,7 +121,7 @@ public:
 		s_fheight -= 50;
 
 		s = cm->GetConfigS("audio_set");
-		CCLabelBMFont* label_audio_set = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* label_audio_set = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		label_audio_set->setPosition(ccp(m_flwidth,s_fheight));
 		addChild(label_audio_set);
 
@@ -159,19 +159,19 @@ public:
 
 		s_fheight -= potentiometer->getContentSize().height - 50;
 		s = cm->GetConfigS("audio_bgm");
-		CCLabelBMFont* label_audio_bgm = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* label_audio_bgm = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		label_audio_bgm->setPosition(ccp(m_frwidth,s_fheight));
 		label_audio_bgm->setColor(ccBLUE);
 		addChild(label_audio_bgm);
 
 		s = cm->GetConfigS("audio_eff");
-		CCLabelBMFont* label_audio_eff = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* label_audio_eff = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		label_audio_eff->setPosition(ccp(m_frwidth + 100,s_fheight));
 		label_audio_eff->setColor(ccBLUE);
 		addChild(label_audio_eff);
 
 		s = cm->GetConfigS("audio_vid");
-		CCLabelBMFont* label_audio_vid = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* label_audio_vid = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		label_audio_vid->setPosition(ccp(m_frwidth + 200,s_fheight));
 		label_audio_vid->setColor(ccBLUE);
 		addChild(label_audio_vid);
@@ -180,7 +180,7 @@ public:
 		s_fheight -= 40;
 		// Add the slider
 		s = cm->GetConfigS("text_speed");
-		CCLabelBMFont* label_text_speed = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* label_text_speed = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		label_text_speed->setPosition(ccp(m_flwidth,s_fheight));
 		addChild(label_text_speed);
 
@@ -198,7 +198,7 @@ public:
 		s_fheight -= 20;
 		// Add the slider
 		s = cm->GetConfigS("text_auto");
-		CCLabelBMFont* label_text_auto = CCLabelBMFont::create(s.c_str(), "fonts/CocoTd.fnt");
+		CCLabelBMFont* label_text_auto = CCLabelBMFont::create(s.c_str(), FNT_CHN);
 		label_text_auto->setPosition(ccp(m_flwidth,s_fheight));
 		addChild(label_text_auto);
 
@@ -686,7 +686,7 @@ public:
 			m_iItem = 0;
 			reinitldb();
 		}else{
-			ldb->RefreshSingleItem(m_iItem,m_sIcd->sum);
+			ldb->RefreshSingleItem(m_iIndex,m_sIcd->sum);
 		}
 
 	}
@@ -724,7 +724,7 @@ public:
 			mb->addChild(ldb);
 
 			if(m_iItem >0) {
-				ldb->SetSelect(m_iItem);
+				ldb->SetSelect(m_iIndex);
 				m_clt->setString(ldb->getdiscrip(m_iItem).c_str());
 			}
 		}else{
@@ -808,7 +808,7 @@ public:
 			int ti = ((CharaListView*) getChildByTag(0x3333))->m_iItemCount;
 
 			m_sIcd->sum--;
-			ldb->RefreshSingleItem(m_iItem,m_sIcd->sum);
+			ldb->RefreshSingleItem(m_iIndex,m_sIcd->sum);
 			CCLOG("[ECICS]>Target back, add to catlist&callc.");
 
 			EffectControler::sharedEffectControler()->md_act_item(m_caTList);

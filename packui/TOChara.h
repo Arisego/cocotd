@@ -16,7 +16,7 @@ USING_NS_CC;
 
 */
 
-class TOChara : public CCLayer,public CharaTab
+class TOChara : public CCLayer,public CharaTab,public Activator
 {
 public:
 	TOChara(int a_iCharaID,CCObject* target, SEL_MenuHandler selector);
@@ -26,6 +26,8 @@ public:
 	TOPopup* m_Topop;
 	/* <装备被点击,鼠标操作接口 */
 	void EquipClick(CCObject* pSender);
+
+	void EquipChange(CCObject* pSender);
 	/* Change Equip view */
 	bool RefreshEquip(int anewi);
 	/* Pop up */
@@ -45,6 +47,7 @@ protected:
 	void RefreshView(int Page);
 	/* <刷新数据 */
 	void RefreshData(int Id);
+	void f_refresh_cur_data();
 
 
 	/* <显示属性和装备页 pageid:1 */
@@ -62,13 +65,6 @@ protected:
 	void s_press();
 
 private:
-	//////////////////////////////////////////////////////////////////////////
-	//	<通用的回调结构
-
-	CCObject*       m_pListener;
-	SEL_MenuHandler    m_pfnSelector;
-	void activate(CCObject* pSender);
-	//////////////////////////////////////////////////////////////////////////
 	/* <角色序号 */
 	int m_iCharaID;
 	/* <页标志 1 为属性 2 为技能 */

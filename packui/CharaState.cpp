@@ -211,7 +211,7 @@ void CharaState::show_all()		//显示所有内容
 
 	refresh_attrtable();
 
-	m_testdeffer = CCLabelBMFont::create("[Test Differ OUT]",  "fonts/CocoTd.fnt");
+	m_testdeffer = CCLabelBMFont::create("[Test Differ OUT]",  FNT_CHN);
 	m_testdeffer->setAnchorPoint(CCPointZero);
 	m_testdeffer->setPosition(160,m_y -30);
 	m_testdeffer->setVisible(false);
@@ -412,7 +412,7 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 
 void CharaState::flush_value(string name, int value){
 	r_mb->removeChildByTag(0x5004 + m_x + m_y);
-	CCLabelBMFont* t_clbmf = CCLabelBMFont::create(CCString::createWithFormat("%s:%d",name.c_str(),value)->getCString(),  "fonts/CocoTd.fnt");
+	CCLabelBMFont* t_clbmf = CCLabelBMFont::create(CCString::createWithFormat("%s:%d",name.c_str(),value)->getCString(),  FNT_CHN);
 	t_clbmf->setTag(0x5004 + m_x + m_y);	//Test Only
 	
 	t_clbmf->setAnchorPoint(CCPointZero);
@@ -453,7 +453,7 @@ void CharaState::show_content()			//显示背景和状态条
 
 	float t_height = 78;
 
-	labelAtlas = CCLabelBMFont::create(mpChara->m_sName.c_str(), "fonts/CocoTd.fnt");
+	labelAtlas = CCLabelBMFont::create(mpChara->m_sName.c_str(), FNT_CHN);
 	labelAtlas->setAnchorPoint(CCPointZero);
 	labelAtlas->setPosition(ccp(10,t_height));
 	l_mb->addChild(labelAtlas,1);
@@ -518,9 +518,9 @@ void CharaState::ItemBack( CCObject* pSender )
 			m_cbIClick->setVisible(true);
 
 			if(m_iItem != mpChara->m_miiEquips[m_icurE] && t_canE) 
-				m_cbIClick->settouchstate(true);
+				m_cbIClick->setEnability(true);
 			else 
-				m_cbIClick->onDisable();//settouchstate(false);
+				m_cbIClick->setEnability(false);//settouchstate(false);
 
 			CCLOG(">Calculate the differ.");
 			showEquDiffer();

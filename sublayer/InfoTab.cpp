@@ -205,7 +205,7 @@ void InfoTab::showbmfl(string s,CCObject* target, SEL_MenuHandler selector,strin
 	m_fHeight += 35;
 	//////////////////////////////////////////////////////////////////////////	
 
-	CCLabelBMFont* lbf = CCLabelBMFont::create(fls.c_str(),"fonts/CocoTd.fnt",300);
+	CCLabelBMFont* lbf = CCLabelBMFont::create(fls.c_str(),FNT_CHN,300);
 	lbf->setAnchorPoint(CCPointZero);
 	lbf->setPosition(ccp(-150,m_fHeight));
 	lbf->setColor(ccYELLOW);
@@ -262,7 +262,7 @@ void InfoTab::showsteper(string s, CCObject* target, SEL_MenuHandler selector,in
 
 	m_fHeight += 35;
 	//////////////////////////////////////////////////////////////////////////	
-	m_bmlable = CCLabelBMFont::create(CCString::createWithFormat("%d",m_icount)->getCString(),"fonts/CocoTd.fnt");
+	m_bmlable = CCLabelBMFont::create(CCString::createWithFormat("%d",m_icount)->getCString(),FNT_CHN);
 	m_bmlable->setAnchorPoint(ccp(1,0));
 	m_bmlable->setPosition(ccp (m_fWidth, m_fHeight));
 	m_bmlable->setScale(1.5);

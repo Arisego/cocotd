@@ -66,6 +66,7 @@ public:
 	void f_add_item(Script* ts, bool bSilent = false);				//丢弃和使用物品没有加入统一的接口里面来 = =，因为每次只会针对一个物品进行操作所以就由操作者自行处理了。
 	string m_sShowMask;
 	void f_add_item_show();											//弹出窗口，测试中。必须紧接着f_add_item使用以防止不可预知的bug。
+	//void f_insert_item(int aid,int agroup,ItemCellData* aicd);							// <替换一个物品，目前只有TOChara切换装备时使用
 
 	void f_get_state();
 

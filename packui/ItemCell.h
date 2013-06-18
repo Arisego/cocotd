@@ -37,6 +37,7 @@ public:
 
 	int sum,lock;
 
+	ItemCell();
 	ItemCell(float w, float h, int type, ItemCellData* a_icd);
 
 	virtual void onNormal();
@@ -45,7 +46,7 @@ public:
 		return false;
 	};
 
-	void f_init(float w, float h, int type, ItemCellData* a_icd);
+	virtual void f_init(float w, float h, int type, ItemCellData* a_icd);
 	void f_setsum(int i);
 
 	void setNormal();
