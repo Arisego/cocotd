@@ -136,18 +136,28 @@ public:
 	TOPopup(int width, int height);
 	~TOPopup();
 	TOButton* mTB_confirm;
+	TOButton* mTB_cancell;
+	TOButton* tTB_packdown;
 
-	void refresh_ldb(int tag);
+	bool refresh_ldb(int tag);
 
 	void ItemBack(CCObject* pSender);
 	void ConfirmBack(CCObject* pSender);
 	string m_sEffect;		//Effect String for selected item.
 
 	void inform(Equip* s);
+	void clear();			//clear the states
+
+	void w_press();
+	void s_press();
+	void z_press();
+	void x_press();
 private:
 	ListDBView<TOEquipCell>* m_ldbEquList;
 	int miHeight,miWidth;
 	int miFlag;
+	int miIdx;
+	BYLayerDescendant* mb;
 };
 
 

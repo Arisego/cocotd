@@ -62,14 +62,20 @@ void EventCenter::handlekeydown(WPARAM wParam, LPARAM lParam){
 	if( !(lParam & 0x40000000) ){
 		switch(wParam){
 		case 87:
-			if(mCharaTab) mCharaTab->w_press();
+			if(mCharaTab){mCharaTab->w_press();return;}
 			if(!mController) return;
 			mController->w_press();
 			break;						 
 		case 83:
-			if(mCharaTab) mCharaTab->s_press();
+			if(mCharaTab) {mCharaTab->s_press();return;}
 			if(!mController) return;
 			mController->s_press();
+			break;
+		case 88:
+			if(mCharaTab) {mCharaTab->x_press();return;}
+			break;
+		case 90:
+			if(mCharaTab) {mCharaTab->z_press();return;}
 			break;
 		case 65:
 			if(!mController) return;

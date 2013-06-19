@@ -118,6 +118,48 @@ public:
 			return -1;
 	}
 
+	/* [IN] view id |Bring the cell to view. */
+	void f_idx_sel(int idx,int atype = 0){
+		do 
+		{
+			const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+			float off_t;
+			CCPoint offset = ccpMult(this->getContentOffset(), -1);
+
+			off_t = this->_offsetFromIndex(idx).y;
+			if (m_eVordering == kCCTableViewFillTopDown)
+			{
+				offset.y = offset.y + m_tViewSize.height/this->getContainer()->getScaleY() - cellSize.height;
+			}
+			if(off_t<offset.y){
+				this->setContentOffset(ccp(offset.x,-off_t));
+				break;
+			}
+
+
+			if (m_eVordering == kCCTableViewFillTopDown)
+			{
+				offset.y -= m_tViewSize.height/this->getContainer()->getScaleY();
+			}
+			else 
+			{
+				offset.y += m_tViewSize.height/this->getContainer()->getScaleY();
+			}
+			if(off_t - cellSize.height>offset.y){
+				this->setContentOffset(ccp(offset.x,-off_t));
+				break;
+			}
+		} while (1);
+		CCTableViewCell *cell  = this->_cellWithIndex(idx);
+
+		if (cell) {
+			m_pTableViewDelegate->tableCellTouched(this, cell);
+		}
+
+
+
+
+	}
 };
 
 #endif

@@ -25,7 +25,16 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	m_iPage		= 0;
 	mSpStand	= NULL;
 	m_cdEquips	= NULL;
-	m_Topop		= NULL;
+	m_bPopup	= false;
+	
+	m_Topop = new TOPopup(305,235);
+	m_Topop->autorelease();
+	m_Topop->setAnchorPoint(ccp(0,0));
+	m_Topop->setPosition(ccp(130,25));
+	m_Topop->setactivator(this,menu_selector(TOChara::EquipChange));
+	m_Topop->clear();
+	addChild(m_Topop,20);
+
 	m_iCurrentEuip	= -2;
 
 	CCSprite* m_SpBack = CCSprite::create("Images/ui_tab_chara_ba.png");
@@ -260,14 +269,11 @@ bool TOChara::RefreshEquip( int anewi )
 
 void TOChara::EquipPop()
 {
-	m_Topop = new TOPopup(305,235);
-	m_Topop->autorelease();
-	m_Topop->refresh_ldb(m_iCurrentEuip);
-	m_Topop->setAnchorPoint(ccp(0,0));
-	m_Topop->setPosition(ccp(130,25));
-	m_Topop->setactivator(this,menu_selector(TOChara::EquipChange));
-	addChild(m_Topop,20);
-	eq_mb->m_bIsEnabled = false;
+	if(m_Topop->refresh_ldb(m_iCurrentEuip)){
+		eq_mb->m_bIsEnabled = false;
+		m_Topop->setVisible(true);
+		m_bPopup = true;
+	}
 
 }
 //////////////////////////////////////////////////////////////////////////
@@ -283,60 +289,118 @@ void TOChara::ShowSa()
 // <事件处理
 void TOChara::s_press()
 {
-	if(m_iCurrentEuip<0) m_iCurrentEuip = 4;
-	RefreshEquip((m_iCurrentEuip+1)%5);
+	if(m_bPopup){
+		m_Topop->s_press();
+	}else{
+		if(m_iCurrentEuip<0) m_iCurrentEuip = 4;
+		RefreshEquip((m_iCurrentEuip+1)%5);
+	}
+
 }
 
 void TOChara::w_press()
 {
-	if(m_iCurrentEuip<0) m_iCurrentEuip = 5;
-	RefreshEquip((m_iCurrentEuip+4)%5);
-
+	if(m_bPopup){
+		m_Topop->w_press();
+	}else{
+		if(m_iCurrentEuip<0) m_iCurrentEuip = 5;
+		RefreshEquip((m_iCurrentEuip+4)%5);
+	}
 }
+
+
+void TOChara::z_press()
+{
+	if(m_bPopup){
+		m_Topop->z_press();
+	}else{
+		EquipPop();
+	}
+}
+
+
+void TOChara::x_press()
+{
+	if(m_bPopup){
+		m_Topop->x_press();
+	}else{
+
+	}
+}
+
 
 void TOChara::EquipChange( CCObject* pSender )
 {
 	int titag = ((CCNode*) pSender)->getTag();
 	switch (titag)
 	{
-	case -4:			// <卸掉装备
-		break;
-	default:			// <切换
-		ItemCellData* ticd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(4)->objectForKey(titag);
-		TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
-		
-		//Tye to get the equip from m_cdEqups,if none,generate one.How ever the data should be flush into g_chara_m_iis.
-		int t_newid = ticd->type_id;
-		Equip* t_e = (Equip*) m_cdEquips->objectForKey(t_newid);
-		if(!t_e){
-			t_e = new Equip();
-			m_Topop->inform(t_e);
+	case -2:			// <Do Nothing
+		{
+			break;
 		}
-		//t_e->id = t_newid;
-		t_e->lock = ticd->lock;
-		t_e->sum = ticd->sum;
-
-		g_chara->calDiffer(ttoec->eq->effect,m_Topop->m_sEffect);
-		g_chara->aplyDiffer();
-
-		ticd->type_id	= ttoec->eq->id;
-		ticd->lock		= ttoec->eq->lock;
-		ticd->sum		= ttoec->eq->sum;
-
-		f_refresh_cur_data();
+	case -1:			// <卸掉装备
+		{
+			TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
+			ItemCellData* ticd = new ItemCellData(ttoec->eq->id,ttoec->eq->sum,ttoec->eq->lock);
+			StateCenter::sharedStateCenter()->f_insert_item(ttoec->eq->id,4,ticd);
 			
-		g_chara->m_miiEquips[m_iCurrentEuip] = t_e->id;
-		g_chara->m_viiELock[m_iCurrentEuip] = t_e->lock;
-		g_chara->m_viiESum[m_iCurrentEuip] = t_e->sum;
-		m_vEBtns[m_iCurrentEuip]->setcontent(t_e);
 
+			g_chara->m_miiEquips.erase(m_iCurrentEuip);//[m_iCurrentEuip] = t_e->id;
+			g_chara->m_viiELock[m_iCurrentEuip] = 0;
+			g_chara->m_viiESum[m_iCurrentEuip] = 0;
 
+			g_chara->calDiffer(ttoec->eq->effect,"");
+			g_chara->aplyDiffer();
+			ttoec->setcontent(NULL);
 
+			break;
+		}
+	default:			// <切换
+		{
+			ItemCellData* ticd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(4)->objectForKey(titag);
+			TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
 
+			//Tye to get the equip from m_cdEqups,if none,generate one.How ever the data should be flush into g_chara_m_iis.
+			int t_newid     = ticd->type_id;
+			int t_newlock   = ticd->lock;
+			int t_newsum	= ticd->sum;
+			Equip* t_e = (Equip*) m_cdEquips->objectForKey(t_newid);
+			if(!t_e){
+				t_e = new Equip();
+				m_cdEquips->setObject(t_e,t_newid);
+				t_e->autorelease();
+				m_Topop->inform(t_e);
+			}
 
-		//StateCenter::sharedStateCenter()->f_insert_item(titag,4,);
-		break;
+			if(ttoec->eq)
+				g_chara->calDiffer(ttoec->eq->effect,m_Topop->m_sEffect);
+			else
+				g_chara->calDiffer("",m_Topop->m_sEffect);
+			g_chara->aplyDiffer();
+
+			ticd->type_id	= ttoec->eq->id;
+			ticd->lock		= ttoec->eq->lock;
+			ticd->sum		= ttoec->eq->sum;
+
+			f_refresh_cur_data();
+
+			t_e->sum	 = t_newsum;
+			t_e->lock	 = t_newlock;
+			g_chara->m_miiEquips[m_iCurrentEuip] = t_e->id;
+			g_chara->m_viiELock[m_iCurrentEuip] = t_e->lock;
+			g_chara->m_viiESum[m_iCurrentEuip] = t_e->sum;
+			m_vEBtns[m_iCurrentEuip]->setcontent(t_e);
+			//StateCenter::sharedStateCenter()->f_insert_item(titag,4,);
+			break;
+		}
+
 	}
+
+	m_Topop->clear();
+	m_bPopup = false;
+
+	//m_iCurrentEuip = -2;
+	eq_mb->m_bIsEnabled = true;
 }
 
 void TOChara::f_refresh_cur_data()

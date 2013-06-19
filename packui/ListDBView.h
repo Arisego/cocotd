@@ -122,7 +122,7 @@ public:
 		
 	}
 
-	/* [IN] view_id please. */
+	/* [IN] view_id?src_id please. */
 	virtual void RefreshSingleItem(int id, int value){
 		//int ti = id;
 		int ti = m_miiViDs[id];		//Find the cell real id.
@@ -133,7 +133,7 @@ public:
 		tci->f_setsum(value);
 	}
 
-	/* [IN] view_id please */
+	/* [IN] view_id?src_id please */
 	virtual void SetSelect(int id){
 		//int ti = id;
 		int ti = m_miiViDs[id];		//Find the cell real id.
@@ -165,8 +165,10 @@ public:
 	int moto;		//不适用Static
 	void cellhover(int idx){
 		if(moto != idx){
-			if(moto>-1) 
+			if(moto>-1) {
 				((T*) data->objectAtIndex(moto))->onNormal();
+				//((T*) data->objectAtIndex(moto))->setNormal();
+			}
 			moto = idx;
 			if(moto>-1)
 				((T*) data->objectAtIndex(moto))->onHover();
@@ -176,11 +178,19 @@ public:
 	int smoto;
 	void cellselect(int idx){
 		if(smoto != idx){
-			if(smoto>-1) 
+			if(smoto>-1) {
+				((T*) data->objectAtIndex(smoto))->onNormal();
 				((T*) data->objectAtIndex(smoto))->setNormal();
+			}
 			smoto = idx;
-			((T*) data->objectAtIndex(smoto))->onSelect();
+			if(smoto>-1)
+				((T*) data->objectAtIndex(smoto))->onSelect();
 		}
+	}
+
+	void cellnormal(int idx){
+		((T*) data->objectAtIndex(smoto))->setNormal();
+		((T*) data->objectAtIndex(idx))->onNormal();
 	}
 
 };
@@ -192,6 +202,7 @@ public:
 	<目前[装备]物品列表的主键不再是item_id，在使用时注意区分，因为item_id究竟是不是在作为主键并不重要，关心item_id的类需要修改为自己去读取item_idB
 	<ListDBView回调的CCTableViewCell里面有tag为1234的ItemCell，可以用于读取详细状态
 	<ListDBView的sqlMask发生了更改，如果出现空列表参照ToPopup进行修改。
+	<使用listdbviews
 */
 template <class T = ItemCell> class ListDBView : public cocos2d::CCLayer, public ListDBSource<T>, public cocos2d::extension::CCTableViewDelegate, public Scroller
 {
@@ -355,6 +366,20 @@ public:
 	void scroll_in(WPARAM wParam, LPARAM lParam){
 		float zDelta = (short) HIWORD(wParam);    // wheel rotation
 		scrolldis(-zDelta);
+	}
+
+	/* [IN] view_id please. */
+	void f_swithc_id(int aid, int atype){
+		aid = min(aid,m_iNumber-1);
+		pTableView->f_idx_sel(aid,atype);
+	}
+
+	int f_get_viewid(int aid)
+	{
+		if(aid>=0)
+			return min(m_miiViDs[aid],m_iNumber-1);
+		else
+			return aid;
 	}
 
 	//~ListDBView();

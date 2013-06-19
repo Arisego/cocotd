@@ -50,9 +50,8 @@ protected:
 
 	CCObject*       m_pListener;
 	SEL_MenuHandler    m_pfnSelector;
-	void activate();
-
 public:
+	void activate();
 	CCLabelBMFont* labelAtlas;
 
 	Container();

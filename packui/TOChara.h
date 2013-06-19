@@ -63,6 +63,8 @@ protected:
 
 	void w_press();
 	void s_press();
+	void z_press();
+	void x_press();
 
 private:
 	/* <½ÇÉ«ÐòºÅ */
@@ -85,6 +87,7 @@ private:
 	BYLayerDescendant* eq_mb;
 	/* Equip List<Db */
 	CCDictionary* m_cdEquips;
+	bool m_bPopup;
 };
 
 

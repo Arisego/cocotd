@@ -628,18 +628,29 @@ StateCenter::~StateCenter()
 	}
 }
 
-//void StateCenter::f_insert_item(int aid,int agroup, ItemCellData* aicd )
-//{
-//	if(!m_cdItemList) m_cdItemList = new CCDictionary();			//防止列表为空
-//
-//	CCDictionary* t_caGItem = (CCDictionary*) m_cdItemList->objectForKey(agroup);
-//	if(!t_caGItem) {
-//		t_caGItem = new CCDictionary();
-//		m_cdItemList->setObject(t_caGItem,agroup);
-//		t_caGItem->autorelease();
-//	}
-//
-//	//Group == 4 || <装备切换	
-//	t_caGItem->setObject(aicd,aid);
-//
-//}
+void StateCenter::f_insert_item(int aid,int agroup, ItemCellData* aicd )
+{
+	if(!m_cdItemList) m_cdItemList = new CCDictionary();			//防止列表为空
+
+	CCDictionary* t_caGItem = (CCDictionary*) m_cdItemList->objectForKey(agroup);
+	if(!t_caGItem) {
+		t_caGItem = new CCDictionary();
+		m_cdItemList->setObject(t_caGItem,agroup);
+		t_caGItem->autorelease();
+	}
+
+	//Group == 4 || <装备切换	
+	t_caGItem->setObject(aicd,aid);
+	aicd->autorelease();
+	int t_max = 0;
+	CCDictElement* cde = NULL;
+	vector<ItemCellData*> t_vi;
+
+
+	CCDICT_FOREACH(t_caGItem,cde){
+		t_max = max(t_max,cde->getIntKey());
+	}
+
+	t_caGItem->setObject(aicd,t_max+1);
+
+}
