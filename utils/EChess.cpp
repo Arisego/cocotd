@@ -333,7 +333,7 @@ void EChesses::load_chara_dbsp( Script* sp )
 			{
 				for(int k = 0; k<t_cp->m_snum;++k){
 					Script* t_kcp = (Script*) t_cp->scriptnodes->objectAtIndex(k);
-					m_pChara->m_viSkills.push_back(t_kcp->getint("id"));						
+					m_pChara->m_viSkills.insert(make_pair(t_kcp->getint("lock"),t_kcp->getint("id")));						
 				}
 				break;
 			}

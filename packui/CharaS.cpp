@@ -96,7 +96,7 @@ void CharaS::load_chara(Script* ts){
 				{
 					for(int k = 0; k<t_cp->m_snum;++k){
 						Script* t_kcp = (Script*) t_cp->scriptnodes->objectAtIndex(k);
-						ticd->m_viSkills.push_back(t_kcp->getint("id"));						
+						ticd->m_viSkills.insert(make_pair(t_kcp->getint("lock"),t_kcp->getint("id")));						
 					}
 					break;
 				}

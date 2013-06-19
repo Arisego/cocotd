@@ -295,11 +295,13 @@ void CharaState::show_listndis(){				//every equip has a maskbit perpoty. Its fo
 
 				CCDictionary* m_cid = new CCDictionary();
 				string t_sMask;
-				for(vector<int>::iterator it = mpChara->m_viSkills.begin(); it != mpChara->m_viSkills.end(); ++it)
+				int t_it;
+				for(map<int,int>::iterator it = mpChara->m_viSkills.begin(); it != mpChara->m_viSkills.end(); ++it)
 				{
-					t_sMask +=  CCString::createWithFormat("%d,",*it)->getCString();
-					ItemCellData* t_icd	=	new ItemCellData(*it,0,0);
-					m_cid->setObject(t_icd,*it);
+					t_it = it->second;
+					t_sMask +=  CCString::createWithFormat("%d,",t_it)->getCString();
+					ItemCellData* t_icd	=	new ItemCellData(t_it,0,0);
+					m_cid->setObject(t_icd,t_it);
 					t_icd->release();
 				}
 				t_sMask.erase(t_sMask.length()-1);

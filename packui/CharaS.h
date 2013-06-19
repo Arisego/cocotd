@@ -28,8 +28,8 @@ public:
 	vector<int> m_viiELock;
 
 	map<string,int> m_iiAttrs;		//for attributes
-	vector<int> m_viSkills;			//for skills,change this to map if group is needed.
-
+	//vector<int> m_viSkills;			//for skills,change this to map if group is needed.
+	map<int,int> m_viSkills;
 
 
 	bool m_bIsDead;

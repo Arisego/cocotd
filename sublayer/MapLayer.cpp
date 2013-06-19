@@ -426,11 +426,12 @@ void MapLayer::menu_back( CCObject* pSender )
 			if(mpChara->m_viSkills.size() > 0){			//TODO: Not Showing skill-list/m_ldbEquList if there is no skill, modify it while needed.
 				CCDictionary* m_cid = new CCDictionary();
 				string t_sMask;
-				for(vector<int>::iterator it = mpChara->m_viSkills.begin(); it != mpChara->m_viSkills.end(); ++it)
+				for(map<int,int>::iterator it = mpChara->m_viSkills.begin(); it != mpChara->m_viSkills.end(); ++it)
 				{
-					t_sMask +=  CCString::createWithFormat("%d,",*it)->getCString();
-					ItemCellData* t_icd	=	new ItemCellData(*it,0,0);
-					m_cid->setObject(t_icd,*it);
+					int t_id = it->second;
+					t_sMask +=  CCString::createWithFormat("%d,",t_id)->getCString();
+					ItemCellData* t_icd	=	new ItemCellData(t_id,0,0);
+					m_cid->setObject(t_icd,t_id);
 					t_icd->autorelease();
 				}
 				t_sMask.erase(t_sMask.length()-1);

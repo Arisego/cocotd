@@ -6,6 +6,7 @@
 #include "packui/TOEquips.h"
 #include "utils/Controller.h"
 #include "packui/TOPopup.h"
+#include "packui/TOSkillVA.h"
 
 USING_NS_CC;
 
@@ -33,6 +34,8 @@ public:
 	/* Pop up */
 	void EquipPop();
 
+	void SkillClick(CCObject* pSender);
+
 protected:
 	/* <属性值字典 string|laberbm */
 	CCDictionary* m_cdBmNum;
@@ -56,6 +59,8 @@ protected:
 	void ShowEquips();
 	/* <初始化数值显示 pageid:1 */
 	void InitBmNums();
+	/* <初始化数值显示 pageid:2 */
+	void InitSaBtns();
 
 
 	/* <显示技能页 */
@@ -88,6 +93,22 @@ private:
 	/* Equip List<Db */
 	CCDictionary* m_cdEquips;
 	bool m_bPopup;
+	//////////////////////////////////////////////////////////////////////////
+	// page id 2
+	BYLayerDescendant* sa_mb;
+
+	CCDictionary* m_cdSkills;
+
+	/* <根据设计考虑换为labelbmfont */
+	CCLabelTTF* m_ltDisc;
+	CCLabelTTF* m_ltName;
+	CCLabelTTF* m_ltPro;
+	CCLabelTTF* m_ltCV;
+	vector<TOSkill*> m_vtsWsad;
+	vector<TOSkill*> m_vtsIkjl;
+	vector<TOTama*> m_vttSix;
+	vector<TOVoice*> m_vtvFive;
+	vector<TOASkill*> m_vasEight;
 };
 
 

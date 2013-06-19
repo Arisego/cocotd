@@ -158,6 +158,7 @@ bool StateCenter::f_save_file(const char* psz){
 		}
 		
 		//////////////////////////////////////////////////////////////////////////
+		// Items
 		PackElement = new TiXmlElement("pack");
 		RootElement->LinkEndChild(PackElement);
 		PackElement->SetAttribute("type",3);
@@ -185,6 +186,7 @@ bool StateCenter::f_save_file(const char* psz){
 		}
 
 		//////////////////////////////////////////////////////////////////////////
+		// <Charas
 		PackElement = new TiXmlElement("pack");
 		RootElement->LinkEndChild(PackElement);
 		PackElement->SetAttribute("type",4);
@@ -234,10 +236,11 @@ bool StateCenter::f_save_file(const char* psz){
 					TiXmlElement *LockElement = new TiXmlElement("lock");
 					PngElement->LinkEndChild(LockElement);
 					LockElement->SetAttribute("type",2);
-					for(vector<int>::iterator it = t_icad->m_viSkills.begin(); it != t_icad->m_viSkills.end(); ++it){
+					for(map<int,int>::iterator it = t_icad->m_viSkills.begin(); it != t_icad->m_viSkills.end(); ++it){
 						TiXmlElement *LockElement1 = new TiXmlElement("lock");
 						LockElement->LinkEndChild(LockElement1);
-						LockElement1->SetAttribute("id",*it);
+						LockElement1->SetAttribute("lock",it->first);
+						LockElement1->SetAttribute("id",it->second);
 					}
 				}
 

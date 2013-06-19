@@ -15,6 +15,15 @@
 	mSp_av->addChild(lbf);												\
 	m_cdBmNum->setObject(lbf,p);
 
+#define PLACE_TOSKILL(w,h,g,i)											\
+	t_toe = new TOSkill();												\
+	t_toe->setAnchorPoint(CCPointZero);									\
+	t_toe->setPosition(ccp(w,h));										\
+	t_toe->setTag(i);													\
+	t_toe->setactivator(this,menu_selector(TOChara::SkillClick));		\
+	g.push_back(t_toe);													\
+	sa_mb->addChild(t_toe);
+
 //////////////////////////////////////////////////////////////////////////
 
 TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
@@ -25,6 +34,7 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	m_iPage		= 0;
 	mSpStand	= NULL;
 	m_cdEquips	= NULL;
+	m_cdSkills	= NULL;
 	m_bPopup	= false;
 	
 	m_Topop = new TOPopup(305,235);
@@ -56,6 +66,7 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	addChild(mSp_sa);
 
 	InitBmNums();
+	InitSaBtns();
 
 	CCSprite* m_SpFrame = CCSprite::create("Images/ui_tab_chara_bg.png");
 	m_SpFrame->setAnchorPoint(CCPointZero);
@@ -65,13 +76,14 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	setactivator(target,selector);
 
 	RefreshData(a_iCharaID);
-	RefreshView(1);
+	RefreshView(2);
 }
 
 TOChara::~TOChara()
 {
 	CC_SAFE_RELEASE_NULL(m_cdBmNum);
 	CC_SAFE_RELEASE_NULL(m_cdEquips);
+	CC_SAFE_RELEASE_NULL(m_cdSkills);
 
 	EventCenter::sharedEventCenter()->SetCharaTab(NULL);
 }
@@ -139,6 +151,42 @@ void TOChara::RefreshData( int Id )
 			t_eq->release();
 
 			CCLOG(">Read for dquip with itemid:%d.", item_id);	
+		}
+
+		DBUtil::closeDB(); 
+	}
+	/* <读取技能数据 */
+	CC_SAFE_RELEASE_NULL(m_cdSkills);
+	m_cdSkills = new CCDictionary();
+	if(g_chara->m_viSkills.size()>0)
+	{
+		string t_sMask;
+		int t_it;
+		for(map<int,int>::iterator it = g_chara->m_viSkills.begin(); it != g_chara->m_viSkills.end(); ++it)
+		{
+			t_it = it->second;
+			t_sMask +=  CCString::createWithFormat("%d,",t_it)->getCString();
+		}
+		t_sMask.erase(t_sMask.length()-1);
+		CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
+		vector<map<string,string>> vdata;
+		DBUtil::initDB("save.db");
+		vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
+
+		int m_number = vdata.size();
+		for(int i = 0;i<m_number;i++){
+			map<string,string> t_ssm = (map<string,string>) vdata.at(i);
+			int sk_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
+			SkillMeta* t_sk = new SkillMeta();
+
+			t_sk->id		=	sk_id;
+			t_sk->name		=	t_ssm.at("name");
+			t_sk->discription	=	t_ssm.at("discription");
+
+			m_cdSkills->setObject(t_sk,sk_id);
+			t_sk->release();
+
+			CCLOG(">Read for Skill with id:%d.", sk_id);	
 		}
 
 		DBUtil::closeDB(); 
@@ -280,7 +328,9 @@ void TOChara::EquipPop()
 
 void TOChara::ShowSa()
 {
-	;
+	m_ltName->setString(g_chara->m_sName.c_str());
+	m_ltPro->setString("NONE");
+	m_ltCV->setString("SAMPLE");
 }
 
 
@@ -415,5 +465,117 @@ void TOChara::f_refresh_cur_data()
 
 		t_clbm->setString(CCString::createWithFormat("%d",g_chara->getvalue(t_name))->getCString());
 	}
+}
+
+void TOChara::InitSaBtns()
+{
+
+
+	//////////////////////////////////////////////////////////////////////////
+	sa_mb = new BYLayerDescendant();
+	sa_mb->autorelease();
+	sa_mb->setAnchorPoint(ccp(0,0));
+	sa_mb->setPosition(ccp(0,0));
+	sa_mb->setContentSize(CCSizeMake(900,600));
+	mSp_sa->addChild(sa_mb,-1);
+
+	//////////////////////////////////////////////////////////////////////////
+
+	TOSkill* t_toe;
+	PLACE_TOSKILL(264,379,m_vtsWsad,0);
+	PLACE_TOSKILL(286,342,m_vtsWsad,1);
+	PLACE_TOSKILL(286,243,m_vtsWsad,2);
+	PLACE_TOSKILL(264,207,m_vtsWsad,3);
+
+	PLACE_TOSKILL(500,379,m_vtsIkjl,0);
+	PLACE_TOSKILL(478,342,m_vtsIkjl,1);
+	PLACE_TOSKILL(478,243,m_vtsIkjl,2);
+	PLACE_TOSKILL(500,207,m_vtsIkjl,3);
+	
+	//////////////////////////////////////////////////////////////////////////
+	float t_oa_x = 329;
+	TOASkill* t_taoe;
+	for(int i=0;i<4;++i){
+		t_taoe = new TOASkill();
+		t_taoe->setAnchorPoint(CCPointZero);
+		t_taoe->setPosition(t_oa_x,401);
+		t_taoe->setTag(i);
+		t_taoe->setactivator(this,menu_selector(TOChara::EquipClick));
+		m_vasEight.push_back(t_taoe);
+		sa_mb->addChild(t_taoe);
+		//t_toe->autorelease();
+		t_oa_x += 64;		
+	}
+
+	t_oa_x = 329;
+	for(int i =4;i<8;++i){
+		t_taoe = new TOASkill();
+		t_taoe->setAnchorPoint(CCPointZero);
+		t_taoe->setPosition(t_oa_x,279);
+		t_taoe->setTag(i);
+		t_taoe->setactivator(this,menu_selector(TOChara::EquipClick));
+		m_vasEight.push_back(t_taoe);
+		sa_mb->addChild(t_taoe);
+		//t_toe->autorelease();
+		t_oa_x += 64;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	t_oa_x = 426;
+	TOTama* ttota;
+	for(int i = 0;i<6;++i){
+		ttota = new TOTama();
+		ttota->setAnchorPoint(CCPointZero);
+		ttota->setPosition(195,t_oa_x);
+		ttota->setTag(i);
+		ttota->setactivator(this,menu_selector(TOChara::EquipClick));
+		m_vasEight.push_back(t_taoe);
+		sa_mb->addChild(ttota);
+		//t_toe->autorelease();
+		t_oa_x += 20;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	t_oa_x = 430;
+	TOVoice* tov;
+	for(int i = 0;i<5;++i){
+		tov = new TOVoice();
+		tov->setAnchorPoint(CCPointZero);
+		tov->setPosition(520,t_oa_x);
+		tov->setTag(i);
+		tov->setactivator(this,menu_selector(TOChara::EquipClick));
+		m_vtvFive.push_back(tov);
+		sa_mb->addChild(tov);
+		//t_toe->autorelease();
+		t_oa_x += 20;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	m_ltDisc = CCLabelTTF::create("----",FNT_UI_TTF,20);
+	m_ltDisc->setAnchorPoint(CCPointZero);
+	m_ltDisc->setPosition(ccp(130,40));
+	m_ltDisc->setColor(COLOUR_HOVER);
+	sa_mb->addChild(m_ltDisc);
+
+	m_ltName = CCLabelTTF::create("",FNT_UI_TTF,20);
+	m_ltName->setAnchorPoint(CCPointZero);
+	m_ltName->setPosition(ccp(347,548));
+	m_ltName->setColor(COLOUR_HOVER);
+	sa_mb->addChild(m_ltName);
+
+	m_ltPro = CCLabelTTF::create("",FNT_UI_TTF,20);
+	m_ltPro->setAnchorPoint(CCPointZero);
+	m_ltPro->setPosition(ccp(585,548));
+	m_ltPro->setColor(COLOUR_HOVER);
+	sa_mb->addChild(m_ltPro);
+
+	m_ltCV = CCLabelTTF::create("",FNT_UI_TTF,20);
+	m_ltCV->setAnchorPoint(CCPointZero);
+	m_ltCV->setPosition(ccp(576,524));
+	m_ltCV->setColor(COLOUR_HOVER);
+	sa_mb->addChild(m_ltCV);
+
+}
+
+void TOChara::SkillClick( CCObject* pSender )
+{
+	;
 }
 
