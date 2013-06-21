@@ -122,6 +122,14 @@ private:
 
 	float popup_fx,popup_fy;
 	CCDictionary* m_cdPopSkils;
+
+	//////////////////////////////////////////////////////////////////////////
+	virtual void i_press();
+	virtual void j_press();
+	virtual void k_press();
+	virtual void l_press();
+
+	bool mbAV,mbSP;
 };
 
 

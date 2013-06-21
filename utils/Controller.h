@@ -52,10 +52,10 @@ public:
 class CharaTab
 {
 public:
-	//virtual void i_press() = 0;
-	//virtual void j_press() = 0;
-	//virtual void k_press() = 0;
-	//virtual void l_press() = 0;
+	virtual void i_press() = 0;
+	virtual void j_press() = 0;
+	virtual void k_press() = 0;
+	virtual void l_press() = 0;
 
 	virtual void w_press() = 0;
 	virtual void s_press() = 0;

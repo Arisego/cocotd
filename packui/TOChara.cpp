@@ -37,6 +37,8 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	m_cdSkills	= NULL;
 	m_cdPopSkils = NULL;
 	m_bPopup	= false;
+	mbAV		= false;
+	mbSP		= false;
 	
 	m_Topop = new TOPopup(305,235);
 	m_Topop->autorelease();
@@ -77,7 +79,7 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	setactivator(target,selector);
 
 	RefreshData(a_iCharaID);
-	RefreshView(2);
+	RefreshView(1);
 }
 
 TOChara::~TOChara()
@@ -100,11 +102,13 @@ void TOChara::RefreshView(int Page)
 	case 1:
 		mSp_av->setVisible(true);
 		mSp_sa->setVisible(false);	
+		
 		ShowAV();
 		break;
 	case 2:
 		mSp_av->setVisible(false);
 		mSp_sa->setVisible(true);
+		if(mSpStand) mSpStand->setVisible(false);
 		ShowSa();
 		break;
 	default:
@@ -116,7 +120,8 @@ void TOChara::RefreshView(int Page)
 void TOChara::RefreshData( int Id )
 {
 	if(m_iCharaID == Id) return;
-	CC_SAFE_RELEASE_NULL(mSpStand);
+
+	if(mSpStand) {mSpStand->removeFromParent();mSpStand = NULL;}
 	m_iCharaID = Id;
 	m_iPage = 0;
 
@@ -194,12 +199,16 @@ void TOChara::RefreshData( int Id )
 
 		DBUtil::closeDB(); 
 	}
+
+	mbAV		= false;
+	mbSP		= false;
 }
 
 /* <所有的控件将会被更新,注意添加更新保护以减少操作次数 */
 void TOChara::ShowAV()
 {
-
+	if(mbAV) {mSpStand->setVisible(true);return;}
+	mbAV = true;
 	f_refresh_cur_data();
 	clt->setString(g_chara->m_sName.c_str());
 	
@@ -320,6 +329,7 @@ bool TOChara::RefreshEquip( int anewi )
 
 void TOChara::EquipPop()
 {
+	if(m_iCurrentEuip<0) return;
 	if(m_Topop->refresh_ldb(m_iCurrentEuip)){
 		eq_mb->m_bIsEnabled = false;
 		m_Topop->setVisible(true);
@@ -383,6 +393,7 @@ void TOChara::EquipChange( int aid )
 	case -1:			// <卸掉装备
 		{
 			TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
+			if(!ttoec->eq) break;
 			ItemCellData* ticd = new ItemCellData(ttoec->eq->id,ttoec->eq->sum,ttoec->eq->lock);
 			StateCenter::sharedStateCenter()->f_insert_item(ttoec->eq->id,4,ticd);
 
@@ -420,9 +431,14 @@ void TOChara::EquipChange( int aid )
 				g_chara->calDiffer("",m_Topop->m_sEffect);
 			g_chara->aplyDiffer();
 
-			ticd->type_id	= ttoec->eq->id;
-			ticd->lock		= ttoec->eq->lock;
-			ticd->sum		= ttoec->eq->sum;
+			if(ttoec->eq){
+				ticd->type_id	= ttoec->eq->id;
+				ticd->lock		= ttoec->eq->lock;
+				ticd->sum		= ttoec->eq->sum;
+			}else{
+				StateCenter::sharedStateCenter()->f_get_itemlist(4)->removeObjectForKey(aid);
+			}
+
 
 			f_refresh_cur_data();
 
@@ -590,6 +606,8 @@ void TOChara::InitSaBtns()
 
 void TOChara::ShowSa()
 {
+	if(mbSP) return;
+	mbSP = true;
 	m_ltName->setString(g_chara->m_sName.c_str());
 	m_ltPro->setString("NONE");
 	m_ltCV->setString("SAMPLE");
@@ -652,6 +670,7 @@ void TOChara::SkillPopup()
 	{
 		if(it->first == it->second){
 			t_sm = (SkillMeta*) m_cdSkills->objectForKey(it->first);
+			if(!t_sm) continue;
 			if(t_sm->zbtype != t_zbtype) continue;
 			t_sMask +=  CCString::createWithFormat("%d,",it->second)->getCString();
 			m_cdPopSkils->setObject(m_cdSkills->objectForKey(it->first),it->second);
@@ -660,8 +679,7 @@ void TOChara::SkillPopup()
 	}
 
 	CCString* t_csSql;
-	if(t_sMask.size()<1) return;
-	t_sMask.erase(t_sMask.length()-1);
+	if(t_sMask.size()>1) t_sMask.erase(t_sMask.length()-1);
 
 	t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s) and usecase = %d",t_sMask.c_str(),t_zbtype);
 
@@ -677,12 +695,34 @@ void TOChara::SkillPopup()
 
 void TOChara::SkillChange( int sid )
 {
-	int old_id = g_chara->m_viSkills[m_iSkilId];
-	if(old_id>0){
-		g_chara->m_viSkills.insert(make_pair(old_id,old_id));
+	switch (sid)
+	{
+	case -2:
+		return;
+		break;
+	case -1:
+		{
+			int old_id = g_chara->m_viSkills[m_iSkilId];
+			if(old_id>0){
+				g_chara->m_viSkills.insert(make_pair(old_id,old_id));
+			}
+			break;
+		}
+	default:
+		{
+			int old_id = g_chara->m_viSkills[m_iSkilId];
+			if(old_id>0){
+				g_chara->m_viSkills.insert(make_pair(old_id,old_id));
+			}
+
+			g_chara->m_viSkills[m_iSkilId] = sid;
+			g_chara->m_viSkills.erase(sid);
+			break;
+		}
 	}
-	g_chara->m_viSkills[m_iSkilId] = sid;
-	g_chara->m_viSkills.erase(sid);
+
+
+
 
 	SkillMeta* t_sm = (SkillMeta*) m_cdSkills->objectForKey(sid);
 
@@ -693,7 +733,7 @@ void TOChara::SkillChange( int sid )
 	}else{
 		m_vasEight[m_iSkilId-8]->setcontent(t_sm);
 	}
-	m_ltDisc->setString(t_sm->discription.c_str());
+	if(t_sm) m_ltDisc->setString(t_sm->discription.c_str());
 	m_CurContainer->onHover();
 }
 
@@ -716,6 +756,38 @@ void TOChara::RefreshSkills()
 		m_CurContainer = m_vtsIkjl[m_iSkilId-4];
 	}else{
 		m_CurContainer = m_vasEight[m_iSkilId-8];
+	}
+}
+
+void TOChara::l_press()
+{
+	if(!m_bPopup){
+		int t = m_iPage;
+		RefreshData(min(m_iCharaID+1,CharaS::sharedCharaS()->m_iNumber-1));
+		RefreshView(t);
+	}
+}
+
+void TOChara::k_press()
+{
+	if(!m_bPopup){
+		RefreshView(3-m_iPage);
+	}
+}
+
+void TOChara::j_press()
+{
+	if(!m_bPopup){
+		int t = m_iPage;
+		RefreshData(max(m_iCharaID-1,0));
+		RefreshView(t);
+	}
+}
+
+void TOChara::i_press()
+{
+	if(!m_bPopup){
+		RefreshView(3-m_iPage);
 	}
 }
 

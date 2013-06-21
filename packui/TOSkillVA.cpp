@@ -74,6 +74,7 @@ void TOSkill::setcontent( SkillMeta* sm )
 	}else{
 		mLT_Name->setString("NONE");
 	}
+	onNormal();
 }
 
 TOASkill::TOASkill()
@@ -142,4 +143,5 @@ void TOASkill::setcontent( SkillMeta* sm )
 	}else{
 		mLT_Name->setString("NONE");
 	}
+	onNormal();
 }

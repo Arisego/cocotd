@@ -115,13 +115,12 @@ bool TOPopup::refresh_ldb( int tag )
 				m_ldbEquList->setPosition(ccp(1,21));
 				m_ldbEquList->setContentSize(CCSizeMake(miWidth,miHeight - 42));
 				m_ldbEquList->autorelease();
-
+				addChild(m_ldbEquList);
 
 			}else{
 				CC_SAFE_RELEASE_NULL(m_ldbEquList);
-				return false;
 			}
-			addChild(m_ldbEquList);
+
 			setVisible(true);
 			setTouchEnabled(false);
 			mTB_cancell->onNormal();
@@ -281,13 +280,12 @@ bool TOPopup::refresh_sks(const char* msk, CCDictionary* mld)
 		m_ldbSkilList->setPosition(ccp(1,21));
 		m_ldbSkilList->setContentSize(CCSizeMake(miWidth,miHeight - 42));
 		m_ldbSkilList->autorelease();
-
+		addChild(m_ldbSkilList);
 
 	}else{
 		CC_SAFE_RELEASE_NULL(m_ldbSkilList);
-		return false;
 	}
-	addChild(m_ldbSkilList);
+	
 	setVisible(true);
 	setTouchEnabled(false);
 	mTB_cancell->onNormal();
