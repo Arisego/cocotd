@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "ListDBView.h"
 #include "packui/Activator.h"
+#include "packui/TOSkillVA.h"
 
 USING_NS_CC;
 
@@ -139,7 +140,10 @@ public:
 	TOButton* mTB_cancell;
 	TOButton* tTB_packdown;
 
+	//For Equips
 	bool refresh_ldb(int tag);
+	//For Skills
+	bool refresh_sks(const char* msk, CCDictionary* mld);
 
 	void ItemBack(CCObject* pSender);
 	void ConfirmBack(CCObject* pSender);
@@ -154,10 +158,12 @@ public:
 	void x_press();
 private:
 	ListDBView<TOEquipCell>* m_ldbEquList;
+	ListDBView<TOSkillCell>* m_ldbSkilList;
 	int miHeight,miWidth;
 	int miFlag;
 	int miIdx;
 	BYLayerDescendant* mb;
+	int miPage;
 };
 
 

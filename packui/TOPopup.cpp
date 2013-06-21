@@ -3,6 +3,7 @@
 #include "byeven/BYCocos.h"
 #include "packui/ConfigManager.h"
 
+
 #define CONFIRM -3
 #define PACKDOW -1
 #define CANCELL -2
@@ -10,6 +11,7 @@
 TOPopup::TOPopup(int width, int height)
 {
 	m_ldbEquList = NULL;
+	m_ldbSkilList = NULL;
 	miFlag		 = -3;
 
 	miWidth		=	width;
@@ -62,14 +64,30 @@ TOPopup::~TOPopup()
 //////////////////////////////////////////////////////////////////////////
 void TOPopup::ItemBack( CCObject* pSender )
 {
-	miFlag = ((CCNode*) pSender)->getTag();
-	mTB_confirm->setEnability(true);
-	if(miFlag>0){
-		m_sEffect = m_ldbEquList->getval("effect",miFlag);
-		CCLOG(">[Effect]:%s",m_sEffect.c_str());
-	}else{
-		m_sEffect = "";
+	switch (miPage)
+	{
+	case 1:
+		{
+			miFlag = ((CCNode*) pSender)->getTag();
+			mTB_confirm->setEnability(true);
+			if(miFlag>0){
+				m_sEffect = m_ldbEquList->getval("effect",miFlag);
+				CCLOG(">[Effect]:%s",m_sEffect.c_str());
+			}else{
+				m_sEffect = "";
+			}
+			break;
+		}
+	case 2:
+		{
+			miFlag = ((CCNode*) pSender)->getTag();
+			mTB_confirm->setEnability(true);
+			break;
+		}
+	default:
+		break;
 	}
+
 }
 
 bool TOPopup::refresh_ldb( int tag )
@@ -103,20 +121,21 @@ bool TOPopup::refresh_ldb( int tag )
 				CC_SAFE_RELEASE_NULL(m_ldbEquList);
 				return false;
 			}
-
+			addChild(m_ldbEquList);
+			setVisible(true);
+			setTouchEnabled(false);
+			mTB_cancell->onNormal();
+			tTB_packdown->onNormal();
+			mTB_confirm->setEnability(false);
+			mb->m_bIsEnabled = true;
+			miFlag = -3;
+			miPage = 1;
+			return true;
 		}
 
-		addChild(m_ldbEquList);
-		setVisible(true);
-		setTouchEnabled(false);
-		mTB_cancell->onNormal();
-		tTB_packdown->onNormal();
-		mb->m_bIsEnabled = true;
-		miFlag = -3;
-		return true;
-	}else{
-		return false;
+		
 	}
+	return false;
 }
 
 void TOPopup::ConfirmBack( CCObject* pSender )
@@ -159,31 +178,81 @@ void TOPopup::clear()
 
 void TOPopup::w_press()
 {	
-	miIdx = m_ldbEquList->f_get_viewid(miFlag);
-	CCLOG(">w_press|%d",miIdx);
+	switch (miPage)
+	{
+	case 1:
+		{
+			miIdx = m_ldbEquList->f_get_viewid(miFlag);
+			CCLOG(">w_press|%d",miIdx);
 
-	if(miIdx<=0){
-		tTB_packdown->activate();
-		tTB_packdown->onSelect();
-		if(miIdx == 0)
-			m_ldbEquList->cellselect(-1);
-	}else{
-		tTB_packdown->onNormal();
-		m_ldbEquList->f_swithc_id(miIdx-1,0);
+			if(miIdx<=0){
+				tTB_packdown->activate();
+				tTB_packdown->onSelect();
+				if(miIdx == 0)
+					m_ldbEquList->cellselect(-1);
+			}else{
+				tTB_packdown->onNormal();
+				m_ldbEquList->f_swithc_id(miIdx-1,0);
+			}
+			break;
+		}
+	case 2:
+		{
+			miIdx = m_ldbSkilList->f_get_viewid(miFlag);
+			CCLOG(">w_press|%d",miIdx);
+
+			if(miIdx<=0){
+				tTB_packdown->activate();
+				tTB_packdown->onSelect();
+				if(miIdx == 0)
+					m_ldbSkilList->cellselect(-1);
+			}else{
+				tTB_packdown->onNormal();
+				m_ldbSkilList->f_swithc_id(miIdx-1,0);
+			}
+			break;
+		}
+	default:
+		break;
 	}
+
 }
 
 void TOPopup::s_press()
 {
-	miIdx = m_ldbEquList->f_get_viewid(miFlag);
-	CCLOG(">s_press|%d",miIdx);
-	if(miIdx<-1){
-		tTB_packdown->activate();
-		tTB_packdown->onSelect();
-	}else{
-		tTB_packdown->onNormal();
-		m_ldbEquList->f_swithc_id(miIdx+1,0);
+	switch (miPage)
+	{
+	case 1:
+		{
+			miIdx = m_ldbEquList->f_get_viewid(miFlag);
+			CCLOG(">s_press|%d",miIdx);
+			if(miIdx<-1){
+				tTB_packdown->activate();
+				tTB_packdown->onSelect();
+			}else{
+				tTB_packdown->onNormal();
+				m_ldbEquList->f_swithc_id(miIdx+1,0);
+			}
+			break;
+		}
+	case 2:
+		{
+			miIdx = m_ldbSkilList->f_get_viewid(miFlag);
+			CCLOG(">s_press|%d",miIdx);
+			if(miIdx<-1){
+				tTB_packdown->activate();
+				tTB_packdown->onSelect();
+			}else{
+				tTB_packdown->onNormal();
+				m_ldbSkilList->f_swithc_id(miIdx+1,0);
+			}
+			break;
+		}
+	default:
+		break;
 	}
+
+
 }
 
 void TOPopup::z_press()
@@ -199,4 +268,37 @@ void TOPopup::x_press()
 	CCLOG(">x_press:%d",miFlag);
 	setTag(CANCELL);
 	activate(this);
+}
+
+bool TOPopup::refresh_sks(const char* msk, CCDictionary* mld)
+{
+
+
+	if(m_ldbSkilList) m_ldbSkilList->removeFromParent();
+	m_ldbSkilList = new ListDBView<TOSkillCell>(miWidth,miHeight - 42, msk,mld, this,menu_selector(TOPopup::ItemBack),2);
+	if(m_ldbSkilList->init()){
+		m_ldbSkilList->setAnchorPoint(ccp(0,0));
+		m_ldbSkilList->setPosition(ccp(1,21));
+		m_ldbSkilList->setContentSize(CCSizeMake(miWidth,miHeight - 42));
+		m_ldbSkilList->autorelease();
+
+
+	}else{
+		CC_SAFE_RELEASE_NULL(m_ldbSkilList);
+		return false;
+	}
+	addChild(m_ldbSkilList);
+	setVisible(true);
+	setTouchEnabled(false);
+	mTB_cancell->onNormal();
+	tTB_packdown->onNormal();
+	mTB_confirm->setEnability(false);
+	mb->m_bIsEnabled = true;
+	miPage = 2;
+	miFlag = -3;
+	return true;
+
+
+
+
 }

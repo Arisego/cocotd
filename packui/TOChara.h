@@ -27,8 +27,11 @@ public:
 	TOPopup* m_Topop;
 	/* <装备被点击,鼠标操作接口 */
 	void EquipClick(CCObject* pSender);
+	/* Called by popback(). */
+	void EquipChange(int aid);
+	void SkillChange(int sid);
 
-	void EquipChange(CCObject* pSender);
+	void TOPopBack(CCObject* pSender);
 	/* Change Equip view */
 	bool RefreshEquip(int anewi);
 	/* Pop up */
@@ -50,6 +53,7 @@ protected:
 	void RefreshView(int Page);
 	/* <刷新数据 */
 	void RefreshData(int Id);
+	/* <装备变更导致属性变化时调用 */
 	void f_refresh_cur_data();
 
 
@@ -95,6 +99,7 @@ private:
 	bool m_bPopup;
 	//////////////////////////////////////////////////////////////////////////
 	// page id 2
+	int m_iSkilId;
 	BYLayerDescendant* sa_mb;
 
 	CCDictionary* m_cdSkills;
@@ -104,11 +109,19 @@ private:
 	CCLabelTTF* m_ltName;
 	CCLabelTTF* m_ltPro;
 	CCLabelTTF* m_ltCV;
+
 	vector<TOSkill*> m_vtsWsad;
 	vector<TOSkill*> m_vtsIkjl;
 	vector<TOTama*> m_vttSix;
 	vector<TOVoice*> m_vtvFive;
 	vector<TOASkill*> m_vasEight;
+
+	void SkillPopup();
+	void RefreshSkills();
+	Container* m_CurContainer;
+
+	float popup_fx,popup_fy;
+	CCDictionary* m_cdPopSkils;
 };
 
 

@@ -35,13 +35,13 @@ void Container::activate()
 	}
 }
 
-bool Container::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-	if(!isVisible()) return false;
+void Container::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent){
+	if(!isVisible()) return;
 	if(checkTouch(pTouch)){
 		onSelect();activate();	
 				
 	}
-	return true;
+	return;
 }
 
 void Container::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent){

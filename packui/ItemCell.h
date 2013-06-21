@@ -23,6 +23,8 @@ struct ItemCellData : public CCObject			//Struct for ItemCellData,只保存必要的内
 		lock	= l;
 	}
 
+	ItemCellData(){};
+
 };
 
 class ItemCell : public Container
@@ -42,8 +44,8 @@ public:
 
 	virtual void onNormal();
 	virtual void onHover();
-	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-		return false;
+	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent){
+		return;
 	};
 
 	virtual void f_init(float w, float h, int type, ItemCellData* a_icd);

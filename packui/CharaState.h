@@ -100,9 +100,9 @@ public:
 		BYLayer::ccTouchMoved(pTouch,pEvent);
 	}
 
-	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-		Container::ccTouchBegan(pTouch,pEvent);
-		return BYLayer::ccTouchBegan(pTouch,pEvent);
+	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent){
+		Container::ccTouchEnded(pTouch,pEvent);
+		BYLayer::ccTouchEnded(pTouch,pEvent);
 	}
 	//////////////////////////////////////////////////////////////////////////
 	void refresh_attrtable();

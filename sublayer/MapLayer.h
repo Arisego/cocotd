@@ -98,7 +98,7 @@ protected:
 	int m_iFuncType;
 
 	void draw_func();			//Run the specified function.
-	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
 	ItemCellData* m_sIcd;
 

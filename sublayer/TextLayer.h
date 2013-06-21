@@ -107,10 +107,10 @@ protected:
 
 	bool click(CCTouch *touch, CCEvent * pEvent);
 
-	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-		BYLayerModal::ccTouchBegan(pTouch,pEvent);
-		return true;
-	}
+	//virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
+	//	BYLayerModal::ccTouchBegan(pTouch,pEvent);
+	//	return true;
+	//}
 	
 	bool m_bTouchProt;
 	virtual void ccTouchEnded(CCTouch *touch, CCEvent * pEvent){

@@ -35,13 +35,14 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	mSpStand	= NULL;
 	m_cdEquips	= NULL;
 	m_cdSkills	= NULL;
+	m_cdPopSkils = NULL;
 	m_bPopup	= false;
 	
 	m_Topop = new TOPopup(305,235);
 	m_Topop->autorelease();
 	m_Topop->setAnchorPoint(ccp(0,0));
 	m_Topop->setPosition(ccp(130,25));
-	m_Topop->setactivator(this,menu_selector(TOChara::EquipChange));
+	m_Topop->setactivator(this,menu_selector(TOChara::TOPopBack));
 	m_Topop->clear();
 	addChild(m_Topop,20);
 
@@ -84,6 +85,7 @@ TOChara::~TOChara()
 	CC_SAFE_RELEASE_NULL(m_cdBmNum);
 	CC_SAFE_RELEASE_NULL(m_cdEquips);
 	CC_SAFE_RELEASE_NULL(m_cdSkills);
+	CC_SAFE_RELEASE_NULL(m_cdPopSkils);
 
 	EventCenter::sharedEventCenter()->SetCharaTab(NULL);
 }
@@ -179,9 +181,10 @@ void TOChara::RefreshData( int Id )
 			int sk_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
 			SkillMeta* t_sk = new SkillMeta();
 
-			t_sk->id		=	sk_id;
+			t_sk->type_id		=	sk_id;
 			t_sk->name		=	t_ssm.at("name");
 			t_sk->discription	=	t_ssm.at("discription");
+			t_sk->zbtype		=	stoi(t_ssm.at("usecase"));
 
 			m_cdSkills->setObject(t_sk,sk_id);
 			t_sk->release();
@@ -324,16 +327,6 @@ void TOChara::EquipPop()
 	}
 
 }
-//////////////////////////////////////////////////////////////////////////
-
-void TOChara::ShowSa()
-{
-	m_ltName->setString(g_chara->m_sName.c_str());
-	m_ltPro->setString("NONE");
-	m_ltCV->setString("SAMPLE");
-}
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // <事件处理
@@ -379,10 +372,9 @@ void TOChara::x_press()
 }
 
 
-void TOChara::EquipChange( CCObject* pSender )
+void TOChara::EquipChange( int aid )
 {
-	int titag = ((CCNode*) pSender)->getTag();
-	switch (titag)
+	switch (aid)
 	{
 	case -2:			// <Do Nothing
 		{
@@ -393,7 +385,7 @@ void TOChara::EquipChange( CCObject* pSender )
 			TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
 			ItemCellData* ticd = new ItemCellData(ttoec->eq->id,ttoec->eq->sum,ttoec->eq->lock);
 			StateCenter::sharedStateCenter()->f_insert_item(ttoec->eq->id,4,ticd);
-			
+
 
 			g_chara->m_miiEquips.erase(m_iCurrentEuip);//[m_iCurrentEuip] = t_e->id;
 			g_chara->m_viiELock[m_iCurrentEuip] = 0;
@@ -407,7 +399,7 @@ void TOChara::EquipChange( CCObject* pSender )
 		}
 	default:			// <切换
 		{
-			ItemCellData* ticd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(4)->objectForKey(titag);
+			ItemCellData* ticd = (ItemCellData*) StateCenter::sharedStateCenter()->f_get_itemlist(4)->objectForKey(aid);
 			TOEquips* ttoec = m_vEBtns[m_iCurrentEuip];
 
 			//Tye to get the equip from m_cdEqups,if none,generate one.How ever the data should be flush into g_chara_m_iis.
@@ -440,17 +432,37 @@ void TOChara::EquipChange( CCObject* pSender )
 			g_chara->m_viiELock[m_iCurrentEuip] = t_e->lock;
 			g_chara->m_viiESum[m_iCurrentEuip] = t_e->sum;
 			m_vEBtns[m_iCurrentEuip]->setcontent(t_e);
-			//StateCenter::sharedStateCenter()->f_insert_item(titag,4,);
+			//StateCenter::sharedStateCenter()->f_insert_item(atag,4,);
 			break;
 		}
 
+	}
+}
+
+
+void TOChara::TOPopBack( CCObject* pSender )
+{
+	int titag = ((CCNode*) pSender)->getTag();
+
+	switch (m_iPage)
+	{
+	case 1:
+		EquipChange(titag);
+		eq_mb->m_bIsEnabled = true;
+		break;
+	case 2:
+		SkillChange(titag);
+		sa_mb->m_bIsEnabled = true;
+		break;
+	default:
+		break;
 	}
 
 	m_Topop->clear();
 	m_bPopup = false;
 
 	//m_iCurrentEuip = -2;
-	eq_mb->m_bIsEnabled = true;
+	
 }
 
 void TOChara::f_refresh_cur_data()
@@ -482,15 +494,15 @@ void TOChara::InitSaBtns()
 	//////////////////////////////////////////////////////////////////////////
 
 	TOSkill* t_toe;
-	PLACE_TOSKILL(264,379,m_vtsWsad,0);
-	PLACE_TOSKILL(286,342,m_vtsWsad,1);
-	PLACE_TOSKILL(286,243,m_vtsWsad,2);
-	PLACE_TOSKILL(264,207,m_vtsWsad,3);
+	PLACE_TOSKILL(280,379,m_vtsWsad,0);
+	PLACE_TOSKILL(302,342,m_vtsWsad,1);
+	PLACE_TOSKILL(302,243,m_vtsWsad,2);
+	PLACE_TOSKILL(280,207,m_vtsWsad,3);
 
-	PLACE_TOSKILL(500,379,m_vtsIkjl,0);
-	PLACE_TOSKILL(478,342,m_vtsIkjl,1);
-	PLACE_TOSKILL(478,243,m_vtsIkjl,2);
-	PLACE_TOSKILL(500,207,m_vtsIkjl,3);
+	PLACE_TOSKILL(484,379,m_vtsIkjl,4);
+	PLACE_TOSKILL(462,342,m_vtsIkjl,5);
+	PLACE_TOSKILL(462,243,m_vtsIkjl,6);
+	PLACE_TOSKILL(484,207,m_vtsIkjl,7);
 	
 	//////////////////////////////////////////////////////////////////////////
 	float t_oa_x = 329;
@@ -498,9 +510,9 @@ void TOChara::InitSaBtns()
 	for(int i=0;i<4;++i){
 		t_taoe = new TOASkill();
 		t_taoe->setAnchorPoint(CCPointZero);
-		t_taoe->setPosition(t_oa_x,401);
-		t_taoe->setTag(i);
-		t_taoe->setactivator(this,menu_selector(TOChara::EquipClick));
+		t_taoe->setPosition(t_oa_x,301);
+		t_taoe->setTag(i+8);
+		t_taoe->setactivator(this,menu_selector(TOChara::SkillClick));
 		m_vasEight.push_back(t_taoe);
 		sa_mb->addChild(t_taoe);
 		//t_toe->autorelease();
@@ -512,8 +524,8 @@ void TOChara::InitSaBtns()
 		t_taoe = new TOASkill();
 		t_taoe->setAnchorPoint(CCPointZero);
 		t_taoe->setPosition(t_oa_x,279);
-		t_taoe->setTag(i);
-		t_taoe->setactivator(this,menu_selector(TOChara::EquipClick));
+		t_taoe->setTag(i+8);
+		t_taoe->setactivator(this,menu_selector(TOChara::SkillClick));
 		m_vasEight.push_back(t_taoe);
 		sa_mb->addChild(t_taoe);
 		//t_toe->autorelease();
@@ -548,9 +560,9 @@ void TOChara::InitSaBtns()
 		t_oa_x += 20;
 	}
 	//////////////////////////////////////////////////////////////////////////
-	m_ltDisc = CCLabelTTF::create("----",FNT_UI_TTF,20);
-	m_ltDisc->setAnchorPoint(CCPointZero);
-	m_ltDisc->setPosition(ccp(130,40));
+	m_ltDisc = CCLabelTTF::create("----",FNT_UI_TTF,20, CCSize(631, 100), kCCTextAlignmentLeft);
+	m_ltDisc->setAnchorPoint(ccp(0,0));
+	m_ltDisc->setPosition(ccp(140,48));
 	m_ltDisc->setColor(COLOUR_HOVER);
 	sa_mb->addChild(m_ltDisc);
 
@@ -574,8 +586,136 @@ void TOChara::InitSaBtns()
 
 }
 
+//////////////////////////////////////////////////////////////////////////
+
+void TOChara::ShowSa()
+{
+	m_ltName->setString(g_chara->m_sName.c_str());
+	m_ltPro->setString("NONE");
+	m_ltCV->setString("SAMPLE");
+
+	m_iSkilId = -1;
+
+	SkillMeta* ttosm = NULL;
+	for(int i =0;i<4;++i){
+		ttosm = (SkillMeta*) m_cdSkills->objectForKey(g_chara->m_viSkills[i]);
+		m_vtsWsad[i]->setcontent(ttosm);
+	}
+	for(int i =4;i<8;++i){
+		ttosm = (SkillMeta*) m_cdSkills->objectForKey(g_chara->m_viSkills[i]);
+		m_vtsIkjl[i-4]->setcontent(ttosm);
+	}
+
+	for(int i =8;i<16;++i){
+		ttosm = (SkillMeta*) m_cdSkills->objectForKey(g_chara->m_viSkills[i]);
+		m_vasEight[i-8]->setcontent(ttosm);
+	}
+}
+
+
 void TOChara::SkillClick( CCObject* pSender )
 {
-	;
+	Container* tc = (Container*) pSender;
+	int titag = tc->getTag();
+	CCLOG(">[TOCHARA]click is back:%d",titag);
+	m_iSkilId = titag;
+	popup_fx = 305;
+	popup_fy = 200;
+
+	titag = g_chara->m_viSkills[titag];
+	SkillMeta* tsm = (SkillMeta*) m_cdSkills->objectForKey(titag);
+	if(tsm){
+		m_ltDisc->setString(tsm->discription.c_str());
+	}else{
+		m_ltDisc->setString("");
+	}
+
+	RefreshSkills();
+	m_CurContainer->onHover();
+	SkillPopup();
+}
+
+void TOChara::SkillPopup()
+{
+	if(m_iSkilId<0) return;
+
+	int t_zbtype = 0;
+	if(m_iSkilId<8) t_zbtype = 1;
+
+	CC_SAFE_RELEASE_NULL(m_cdPopSkils);
+	m_cdPopSkils = new CCDictionary();
+
+	string t_sMask;
+	SkillMeta* t_sm;
+
+	for(map<int,int>::iterator it = g_chara->m_viSkills.begin(); it != g_chara->m_viSkills.end(); ++it)
+	{
+		if(it->first == it->second){
+			t_sm = (SkillMeta*) m_cdSkills->objectForKey(it->first);
+			if(t_sm->zbtype != t_zbtype) continue;
+			t_sMask +=  CCString::createWithFormat("%d,",it->second)->getCString();
+			m_cdPopSkils->setObject(m_cdSkills->objectForKey(it->first),it->second);
+		}
+		
+	}
+
+	CCString* t_csSql;
+	if(t_sMask.size()<1) return;
+	t_sMask.erase(t_sMask.length()-1);
+
+	t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s) and usecase = %d",t_sMask.c_str(),t_zbtype);
+
+	if(m_Topop->refresh_sks(t_csSql->getCString(),m_cdPopSkils)){
+		sa_mb->m_bIsEnabled = false;
+		m_Topop->setPosition(popup_fx,popup_fy);
+		m_Topop->setAnchorPoint(ccp(1,0));
+		m_Topop->setVisible(true);
+		m_bPopup = true;
+	}
+	m_CurContainer->onSelect();
+}
+
+void TOChara::SkillChange( int sid )
+{
+	int old_id = g_chara->m_viSkills[m_iSkilId];
+	if(old_id>0){
+		g_chara->m_viSkills.insert(make_pair(old_id,old_id));
+	}
+	g_chara->m_viSkills[m_iSkilId] = sid;
+	g_chara->m_viSkills.erase(sid);
+
+	SkillMeta* t_sm = (SkillMeta*) m_cdSkills->objectForKey(sid);
+
+	if(m_iSkilId<4){
+		m_vtsWsad[m_iSkilId]->setcontent(t_sm);
+	}else if(m_iSkilId<8){
+		m_vtsIkjl[m_iSkilId-4]->setcontent(t_sm);
+	}else{
+		m_vasEight[m_iSkilId-8]->setcontent(t_sm);
+	}
+	m_ltDisc->setString(t_sm->discription.c_str());
+	m_CurContainer->onHover();
+}
+
+void TOChara::RefreshSkills()
+{
+	int i = 0;
+	for(;i<4;++i){
+		m_vtsWsad[i]->onNormal();
+	}
+	for(;i<8;++i){
+		m_vtsIkjl[i-4]->onNormal();
+	}
+	for(;i<16;++i){
+		m_vasEight[i-8]->onNormal();
+	}
+
+	if(m_iSkilId<4){
+		m_CurContainer = m_vtsWsad[m_iSkilId];
+	}else if(m_iSkilId<8){
+		m_CurContainer = m_vtsIkjl[m_iSkilId-4];
+	}else{
+		m_CurContainer = m_vasEight[m_iSkilId-8];
+	}
 }
 

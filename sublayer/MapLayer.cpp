@@ -324,7 +324,7 @@ void MapLayer::show_menu()
 	bm->b_battle = 2;
 }
 
-bool MapLayer::ccTouchBegan( CCTouch *pTouch, CCEvent *pEvent )
+void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 {
 	switch(m_iMLState){
 	case(2):
@@ -354,7 +354,7 @@ bool MapLayer::ccTouchBegan( CCTouch *pTouch, CCEvent *pEvent )
 					break;
 				}
 			}
-			BYLayerAncestor::ccTouchBegan(pTouch,pEvent);				
+			BYLayerAncestor::ccTouchEnded(pTouch,pEvent);				
 			break;
 		}
 	case(3):
@@ -366,7 +366,7 @@ bool MapLayer::ccTouchBegan( CCTouch *pTouch, CCEvent *pEvent )
 
 
 			
-	return true;
+	return;
 }
 
 void MapLayer::ItemBack( CCObject* pSender )

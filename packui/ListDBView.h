@@ -106,7 +106,7 @@ public:
 					
 				ticd->name		 = s;
 				ticd->icon_mask	 = t_ssm.at("icon");
-
+				CCLOG(">Item Name[1]:%s.",s.c_str());
 				T* tic = new T(cWidth, cHeight, m_ICType, ticd);
 				tic->setTag(ticde->getIntKey());
 				//tic->autorelease();

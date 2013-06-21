@@ -88,7 +88,6 @@ void TOEquips::onHover()
 
 void TOEquips::onSelect()
 {
-	m_iState = C_STATE_HOVERD;
 	Container::onSelect();
 }
 
