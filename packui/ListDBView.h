@@ -22,7 +22,6 @@ protected:
 	CCDictionary* m_caStData;							//Data Counts Read From SC.
 	CCArray *data;									//Array for DataSource
 	
-	int m_iNumber;
 	float rw,cHeight,cWidth;
 
 	vector<map<string,string>> vdata;
@@ -31,6 +30,8 @@ protected:
 	map<int,int> m_miiViDs;				//map sour_id to view_id
 
 public:
+	int m_iNumber;
+
 	int m_ICType;									// 0 --> view of Item | 1 --> view of Skill | 2 --> view of Equip
 	string m_sSql;									//Query String.
 
@@ -370,6 +371,7 @@ public:
 
 	/* [IN] view_id please. */
 	void f_swithc_id(int aid, int atype){
+		if(m_iNumber == 0) return;
 		aid = min(aid,m_iNumber-1);
 		pTableView->f_idx_sel(aid,atype);
 	}

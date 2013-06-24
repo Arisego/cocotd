@@ -59,6 +59,8 @@ public:
 
 	virtual void w_press() = 0;
 	virtual void s_press() = 0;
+	virtual void a_press() = 0;
+	virtual void d_press() = 0;
 	virtual void z_press() = 0;
 	virtual void x_press() = 0;
 };

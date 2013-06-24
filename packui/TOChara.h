@@ -38,6 +38,7 @@ public:
 	void EquipPop();
 
 	void SkillClick(CCObject* pSender);
+	void TamaClick(CCObject* pSender);
 
 protected:
 	/* <ÊôÐÔÖµ×Öµä string|laberbm */
@@ -72,6 +73,8 @@ protected:
 
 	void w_press();
 	void s_press();
+	void a_press();
+	void d_press();
 	void z_press();
 	void x_press();
 

@@ -164,6 +164,8 @@ private:
 	int miIdx;
 	BYLayerDescendant* mb;
 	int miPage;
+
+	bool mbZeroList;
 };
 
 

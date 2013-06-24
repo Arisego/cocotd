@@ -90,10 +90,12 @@ void EventCenter::handlekeydown(WPARAM wParam, LPARAM lParam){
 			if(mCharaTab) {mCharaTab->z_press();return;}
 			break;
 		case 65:
+			if(mCharaTab) {mCharaTab->a_press();return;}
 			if(!mController) return;
 			mController->a_press();
 			break;
 		case 68:
+			if(mCharaTab) {mCharaTab->d_press();return;}
 			if(!mController) return;
 			mController->d_press();
 			break;

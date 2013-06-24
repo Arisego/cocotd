@@ -105,7 +105,16 @@ private:
 
 class TOTama : public Container
 {
-	;
+public:
+	TOTama();
+	void setcontent(int a_iLevel);
+
+	virtual void onNormal();
+	virtual void onHover();
+	virtual void onSelect();
+	virtual void onDisable();
+
+	int m_iLevel;
 };
 
 class TOVoice : public Container

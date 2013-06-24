@@ -121,6 +121,9 @@ bool TOPopup::refresh_ldb( int tag )
 				CC_SAFE_RELEASE_NULL(m_ldbEquList);
 			}
 
+			if(m_ldbEquList->m_iNumber == 0) mbZeroList = true;
+			else mbZeroList = false;
+
 			setVisible(true);
 			setTouchEnabled(false);
 			mTB_cancell->onNormal();
@@ -258,6 +261,7 @@ void TOPopup::z_press()
 {
 	CCLOG(">z_press:%d",miFlag);
 	if(miFlag < -2) return;
+	if(mbZeroList&&(miFlag != -1)) return;
 	setTag(miFlag);
 	activate(this);
 }
@@ -286,6 +290,9 @@ bool TOPopup::refresh_sks(const char* msk, CCDictionary* mld)
 		CC_SAFE_RELEASE_NULL(m_ldbSkilList);
 	}
 	
+	if(m_ldbSkilList->m_iNumber == 0) mbZeroList = true;
+	else mbZeroList = false;
+
 	setVisible(true);
 	setTouchEnabled(false);
 	mTB_cancell->onNormal();

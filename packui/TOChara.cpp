@@ -2,7 +2,7 @@
 #include "Macros.h"
 #include "EventCenter.h"
 #include "DBUtil.h"
-
+#include "packui/ConfigManager.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,9 @@ TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 	m_bPopup	= false;
 	mbAV		= false;
 	mbSP		= false;
+
+	popup_fx = 305;
+	popup_fy = 200;
 	
 	m_Topop = new TOPopup(305,235);
 	m_Topop->autorelease();
@@ -338,50 +341,6 @@ void TOChara::EquipPop()
 
 }
 
-//////////////////////////////////////////////////////////////////////////
-// <事件处理
-void TOChara::s_press()
-{
-	if(m_bPopup){
-		m_Topop->s_press();
-	}else{
-		if(m_iCurrentEuip<0) m_iCurrentEuip = 4;
-		RefreshEquip((m_iCurrentEuip+1)%5);
-	}
-
-}
-
-void TOChara::w_press()
-{
-	if(m_bPopup){
-		m_Topop->w_press();
-	}else{
-		if(m_iCurrentEuip<0) m_iCurrentEuip = 5;
-		RefreshEquip((m_iCurrentEuip+4)%5);
-	}
-}
-
-
-void TOChara::z_press()
-{
-	if(m_bPopup){
-		m_Topop->z_press();
-	}else{
-		EquipPop();
-	}
-}
-
-
-void TOChara::x_press()
-{
-	if(m_bPopup){
-		m_Topop->x_press();
-	}else{
-
-	}
-}
-
-
 void TOChara::EquipChange( int aid )
 {
 	switch (aid)
@@ -455,7 +414,6 @@ void TOChara::EquipChange( int aid )
 	}
 }
 
-
 void TOChara::TOPopBack( CCObject* pSender )
 {
 	int titag = ((CCNode*) pSender)->getTag();
@@ -495,6 +453,7 @@ void TOChara::f_refresh_cur_data()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
 void TOChara::InitSaBtns()
 {
 
@@ -519,7 +478,7 @@ void TOChara::InitSaBtns()
 	PLACE_TOSKILL(462,342,m_vtsIkjl,5);
 	PLACE_TOSKILL(462,243,m_vtsIkjl,6);
 	PLACE_TOSKILL(484,207,m_vtsIkjl,7);
-	
+
 	//////////////////////////////////////////////////////////////////////////
 	float t_oa_x = 329;
 	TOASkill* t_taoe;
@@ -548,18 +507,18 @@ void TOChara::InitSaBtns()
 		t_oa_x += 64;
 	}
 	//////////////////////////////////////////////////////////////////////////
-	t_oa_x = 426;
+	t_oa_x = 520;
 	TOTama* ttota;
 	for(int i = 0;i<6;++i){
 		ttota = new TOTama();
 		ttota->setAnchorPoint(CCPointZero);
 		ttota->setPosition(195,t_oa_x);
 		ttota->setTag(i);
-		ttota->setactivator(this,menu_selector(TOChara::EquipClick));
-		m_vasEight.push_back(t_taoe);
+		ttota->setactivator(this,menu_selector(TOChara::TamaClick));
+		m_vttSix.push_back(ttota);
 		sa_mb->addChild(ttota);
 		//t_toe->autorelease();
-		t_oa_x += 20;
+		t_oa_x -= 20;
 	}
 	//////////////////////////////////////////////////////////////////////////
 	t_oa_x = 430;
@@ -602,8 +561,6 @@ void TOChara::InitSaBtns()
 
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void TOChara::ShowSa()
 {
 	if(mbSP) return;
@@ -628,8 +585,11 @@ void TOChara::ShowSa()
 		ttosm = (SkillMeta*) m_cdSkills->objectForKey(g_chara->m_viSkills[i]);
 		m_vasEight[i-8]->setcontent(ttosm);
 	}
-}
 
+	for(int i =16;i<22;++i){
+		m_vttSix[i-16]->setcontent(g_chara->getvalue(CCString::createWithFormat("tama_%d",i-16)->getCString()));
+	}
+}
 
 void TOChara::SkillClick( CCObject* pSender )
 {
@@ -637,25 +597,28 @@ void TOChara::SkillClick( CCObject* pSender )
 	int titag = tc->getTag();
 	CCLOG(">[TOCHARA]click is back:%d",titag);
 	m_iSkilId = titag;
-	popup_fx = 305;
-	popup_fy = 200;
-
-	titag = g_chara->m_viSkills[titag];
-	SkillMeta* tsm = (SkillMeta*) m_cdSkills->objectForKey(titag);
-	if(tsm){
-		m_ltDisc->setString(tsm->discription.c_str());
-	}else{
-		m_ltDisc->setString("");
-	}
 
 	RefreshSkills();
 	m_CurContainer->onHover();
 	SkillPopup();
 }
 
+
+void TOChara::TamaClick( CCObject* pSender )
+{
+	Container* tc = (Container*) pSender;
+	int titag = tc->getTag();
+	CCLOG(">[TOCHARA]tama is back:%d",titag);
+	m_iSkilId = titag;
+
+	RefreshSkills();
+	m_CurContainer->onHover();
+}
+
 void TOChara::SkillPopup()
 {
 	if(m_iSkilId<0) return;
+	if(m_iSkilId>=16) return;
 
 	int t_zbtype = 0;
 	if(m_iSkilId<8) t_zbtype = 1;
@@ -749,13 +712,201 @@ void TOChara::RefreshSkills()
 	for(;i<16;++i){
 		m_vasEight[i-8]->onNormal();
 	}
+	for(;i<22;++i){
+		m_vttSix[i-16]->onNormal();
+	}
 
 	if(m_iSkilId<4){
 		m_CurContainer = m_vtsWsad[m_iSkilId];
 	}else if(m_iSkilId<8){
 		m_CurContainer = m_vtsIkjl[m_iSkilId-4];
-	}else{
+	}else if(m_iSkilId<16){
 		m_CurContainer = m_vasEight[m_iSkilId-8];
+	}else{
+		m_CurContainer = m_vttSix[m_iSkilId-16];
+	}
+	if(m_iSkilId<16){
+		int titag = g_chara->m_viSkills[m_iSkilId];
+		SkillMeta* tsm = (SkillMeta*) m_cdSkills->objectForKey(titag);
+		if(tsm){
+			m_ltDisc->setString(tsm->discription.c_str());
+		}else{
+			m_ltDisc->setString("");
+		}
+	}else{
+		m_ltDisc->setString(ConfigManager::sharedConfigManager()->GetConfigS(CCString::createWithFormat("tama_%d",m_iSkilId-16)->getCString()).c_str());
+	}
+
+}
+//////////////////////////////////////////////////////////////////////////
+// <事件处理
+void TOChara::s_press()
+{
+	if(m_bPopup){
+		m_Topop->s_press();
+	}else{
+		switch (m_iPage)
+		{
+		case 1:
+			{
+				if(m_iCurrentEuip<0) m_iCurrentEuip = 4;
+				RefreshEquip((m_iCurrentEuip+1)%5);
+				break;
+			}
+		case 2:
+			{
+				switch (m_iSkilId)
+				{
+				case 3:
+				case 7:
+					break;
+				case 0:
+				case 2:
+				case 4:
+				case 6:
+				case 16:
+				case 17:
+				case 18:
+				case 19:
+				case 20:
+					++m_iSkilId;
+					break;
+				case 21:
+					m_iSkilId = 0;
+					break;
+				case 1:
+					m_iSkilId = 8;
+					break;
+				case 5:
+					m_iSkilId = 11;
+					break;
+				case 12:
+				case 13:
+					m_iSkilId = 2;
+					break;
+				case 15:
+				case 14:
+					m_iSkilId = 6;
+					break;
+				case 8:
+				case 9:
+				case 10:
+				case 11:
+					m_iSkilId += 4;
+					break;
+				default:
+					m_iSkilId = 0;
+					break;
+				}
+				RefreshSkills();
+				m_CurContainer->onHover();
+
+				break;
+			}
+		default:
+			break;
+		}
+
+	}
+
+}
+
+void TOChara::w_press()
+{
+	if(m_bPopup){
+		m_Topop->w_press();
+	}else{
+		switch (m_iPage)
+		{
+		case 1:
+			{
+				if(m_iCurrentEuip<0) m_iCurrentEuip = 5;
+				RefreshEquip((m_iCurrentEuip+4)%5);
+				break;
+			}
+		case 2:
+			{
+				switch (m_iSkilId)
+				{
+				case 0:
+					m_iSkilId = 21;
+					break;
+				case 4:
+				case 16:
+					break;
+				case 1:
+				case 3:
+				case 5:
+				case 7:
+				case 17:
+				case 18:
+				case 19:
+				case 20:
+				case 21:
+					--m_iSkilId;
+					break;
+				case 2:
+					m_iSkilId = 12;
+					break;
+				case 6:
+					m_iSkilId = 15;
+					break;
+				case 8:
+				case 9:
+					m_iSkilId = 1;
+					break;
+				case 11:
+				case 10:
+					m_iSkilId = 5;
+					break;
+				case 12:
+				case 13:
+				case 14:
+				case 15:
+					m_iSkilId -= 4;
+					break;
+				default:
+					m_iSkilId = 7;
+					break;
+				}
+				RefreshSkills();
+				m_CurContainer->onHover();
+				break;
+			}
+		default:
+			break;
+		}
+
+	}
+}
+
+void TOChara::z_press()
+{
+	if(m_bPopup){
+		m_Topop->z_press();
+	}else{
+		switch (m_iPage)
+		{
+		case 1:
+			EquipPop();
+			break;
+		case 2:
+			SkillPopup();
+			break;
+		default:
+			break;
+		}
+
+	}
+}
+
+void TOChara::x_press()
+{
+	if(m_bPopup){
+		m_Topop->x_press();
+	}else{
+		this->setTag(m_iCharaID);
+		activate(this);
 	}
 }
 
@@ -788,6 +939,100 @@ void TOChara::i_press()
 {
 	if(!m_bPopup){
 		RefreshView(3-m_iPage);
+	}
+}
+
+void TOChara::a_press()
+{
+	switch (m_iPage)
+	{
+	case 1:
+		{
+			break;
+		}
+	case 2:
+		{
+			switch (m_iSkilId)
+			{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 8:
+			case 12:
+				break;
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				m_iSkilId -= 4;;
+				break;
+			case 9:
+			case 10:
+			case 11:
+			case 13:
+			case 14:
+			case 15:
+				--m_iSkilId;
+				break;
+			default:
+				m_iSkilId = 15;
+				break;
+			}
+			RefreshSkills();
+			m_CurContainer->onHover();
+
+			break;
+		}
+	default:
+		break;
+	}
+}
+
+void TOChara::d_press()
+{
+	switch (m_iPage)
+	{
+	case 1:
+		{
+			break;
+		}
+	case 2:
+		{
+			switch (m_iSkilId)
+			{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+				m_iSkilId += 4;
+				break;
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 11:
+			case 15:
+				break;
+			case 9:
+			case 10:
+			case 8:
+			case 13:
+			case 14:
+			case 12:
+				++m_iSkilId;
+				break;
+			default:
+				m_iSkilId = 8;
+				break;
+			}
+			RefreshSkills();
+			m_CurContainer->onHover();
+
+			break;
+		}
+	default:
+		break;
 	}
 }
 

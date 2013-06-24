@@ -1,6 +1,8 @@
 #include "packui/TOSkillVA.h"
 #include "Macros.h"
 
+static const char* tlevel[] = {"E","D","C","B","A","S"};
+
 TOSkill::TOSkill()
 {
 	mLT_Name = CCLabelTTF::create("",FNT_UI_TTF,15);
@@ -93,7 +95,7 @@ TOASkill::TOASkill()
 
 	spriteSelected	= CCSprite::create("Images/icon_select.png");
 	spriteSelected->setAnchorPoint(CCPointZero);
-	spriteSelected->setPosition(ccp(-13,0));
+	spriteSelected->setPosition(ccp(-28,0));
 	spriteSelected->setScale(0.8);
 	spriteSelected->setVisible(false);
 	addChild(spriteSelected);
@@ -143,5 +145,63 @@ void TOASkill::setcontent( SkillMeta* sm )
 	}else{
 		mLT_Name->setString("NONE");
 	}
+	onNormal();
+}
+
+TOTama::TOTama()
+{
+	spriteNormal	= NULL;
+
+	spriteHover		= NULL;
+
+	spriteDisable	= NULL;
+
+	spriteSelected	= CCSprite::create("Images/icon_select.png");
+	spriteSelected->setAnchorPoint(CCPointZero);
+	spriteSelected->setPosition(ccp(-15,3));
+	spriteSelected->setScale(0.8);
+	spriteSelected->setVisible(false);
+	addChild(spriteSelected);
+
+	labelAtlas = CCLabelBMFont::create("", FNT_ENG_NUM);
+	labelAtlas->setAnchorPoint(CCPointZero);
+	labelAtlas->setPosition(ccp(100,0));
+	labelAtlas->setColor(COLOUR_NORMAL);
+	this->addChild(labelAtlas,1);
+
+	m_obContentSize.width = 50;
+	m_obContentSize.height = 18;
+
+	m_bIsEnabled = true;
+	scheduleUpdate();
+}
+
+void TOTama::onNormal()
+{
+	Container::onNormal();
+}
+
+void TOTama::onHover()
+{
+	onSelect();
+}
+
+void TOTama::onSelect()
+{
+	m_iState = C_STATE_HOVERD;
+	Container::onSelect();
+}
+
+void TOTama::onDisable()
+{
+	Container::onDisable();
+}
+
+void TOTama::setcontent( int ail )
+{
+	m_iLevel = ail;
+	//CCAssert(ail<6,"ail<6");
+	//CCAssert(ail>-1,"ail>=0");
+	labelAtlas->setString(tlevel[ail]);
 	onNormal();
 }
