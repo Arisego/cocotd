@@ -321,7 +321,7 @@ void TOChara::EquipClick( CCObject* pSender )
 
 bool TOChara::RefreshEquip( int anewi )
 {
-	if(anewi == m_iCurrentEuip) return false;
+	if(anewi == m_iCurrentEuip) return true;
 	m_iCurrentEuip = anewi;
 	for(int i = 0;i<5;++i){
 		if(i!=m_iCurrentEuip) m_vEBtns[i]->onNormal();
@@ -335,6 +335,7 @@ void TOChara::EquipPop()
 	if(m_iCurrentEuip<0) return;
 	if(m_Topop->refresh_ldb(m_iCurrentEuip)){
 		eq_mb->m_bIsEnabled = false;
+		m_Topop->setPosition(ccp(130,25));
 		m_Topop->setVisible(true);
 		m_bPopup = true;
 	}
@@ -401,6 +402,7 @@ void TOChara::EquipChange( int aid )
 
 			f_refresh_cur_data();
 
+			t_e->id = t_newid;
 			t_e->sum	 = t_newsum;
 			t_e->lock	 = t_newlock;
 			g_chara->m_miiEquips[m_iCurrentEuip] = t_e->id;
@@ -668,6 +670,7 @@ void TOChara::SkillChange( int sid )
 			int old_id = g_chara->m_viSkills[m_iSkilId];
 			if(old_id>0){
 				g_chara->m_viSkills.insert(make_pair(old_id,old_id));
+				g_chara->m_viSkills.erase(m_iSkilId);
 			}
 			break;
 		}

@@ -18,7 +18,7 @@ Entiles::Entiles()
 	//test only
 	b_CanMove = true;
 	direc = MS_STOP;
-	stand = MS_STOP;
+	stand = MS_LEFT;
 	b_Dirty = true;
 	b_IsControler = false;
 	b_Re = false;
@@ -32,7 +32,26 @@ void Entiles::initFiles(const char *pszFileName, const CCRect& rect)
 void Entiles::initFiles(const char *pszFileName)
 {
 	CC_SAFE_RELEASE_NULL(m_sprite);
-	m_sprite = CCSprite::createWithSpriteFrameName(pszFileName);
+	m_sprite = CCSprite::createWithSpriteFrameName("blank.png");
+
+	m_sprite->setOpacity(0);
+
+	CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+	CCSpriteBatchNode *sheet = CCSpriteBatchNode::create(CCString::createWithFormat("%s.png",pszFileName)->getCString());
+	cache->addSpriteFramesWithFile(CCString::createWithFormat("%s.plist",pszFileName)->getCString());
+
+	m_animator = CCSpriterX::create(CCString::createWithFormat("%s.SCML",pszFileName)->getCString());
+
+
+	m_animator->setAnchorPoint(ccp(0.5,0.5));
+	m_animator->setPosition(ccp(16,155));
+//	animator->setScale(0.8f);
+//	animator->PlayAnim("Idle");
+
+	sheet->addChild(m_animator);
+
+	m_sprite->addChild(sheet);
+
 	m_sprite->retain();
 	m_sprite->setTag(9);
 	psz = pszFileName;

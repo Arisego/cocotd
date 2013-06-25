@@ -52,8 +52,8 @@ public:
 
 	virtual void ELoad();
 
-	virtual void initFiles(const char *pszFileName, const CCRect& rect);			//Do not use this.
-	virtual void initFiles(const char *pszFileName);
+	//virtual void initFiles(const char *pszFileName, const CCRect& rect);			//Do not use this.
+	//virtual void initFiles(const char *pszFileName);
 
 	//////////////////////////////////////////////////////////////////////////
 	void load_chara_dbsp(Script* sp);

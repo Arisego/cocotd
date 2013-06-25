@@ -23,7 +23,7 @@
 #endif
 
 //Debug Draw on Map
-#define DEBUGDRAW				
+//#define DEBUGDRAW				
 
 //UI Type
 #define CHARA_TD_TYPE 0		//Original

@@ -5,6 +5,8 @@
 
 #define SLOW_ZONE 0.068
 
+
+
 void EPhsics::ELoad(){
 	if(state == 1) 
 		SCTarget(GameManager::sharedLogicCenter()->ml->tm->m_getEntile(m_sTarget.c_str()));
@@ -47,15 +49,19 @@ void EPhsics::lin(){
 			}
 		}
 
-		if(direc != MS_STOP) stand = direc;
-
+		if(direc != MS_STOP){
+			stand = direc;
+			m_animator->PlayAnim(CCString::createWithFormat("paodong_%s",sDirect[direc])->getCString());
+		}else{
+			m_animator->PlayAnim(CCString::createWithFormat("stand_%s",sDirect[stand])->getCString());
+		}
 		float velChangeX = desiredVel.x - vel.x;
 		float velChangeY = desiredVel.y - vel.y;
 		float impulseX = m_body->GetMass() * velChangeX; //disregard time factor
 		float impulseY = m_body->GetMass() * velChangeY;
 		m_body->ApplyLinearImpulse( b2Vec2(impulseX,impulseY), m_body->GetWorldCenter() );
 
-
+	
 		b_Dirty = true;
 	}
 
@@ -167,9 +173,9 @@ void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
 
 			//[FOLLWOINGDEBUG]CCLOG("up:%f",fac);
 			if(fac < SLOW_ZONE){
-				bv = b2Vec2(0,4 * fac);
+				bv = b2Vec2(0,-4 * fac);
 			}else{
-				bv = b2Vec2(0,4);
+				bv = b2Vec2(0,-4);
 			}
 
 		}else if(cur.y > tar.y){
@@ -177,9 +183,9 @@ void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
 			fac =cur.y - tar.y;
 			//[FOLLWOINGDEBUG]CCLOG("down:%f",fac);
 			if(fac < SLOW_ZONE){
-				bv = b2Vec2(0, -4 * fac);
+				bv = b2Vec2(0, 4 * fac);
 			}else{
-				bv = b2Vec2(0,-4);
+				bv = b2Vec2(0,4);
 			}
 		}
 

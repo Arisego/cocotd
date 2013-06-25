@@ -184,6 +184,7 @@ void TOTama::onNormal()
 void TOTama::onHover()
 {
 	onSelect();
+	m_iState = C_STATE_HOVERD;
 }
 
 void TOTama::onSelect()

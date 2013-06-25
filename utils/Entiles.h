@@ -5,6 +5,7 @@
 
 #include "utils/SimControl.h"
 #include "Macros.h"
+#include "CCSpriterX.h"
 
 USING_NS_CC;
 
@@ -12,6 +13,8 @@ USING_NS_CC;
 #define S_WID 0.5
 #define S_HEI 0.25
  
+static const char* sDirect[] = {"left","right","up","down"};
+
 typedef enum{
 	MS_LEFT,
 	MS_RIGHT,
@@ -28,6 +31,7 @@ public:
 	b2Body *m_body;
 	string name,group,psz;
 	CCSprite *m_sprite;
+	CCSpriterX *m_animator;
 
 	bool b_CanMove;
 	MoveDirect direc;

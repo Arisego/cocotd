@@ -23,6 +23,7 @@
 
 #include "tinyxml/tinyxml.h"
 
+using namespace std;
 
 class CCSpriterX;
 
@@ -219,9 +220,12 @@ public:
 	cocos2d::CCSprite *getSprite(int folderId, int fileId);	//TODO:tricks aruond here
 
 	void PlayNext();		//OVER:使用name来调用动画
-	void PlayAnim(const char* name);
-
-
+	void PlayAnim(const char* name, int aiTimes = -1,const char* alast = "");
+	void PlayLast();
+	
+	string msLast;
+	string msCur;
+	int miPlayTimes;
 private:
 
 	std::vector <SCMLHelper::Folder *> mFolders;

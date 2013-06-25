@@ -73,8 +73,10 @@ void TOPopup::ItemBack( CCObject* pSender )
 			if(miFlag>0){
 				m_sEffect = m_ldbEquList->getval("effect",miFlag);
 				CCLOG(">[Effect]:%s",m_sEffect.c_str());
+				tTB_packdown->onNormal();
 			}else{
 				m_sEffect = "";
+				if(m_ldbEquList) m_ldbEquList->cellselect(-1);
 			}
 			break;
 		}
@@ -82,11 +84,17 @@ void TOPopup::ItemBack( CCObject* pSender )
 		{
 			miFlag = ((CCNode*) pSender)->getTag();
 			mTB_confirm->setEnability(true);
+			if(miFlag>0){
+				tTB_packdown->onNormal();
+			}else{
+				if(m_ldbSkilList) m_ldbSkilList->cellselect(-1);
+			}
 			break;
 		}
 	default:
 		break;
 	}
+
 
 }
 
@@ -108,7 +116,8 @@ bool TOPopup::refresh_ldb( int tag )
 			t_sMask.erase(t_sMask.length()-1);
 			CCString* t_csSql = CCString::createWithFormat("select * from equip_list where itemid IN (%s) and position = %d", t_sMask.c_str(), tag);
 
-			if(m_ldbEquList) m_ldbEquList->removeFromParent();
+			if(m_ldbSkilList){m_ldbSkilList->removeFromParent();m_ldbSkilList = NULL;}
+			if(m_ldbEquList) {m_ldbEquList->removeFromParent();m_ldbEquList = NULL;}
 			m_ldbEquList = new ListDBView<TOEquipCell>(miWidth,miHeight - 42, t_csSql->getCString(),t_caEqui, this,menu_selector(TOPopup::ItemBack),2);
 			if(m_ldbEquList->init()){
 				m_ldbEquList->setAnchorPoint(ccp(0,0));
@@ -116,13 +125,14 @@ bool TOPopup::refresh_ldb( int tag )
 				m_ldbEquList->setContentSize(CCSizeMake(miWidth,miHeight - 42));
 				m_ldbEquList->autorelease();
 				addChild(m_ldbEquList);
-
+				if(m_ldbEquList->m_iNumber == 0) mbZeroList = true;
+				else mbZeroList = false;
 			}else{
 				CC_SAFE_RELEASE_NULL(m_ldbEquList);
+				mbZeroList = false;
 			}
 
-			if(m_ldbEquList->m_iNumber == 0) mbZeroList = true;
-			else mbZeroList = false;
+
 
 			setVisible(true);
 			setTouchEnabled(false);
@@ -277,7 +287,8 @@ bool TOPopup::refresh_sks(const char* msk, CCDictionary* mld)
 {
 
 
-	if(m_ldbSkilList) m_ldbSkilList->removeFromParent();
+	if(m_ldbSkilList){m_ldbSkilList->removeFromParent();m_ldbSkilList = NULL;}
+	if(m_ldbEquList) {m_ldbEquList->removeFromParent();m_ldbEquList = NULL;}
 	m_ldbSkilList = new ListDBView<TOSkillCell>(miWidth,miHeight - 42, msk,mld, this,menu_selector(TOPopup::ItemBack),2);
 	if(m_ldbSkilList->init()){
 		m_ldbSkilList->setAnchorPoint(ccp(0,0));
@@ -285,13 +296,15 @@ bool TOPopup::refresh_sks(const char* msk, CCDictionary* mld)
 		m_ldbSkilList->setContentSize(CCSizeMake(miWidth,miHeight - 42));
 		m_ldbSkilList->autorelease();
 		addChild(m_ldbSkilList);
+		if(m_ldbSkilList->m_iNumber == 0) mbZeroList = true;
+		else mbZeroList = false;
 
 	}else{
 		CC_SAFE_RELEASE_NULL(m_ldbSkilList);
+		mbZeroList = false;
 	}
 	
-	if(m_ldbSkilList->m_iNumber == 0) mbZeroList = true;
-	else mbZeroList = false;
+
 
 	setVisible(true);
 	setTouchEnabled(false);

@@ -114,6 +114,10 @@ public:
 	virtual void onSelect();
 	virtual void onDisable();
 
+	virtual bool checkTouch(CCTouch *pTouch){
+		return Container::checkTouch(pTouch);
+	}
+
 	int m_iLevel;
 };
 

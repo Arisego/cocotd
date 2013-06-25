@@ -282,7 +282,7 @@ void BattleMap::f_generateEnemy( int i )
 			t_fij_ecd->load_chara_dbsp((Script*) t_scp->m_caScript->objectAtIndex(0));
 
 
-			t_fij_ecd->psz	=	"grossinis_sister2.png";			//Test Only.
+			t_fij_ecd->psz	=	"sprite/gongbin";			//Test Only. SPX Èë¿Ú
 			t_fij_ecd->pos	=	ccp(10,10);
 			t_fij_ecd->group_id = 0x02;
 			t_fij_ecd->group_mask = 0x01;
@@ -313,7 +313,7 @@ void BattleMap::f_load_chara()
 	t_ec->group_mask = 0x02;
 	t_ec->m_pChara = t_cca;
 	t_ec->name = "chara_1";
-	t_ec->psz  = "grossinis_sister2.png";//t_cca->m_sPsz;												//Whether use the same psz is due to further design.
+	t_ec->psz  = "sprite/gongbin";//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
 
 	m_itemlist->setObject(t_ec,t_ec->name);									//Test: get one and only one.
 }
@@ -350,7 +350,7 @@ do
 	CCDICT_FOREACH(m_itemlist,cde){
 		EChesses* t_ec = (EChesses*) cde->getObject();
 		
-		t_ec->initFiles("grossinis_sister2.png");
+		t_ec->initFiles(t_ec->psz.c_str());
 		CCPoint d = m_getViewc(t_ec->pos);
 
 		t_ec->m_sprite->setAnchorPoint(ccp(0,0));

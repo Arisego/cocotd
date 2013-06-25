@@ -515,9 +515,15 @@ namespace SCMLHelper
 		if (mTimer >= mLength)
 		{
 			mDone = true;
-
-			Restart();			// always looping for now
-
+			if(animato->miPlayTimes < 0){
+				Restart();
+			}else if(animato->miPlayTimes == 0){
+				animato->PlayLast();
+				return;
+			}else{
+				--animato->miPlayTimes;
+				Restart();			// always looping for now
+			}
 		}
         
 		int count = mMainline->GetKeyframeCount();
@@ -739,7 +745,6 @@ CCSpriterX::CCSpriterX()
 {
 	mFolders.reserve(50);
 	mEntities.reserve(50);
-
 }
 
 
@@ -792,9 +797,13 @@ void CCSpriterX::update(float dt)
 //}
 
 
-void CCSpriterX::PlayAnim(const char* name){
+void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
+	if(strcmp(msCur.c_str(),name) == 0) return;
+	
 	Entity *entity = mEntities[mCurrEntity];		//当前4a版只有单entity
+	msCur = name;
 	entity->PlayTarget(name);
+	msLast = alast;
 
 }
 
@@ -908,5 +917,13 @@ bool CCSpriterX::initWithFile(const char *filename)
 	return true;
 
 }
-	
+
+void CCSpriterX::PlayLast()
+{
+	if(msLast.length()>0){
+		PlayAnim(msLast.c_str());
+	}
+}
+
+
 

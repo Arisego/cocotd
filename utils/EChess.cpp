@@ -5,18 +5,18 @@
 
 #define SLOW_ZONE 0
 
-void EChesses::initFiles(const char *pszFileName, const CCRect& rect)
-{
-	m_sprite->initWithFile(pszFileName, rect);
-}
-
-void EChesses::initFiles(const char *pszFileName)
-{
-	CC_SAFE_RELEASE_NULL(m_sprite);
-	m_sprite = CCSprite::createWithSpriteFrameName(pszFileName);
-	m_sprite->retain();
-	psz = pszFileName;
-}
+//void EChesses::initFiles(const char *pszFileName, const CCRect& rect)
+//{
+//	m_sprite->initWithFile(pszFileName, rect);
+//}
+//
+//void EChesses::initFiles(const char *pszFileName)
+//{
+//	CC_SAFE_RELEASE_NULL(m_sprite);
+//	m_sprite = CCSprite::createWithSpriteFrameName(pszFileName);
+//	m_sprite->retain();
+//	psz = pszFileName;
+//}
 
 
 void EChesses::ELoad(){
@@ -61,7 +61,12 @@ void EChesses::lin(){
 			}
 		}
 
-		if(direc != MS_STOP) stand = direc;
+		if(direc != MS_STOP){
+			stand = direc;
+			m_animator->PlayAnim(CCString::createWithFormat("paodong_%s",sDirect[direc])->getCString());
+		}else{
+			m_animator->PlayAnim(CCString::createWithFormat("stand_%s",sDirect[stand])->getCString());
+		}
 
 		float velChangeX = desiredVel.x - vel.x;
 		float velChangeY = desiredVel.y - vel.y;

@@ -26,6 +26,7 @@ private:
 
 	int m_iCurItem, m_iSum;
 	vector<ItemCellData*> m_viItemList;		//For View2Data Link.
+	map<int,int> m_miiId2Idx;
 
 	CCObject*       m_pListener;
 	SEL_MenuHandler    m_pfnSelector;

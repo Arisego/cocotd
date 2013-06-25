@@ -460,7 +460,7 @@ m_debugDraw->SetFlags(flags);
 				m_itemlist->setObject(mte,CCString::createWithFormat("%s_%s",tmp->getstring("name"),mtca->getstring("name"))->getCString());
 				//mte->scheduleUpdate();				//DEC: 统一遍历链表进行更新操作
 				//m_tilemap->
-				mte->m_sprite->retain();
+				//mte->m_sprite->retain();
 				m_ea->addObject(mte);
 				//sheet->
 					addChild(mte->m_sprite,j);

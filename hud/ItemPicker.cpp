@@ -20,11 +20,15 @@ bool ItemPicker::refresh_itemlist(){
 		m_cdItemList = StateCenter::sharedStateCenter()->f_get_itemlist(2);			//group = 2 || WalkMap Item | Usecase = 0b010
 		CC_BREAK_IF(m_cdItemList->count() < 1);
 
+		m_miiId2Idx.clear();
 		//int i = 0;
 		string t_sMask;
 		CCDictElement* pCe = NULL;
+		ItemCellData* ticd = NULL;
 		CCDICT_FOREACH(m_cdItemList,pCe){
-			t_sMask += CCString::createWithFormat("%d,",pCe->getIntKey())->getCString();
+			ticd = (ItemCellData*) pCe->getObject();
+			t_sMask += CCString::createWithFormat("%d,",ticd->type_id)->getCString();
+			m_miiId2Idx[ticd->type_id] = pCe->getIntKey();
 			//m_viItemList.push_back((ItemCellData*) pCe->getObject());
 		}
 
@@ -39,7 +43,7 @@ bool ItemPicker::refresh_itemlist(){
 		for(int i = 0;i<m_iSum;i++){
 			map<string,string> t_ssm = (map<string,string>) vdata.at(i);
 			int item_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
-			ItemCellData* t_icd = (ItemCellData*) m_cdItemList->objectForKey(item_id);
+			ItemCellData* t_icd = (ItemCellData*) m_cdItemList->objectForKey(m_miiId2Idx[item_id]);
 
 			t_icd->name			=	t_ssm.at("name");
 			t_icd->icon_mask	=	t_ssm.at("icon");
@@ -144,7 +148,7 @@ void ItemPicker::onShow()
 	if(a_icd->sum < 1){
 		//m_viItemList.erase(m_viItemList.at(m_iCurItem));			//Reinit the list for further opreation such as add or....
 		m_iCItemID = a_icd->type_id;
-		StateCenter::sharedStateCenter()->f_get_itemlist(2)->removeObjectForKey(m_iCItemID);
+		StateCenter::sharedStateCenter()->f_get_itemlist(2)->removeObjectForKey(m_miiId2Idx[m_iCItemID]);
 		
 		refresh_itemlist();
 		show_item();
