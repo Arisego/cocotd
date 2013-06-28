@@ -565,6 +565,8 @@ void TOChara::InitSaBtns()
 
 void TOChara::ShowSa()
 {
+	m_iSkilId = -1;
+	RefreshSkills();
 	if(mbSP) return;
 	mbSP = true;
 	m_ltName->setString(g_chara->m_sName.c_str());
@@ -611,7 +613,7 @@ void TOChara::TamaClick( CCObject* pSender )
 	Container* tc = (Container*) pSender;
 	int titag = tc->getTag();
 	CCLOG(">[TOCHARA]tama is back:%d",titag);
-	m_iSkilId = titag;
+	m_iSkilId = titag + 16;
 
 	RefreshSkills();
 	m_CurContainer->onHover();
@@ -718,6 +720,8 @@ void TOChara::RefreshSkills()
 	for(;i<22;++i){
 		m_vttSix[i-16]->onNormal();
 	}
+
+	if(m_iSkilId<0) return;
 
 	if(m_iSkilId<4){
 		m_CurContainer = m_vtsWsad[m_iSkilId];

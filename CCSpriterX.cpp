@@ -798,7 +798,10 @@ void CCSpriterX::update(float dt)
 
 
 void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
-	if(strcmp(msCur.c_str(),name) == 0) return;
+	if(strcmp(msCur.c_str(),name) == 0) {
+		CCLog(">[SPX]Duplicate name.");
+		return;
+	}
 	
 	Entity *entity = mEntities[mCurrEntity];		//当前4a版只有单entity
 	msCur = name;
@@ -920,8 +923,13 @@ bool CCSpriterX::initWithFile(const char *filename)
 
 void CCSpriterX::PlayLast()
 {
+	msCur.clear();
 	if(msLast.length()>0){
 		PlayAnim(msLast.c_str());
+	}else{
+		msLast = "stand_left";
+		PlayLast();
+		CCLog(">[SPX]:No Last.");
 	}
 }
 
