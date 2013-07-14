@@ -155,9 +155,53 @@ void TextLayer::menucallback(CCObject* sender)
 
 bool TextLayer::DerLoadImg(Script* ts){	//meta
 	const char* filename = ts->getstring("content");
-	int x = ts->getfloat("x");
-	int y = ts->getfloat("y");
-	int tag = ts->getint("tag");
+	// TO Change: 
+	//	x <标志是否为切换.
+	//  tag <4001左边 4002右边
+
+	int x,y;
+	int tag		= ts->getint("tag");
+	int flag	= ts->getfloat("x");
+
+	int oqa,oqb;
+	if(tag == 4001) {
+		oqa = 255;
+		oqb = 100;
+	}else{
+		oqb = 255;
+		oqa = 100;
+	}
+
+	switch (flag)
+	{
+	case 0:  // 0:change the color;
+		{
+			CCSprite* tcs =(CCSprite*) getChildByTag(4001);
+			if(tcs) tcs->setOpacity(oqa);
+			tcs =(CCSprite*) getChildByTag(4002);
+			if(tcs) tcs->setOpacity(oqb);
+			return true;
+		}		
+	case 1:
+		break;
+	default:
+		break;
+	}
+
+	switch (tag)
+	{
+	case 4001:
+		x = 200;
+		y = 0;
+		break;
+	case 4002:
+		x = 800;
+		y = 0;
+		break;
+	default:
+		break;
+	}
+
 	string name = ts->getstring("name");
 	removeChildByTag(tag);
 
@@ -170,6 +214,22 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	addChild(tmp);
 	TagMap[name] = tag;
 	PathMap[name] = filename;
+
+	//int x = ts->getfloat("x");
+	//int y = ts->getfloat("y");
+	//int tag = ts->getint("tag");
+	//string name = ts->getstring("name");
+	//removeChildByTag(tag);
+
+	//GameManager::sharedLogicCenter()->f_cachetest(filename);		//读入缓存文件，如果文件未缓存而filename不是本地文件，将会出现错误。
+	//CCSprite* tmp = CCSprite::create(filename);
+	//tmp->setPosition(ccp(x,y));
+	//tmp->setAnchorPoint(CCPoint(0.5,0.5));
+	//tmp->setTag(tag);
+	//tmp->setRotation(ts->getfloat("angel"));
+	//addChild(tmp);
+	//TagMap[name] = tag;
+	//PathMap[name] = filename;
 
 	return true;
 }
