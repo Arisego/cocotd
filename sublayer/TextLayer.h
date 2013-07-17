@@ -56,7 +56,7 @@ public:
 	CCClippingNode* cpn_textcn;
 	CCSpriteBatchNode*	cns_blocks;
 
-	CCLayerColor* layer1;
+	CCSprite* m_sBox;
 	MouseMenu* menu;
 
 	void FadeText(CCObject* sender);

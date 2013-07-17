@@ -9,6 +9,7 @@
 #define TEXTLAYER_PRIO_TOUCH 2
 #define AUTO_ACTION_TAG 1001
 #define SKIP_TIME 0.1
+#define FONT_WIDTH 26			// [AT]: If you change this value remember to change the size of "Images/block.png" to FW + 1.
 
 using namespace std;
 
@@ -83,17 +84,17 @@ void TextLayer::onEnter()
 	s = CCDirector::sharedDirector()->getWinSize();
 	m_bHasFinal = false;
 
-	m_height = 200;
-	m_avatarwidth = m_height;
-	m_textwidth = s.width - m_avatarwidth;
-	layer1 = CCLayerColor::create( ccc4(255, 255, 0, 80), 0.99f * s.width, m_height);
-	layer1->setAnchorPoint(CCPoint(0.5,0));
-	layer1->setPosition(ccp(s.width/2,0));
-	layer1->ignoreAnchorPointForPosition(false);
-	addChild(layer1, 1);
+	m_height = 130;
+	m_avatarwidth = 145;
+	m_textwidth = s.width - m_avatarwidth - 50;
+	m_sBox = CCSprite::create("Images/ui_avg_box.png");
+	m_sBox->setAnchorPoint(CCPoint(0.5,0));
+	m_sBox->setPosition(ccp(s.width/2,0));
+	m_sBox->ignoreAnchorPointForPosition(false);
+	addChild(m_sBox, 1);
 
-	m_Label = CCLabelTTF::create("", FNT_AVG_TTF, 24, CCSize(m_textwidth, m_height), kCCTextAlignmentLeft);
-	mSingeWidth = 24;
+	m_Label = CCLabelTTF::create("", FNT_AVG_TTF, FONT_WIDTH, CCSize(m_textwidth, m_height), kCCTextAlignmentLeft);
+	mSingeWidth = FONT_WIDTH;
 	m_Label->setPosition(CCPointZero);
 	m_Label->setAnchorPoint(CCPointZero);
 
@@ -102,13 +103,13 @@ void TextLayer::onEnter()
 	//m_Label->setColor(ccc3(0,0,0));
 	cpn_textcn = CCClippingNode::create();
 	cpn_textcn->setContentSize(CCSize(m_textwidth, m_height));
-	cpn_textcn->setPosition( ccp((s.width + m_avatarwidth )/ 2, m_height) );
+	cpn_textcn->setPosition( ccp((s.width + m_avatarwidth -50)/ 2, m_height) );
 	cpn_textcn->setAnchorPoint(CCPoint(0.5,1));
 	cpn_textcn->addChild(m_Label);
 	cpn_textcn->setStencil(cns_blocks);
 	//cpn_textcn->setInverted(true);
 	
-	layer1->addChild(cpn_textcn);
+	m_sBox->addChild(cpn_textcn);
 
 
 
@@ -127,9 +128,8 @@ void TextLayer::onEnter()
 	menu = MouseMenu::menuWithItems(item4, item5, item6, NULL);;
 	menu->alignItemsHorizontallyWithPadding(2);
 
-	menu->setPosition(ccp((s.width + m_avatarwidth )/ 2, m_height + 24));
+	menu->setPosition(ccp((s.width + m_avatarwidth )/ 2, m_height + FONT_WIDTH));
 	menu->setAnchorPoint(CCPoint(0.5,0));
-	
 	
 	addChild(menu,1);
 	BYLayerModal::onEnter();
@@ -347,7 +347,7 @@ void TextLayer::FadeText(CCObject* sender){
 	m_bTouchProt = false;
 	m_bIsNoFade = !m_bIsNoFade;
 	setVisible(m_bIsNoFade);
-	layer1->setVisible(m_bIsNoFade);
+	m_sBox->setVisible(m_bIsNoFade);
 	menu->setVisible(m_bIsNoFade);
 	//AT:将不会暂停正在运行的立绘的动作。因为需求比较小而遍历的成本相对较高。
 	if(!m_bIsNoFade) pauseSchedulerAndActions();
@@ -388,7 +388,7 @@ void TextLayer::StreamText(float dt){
 		{
 		case(0):
 			{
-				m_fBlockY -= 24;				//CHV:The height of one line = 24;
+				m_fBlockY -= FONT_WIDTH;				//CHV:The height of one line = FONT_WIDTH;
 				mLineCount = 0;
 				StreamText(0);
 				return;
@@ -414,7 +414,7 @@ void TextLayer::StreamText(float dt){
 	}else{
 		CCSprite* t_cs = CCSprite::create("Images/block.png");
 		t_cs->setAnchorPoint(ccp(1,1));
-		t_cs->setPosition(ccp(mLineCount+24,m_fBlockY));
+		t_cs->setPosition(ccp(mLineCount+FONT_WIDTH,m_fBlockY));
 		cns_blocks->addChild(t_cs);
 		//CCLOG("We should stopstream.");
 		StopStream();
@@ -428,34 +428,34 @@ void TextLayer::FormText(){
 		if(mLineCount+mSingeWidth>m_textwidth){
 			mLineCount = 0;
 			++m_iLine;
-			//lines += '\n';
+			lines += '\n\r';
 			vi_text.push_back(0);
 		}
 
 		char t = fulline[i];
 		if((t&0xE0) == 0xE0){	//3byte
-			//lines += t;
-			//lines += fulline[i+1];
-			//lines += fulline[i+2];
+			lines += t;
+			lines += fulline[i+1];
+			lines += fulline[i+2];
 			i += 3;
 			mLineCount += mSingeWidth;
 			vi_text.push_back(3);
 		}else if((t&0xC0) == 0xC0){//2byte
-			//lines += t;
-			//lines += fulline[i+1];
+			lines += t;
+			lines += fulline[i+1];
 			i += 2;
 			mLineCount += mSingeWidth;
 			vi_text.push_back(2);
 		}else{//1byte
-			//lines += t;
+			lines += t;
 			i++;
 			mLineCount += mSingeWidth/2;
 			vi_text.push_back(1);
 		}
 		m_iTextcount++;
 	}
-	lines = fulline;
-	CCLOG("forming text:%s",lines.c_str());
+	//lines = fulline;
+	CCLOG("forming text:\n%s",lines.c_str());
 }
 
 void TextLayer::ShowText(const char* line){
@@ -478,9 +478,9 @@ void TextLayer::ShowText(const char* line){
 	m_fBlockY = m_height;
 
 	if(m_bIsSkip){
-		FlushText(line,true);
+		FlushText(lines.c_str(),true);
 	}else{
-		FlushText(line,false);
+		FlushText(lines.c_str(),false);
 		this->schedule( schedule_selector(TextLayer::StreamText),m_fTText);		//在这里配置文字间隔
 	}
 }

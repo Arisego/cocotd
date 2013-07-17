@@ -515,7 +515,7 @@ namespace SCMLHelper
 		if (mTimer >= mLength)
 		{
 			mDone = true;
-			CCLog(">[spx]miPlayTimes:%d",animato->miPlayTimes);
+			//[SPX]CCLOG(">[spx]miPlayTimes:%d",animato->miPlayTimes);
 			if(animato->miPlayTimes < 0){
 				Restart();
 			}else if(animato->miPlayTimes == 0){
@@ -747,7 +747,7 @@ CCSpriterX::CCSpriterX()
 	mFolders.reserve(50);
 	mEntities.reserve(50);
 	miPlayTimes = -1;
-	CCLog("<Spx init.");
+	//[SPX]CCLOG("<Spx init.");
 }
 
 
@@ -763,7 +763,7 @@ CCSpriterX::~CCSpriterX()
 
 	mEntities.clear();
 	mFolders.clear();
-	CCLog("<Spx dec");
+	//[SPX]CCLOG("<Spx dec");
 	//mEntities::iterator
 }
 
@@ -771,7 +771,7 @@ CCSpriterX::~CCSpriterX()
 CCSpriterX *CCSpriterX::create(const char *filename)
 {
 	CCSpriterX *animator = new CCSpriterX();
-	CCLog("<new spx");
+	//[SPX]CCLOG("<new spx");
 	if (animator && animator->initWithFile(filename))
 	{
 		animator->autorelease();
@@ -804,7 +804,7 @@ void CCSpriterX::update(float dt)
 
 void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
 	if(strcmp(msCur.c_str(),name) == 0) {
-		//CCLog(">[SPX]Duplicate name.");
+		////[SPX]CCLOG(">[SPX]Duplicate name.");
 		return;
 	}
 	miPlayTimes = aiTimes;
@@ -812,13 +812,13 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
 	msCur = name;
 	entity->PlayTarget(name);
 	msLast = alast;
-	CCLog(">Coding Last:%s",msLast.c_str());
+	//[SPX]CCLOG(">Coding Last:%s",msLast.c_str());
 
 }
 
 void CCSpriterX::PlayNext()
 {
-	CCLog(">[Spx]Play Next()");
+	//[SPX]CCLOG(">[Spx]Play Next()");
 	Entity *entity = mEntities[mCurrEntity];
 	entity->NextAnimation();
 
@@ -936,7 +936,7 @@ void CCSpriterX::PlayLast()
 	}else{
 		msLast = "stand_left";
 		PlayLast();
-		CCLog(">[SPX]:No Last.");
+		//[SPX]CCLOG(">[SPX]:No Last.");
 	}
 }
 
