@@ -16,7 +16,8 @@
 
 
 #define SELTAG 1010
-
+#define FRETAIN CCCallFunc::create(this,callfunc_selector(GameScene::FlagRetain))
+#define FRELEASE CCCallFunc::create(this,callfunc_selector(GameScene::FlagRelease))
 
 using namespace cocos2d;
 
@@ -400,6 +401,7 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			f_initover();	
 			m_StageState = 3;
 			unscheduleUpdate();
+			m_flag = 0;
 			break;
 		}
 
@@ -412,6 +414,10 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			}
 			break;
 			//unschedule(update);
+		}
+	case(4):			//4 --> flag lock.
+		{
+			break;
 		}
 	default:
 		{
@@ -677,6 +683,28 @@ void GameScene::DerChange(Script* s){
 	case 8://play bgm
 		{
 			SoundManager::sharedSoundManager()->PlayMusic(s->getstring("path"));
+			break;
+		}
+	case 9:		// <cg的移动等放到这里
+		{
+			if(!BgImg) return;
+			switch (s->getint("val"))
+			{
+			case 0:
+				{
+					m_flag = 0;
+					float x = s->getfloat("x");
+					float y = s->getfloat("y");
+					float t = s->getfloat("t");
+					BgImg->runAction(CCSequence::create(FRETAIN,CCMoveBy::create(t,ccp(x,y)),FRELEASE,NULL));
+					break;
+				}
+			default:
+				break;
+			}
+
+
+			break;
 		}
 	}
 }
@@ -717,6 +745,7 @@ void GameScene::e_act(){
 
 void GameScene::e_gonext(){
 	//CCLOG("Go next being called!!!!!!");
+	if(m_StageState == 4) return;
 	switch(e_State){
 	case 0:
 		{
@@ -760,8 +789,20 @@ void GameScene::e_jump(int j){
 		}
 
 	}
-
-
-
 	//CCLOG("Jump!:%d",j);
+}
+
+// Effect Meta must control the update by them self.
+void GameScene::FlagRelease(){
+	--m_flag;
+	if(m_flag<1) {
+		m_StageState = 3;
+		e_gonext();
+	}
+	
+}
+
+void GameScene::FlagRetain(){
+	m_StageState = 4;
+	++m_flag;
 }

@@ -39,8 +39,9 @@ private:
 	int m_IScriptSum;
 	ScriptDer* t_sd;
 	
-
-
+	int m_flag;			// Flag for effect lock.
+	void FlagRetain();
+	void FlagRelease();
 
 public:
 	TextLayer* te;
