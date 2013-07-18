@@ -161,6 +161,13 @@ void ALSingle::stopBackgroundMusic(){
 	alSourceStop(bgm_player);
 }
 
+void ALSingle::StopEffect(const char* pszFilePath){
+	ALuint t;
+	t = EffectList[pszFilePath];
+	if(t) alSourceStop(t);
+	else EffectList.erase(pszFilePath);
+}
+
 void ALSingle::playEffect(const char* pszFilePath){		//播放Effect，默认行为：去除前一个相同音效并播放
 	ALint i;
 	ALuint t;

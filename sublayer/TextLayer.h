@@ -20,6 +20,7 @@ private:
 	void update(float dt);
 	float m_timer;
 	CCLabelTTF* m_Label;
+	CCLabelBMFont* m_Name;
 	int cur,sum;
 	CCSize s;
 	float mSingeWidth,mLineCount;
@@ -45,7 +46,7 @@ public:
 
 	virtual void onEnter();
 
-	void ShowText(const char* line);
+	void ShowText(const char* line, const char* name);
 	void FlushText(const char* line,bool dst = false);
 	void StreamText(float dt);
 

@@ -52,6 +52,7 @@ public:
 
 	void stopBackgroundMusic();
 	void playEffect(const char* pszFilePath);
+	void StopEffect(const char* pszFilePath);
 
 	void SetListenervalues()
 	{

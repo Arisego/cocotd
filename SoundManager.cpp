@@ -1,5 +1,5 @@
 #include "cocos2d.h"
-#include "SimpleAudioEngine.h"
+//#include "SimpleAudioEngine.h"
 
 #include "GameManager.h"
 #include "SoundManager.h"
@@ -106,3 +106,15 @@ void SoundManager::PlayHitSFX()
 
 }
 
+void SoundManager::PlaySound( const char* path )
+{
+	if(strlen(path)<1) return;
+	ALSingle *audioEngine = ALSingle::sharedALSingle();
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
+}
+
+void SoundManager::StopSound(const char* path){
+	if(strlen(path)<1) return;
+	ALSingle *audioEngine = ALSingle::sharedALSingle();
+	audioEngine->StopEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
+}

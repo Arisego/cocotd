@@ -17,6 +17,8 @@ public:
 	void PlayLaserSFX();
 	void PlayHitSFX();
 	void update(float dt);
+	void PlaySound(const char* path);
+	void StopSound(const char* path);
 
 protected:
 	SoundManager();

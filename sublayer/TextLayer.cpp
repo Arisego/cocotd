@@ -111,7 +111,11 @@ void TextLayer::onEnter()
 	
 	m_sBox->addChild(cpn_textcn);
 
-
+	m_Name = CCLabelBMFont::create("",FNT_CHN,300);
+	m_Name->setAnchorPoint(CCPointZero);
+	m_Name->setPosition(ccp(60,130));
+	//m_Name->setColor(ccWHITE);
+	addChild(m_Name,1);
 
 	CCMenuItemFont *item4 = CCMenuItemFont::create("Fade", this, menu_selector(TextLayer::FadeText) );
 	item4->setFontSizeObj(20);
@@ -163,23 +167,18 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	int tag		= ts->getint("tag");
 	int flag	= ts->getfloat("x");
 
-	int oqa,oqb;
-	if(tag == 4001) {
-		oqa = 255;
-		oqb = 100;
-	}else{
-		oqb = 255;
-		oqa = 100;
-	}
+	static int last = 0;
 
 	switch (flag)
 	{
 	case 0:  // 0:change the color;
 		{
-			CCSprite* tcs =(CCSprite*) getChildByTag(4001);
-			if(tcs) tcs->setOpacity(oqa);
-			tcs =(CCSprite*) getChildByTag(4002);
-			if(tcs) tcs->setOpacity(oqb);
+			CCSprite* tcs =(CCSprite*) getChildByTag(last);
+			if(tcs) tcs->setOpacity(200);
+			tcs =(CCSprite*) getChildByTag(tag);
+			if(tcs) tcs->setOpacity(255);
+
+			last = tag;
 			return true;
 		}		
 	case 1:
@@ -188,19 +187,8 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 		break;
 	}
 
-	switch (tag)
-	{
-	case 4001:
-		x = 200;
-		y = 0;
-		break;
-	case 4002:
-		x = 800;
-		y = 0;
-		break;
-	default:
-		break;
-	}
+	x = ts->getfloat("x");
+	y = 100;
 
 	string name = ts->getstring("name");
 	removeChildByTag(tag);
@@ -211,6 +199,7 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	tmp->setAnchorPoint(CCPoint(0.5,0.5));
 	tmp->setTag(tag);
 	tmp->setRotation(ts->getfloat("angel"));
+	tmp->setOpacity(200);									// Change default to No. If more is need, change the x flag.
 	addChild(tmp);
 	TagMap[name] = tag;
 	PathMap[name] = filename;
@@ -425,15 +414,22 @@ void TextLayer::StreamText(float dt){
 void TextLayer::FormText(){
 	for(int i = 0; i< sum;)
 	{	
+		
 		if(mLineCount+mSingeWidth>m_textwidth){
 			mLineCount = 0;
 			++m_iLine;
 			lines += '\n\r';
 			vi_text.push_back(0);
 		}
-
 		char t = fulline[i];
-		if((t&0xE0) == 0xE0){	//3byte
+		if(t=='\n'){
+			mLineCount = 0;
+			++m_iLine;
+			++i;
+			lines += '\n\r';
+			vi_text.push_back(0);
+			continue;
+		} else if((t&0xE0) == 0xE0){	//3byte
 			lines += t;
 			lines += fulline[i+1];
 			lines += fulline[i+2];
@@ -458,7 +454,9 @@ void TextLayer::FormText(){
 	CCLOG("forming text:\n%s",lines.c_str());
 }
 
-void TextLayer::ShowText(const char* line){
+void TextLayer::ShowText(const char* line, const char* name){
+
+	m_Name->setString(name);
 
 	cur = 0;
 	m_iTextcount = 0;
@@ -469,6 +467,7 @@ void TextLayer::ShowText(const char* line){
 	vi_text.clear();
 	m_iLine = 0;
 	FormText();
+
 	m_bIsShownOver = false;
 	cns_blocks->removeAllChildren();
 	cpn_textcn->setInverted(false);

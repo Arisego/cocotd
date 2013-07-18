@@ -224,9 +224,9 @@ void GameScene::f_initover(){
 
 
 	//从这里开始展开textlayer
-	ImageInfo *img = (ImageInfo *) m_pImages->objectForKey("Images/background.png");
-	CCTextureCache::sharedTextureCache()->addUIImage(img->image,"Images/background.png");
-	m_pImages->removeObjectForKey("Images/background.png");
+	//ImageInfo *img = (ImageInfo *) m_pImages->objectForKey("Images/background.png");
+	//CCTextureCache::sharedTextureCache()->addUIImage(img->image,"Images/background.png");
+	//m_pImages->removeObjectForKey("Images/background.png");
 
 	//背景层
 	bg = CCLayer::create();
@@ -281,7 +281,6 @@ void GameScene::f_initover(){
 		m_bLoadProtect = true;
 
 	}else{
-		SoundManager::sharedSoundManager()->PlayMusic("sound/1.ogg");
 
 		e_update(0);
 		e_act();
@@ -536,7 +535,11 @@ void GameScene::e_handlecurs(Script* s){
 		{
 		case sShowText:
 			{
-				te->ShowText(tmp->getstring("content"));
+				te->ShowText(tmp->getstring("content"),tmp->getstring("name"));
+				static string slatst = "";
+				ALSingle::sharedALSingle()->StopEffect(slatst.c_str());
+				slatst = tmp->getstring("audio");
+				SoundManager::sharedSoundManager()->PlaySound(slatst.c_str());
 				break;
 			}
 		case sSelect:
@@ -589,7 +592,6 @@ void GameScene::addBackImg(){
 	if(m_sBgi.length()<1) return;
 	f_cachetest(m_sBgi.c_str());
 	BgImg = CCSprite::create(m_sBgi.c_str());
-	BgImg->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
 	bg->addChild(BgImg);
 }
 
@@ -606,7 +608,9 @@ void GameScene::DerChange(Script* s){
 			}
 			m_sBgi = s->getstring("content");
 			addBackImg();
-			
+			BgImg->setAnchorPoint(CCPointZero);
+			BgImg->setPosition(ccp(s->getfloat("x"), s->getfloat("y")));
+
 			break;
 		}
 	case 1:  //清除背景
@@ -669,6 +673,10 @@ void GameScene::DerChange(Script* s){
 			}
 	*/		
 			break;
+		}
+	case 8://play bgm
+		{
+			SoundManager::sharedSoundManager()->PlayMusic(s->getstring("path"));
 		}
 	}
 }
