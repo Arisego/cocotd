@@ -63,8 +63,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #endif
 	
     // turn on display FPS
-    pDirector->setDisplayStats(true);
-
+#if (COCOS2D_DEBUG == 1)
+	pDirector->setDisplayStats(true);
+#endif
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
 

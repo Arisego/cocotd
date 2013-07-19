@@ -415,10 +415,6 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			break;
 			//unschedule(update);
 		}
-	case(4):			//4 --> flag lock.
-		{
-			break;
-		}
 	default:
 		{
 			//CCLOG("!!!!!!!!!!!Unkonwn stage state.");
@@ -543,7 +539,7 @@ void GameScene::e_handlecurs(Script* s){
 			{
 				te->ShowText(tmp->getstring("content"),tmp->getstring("name"));
 				static string slatst = "";
-				ALSingle::sharedALSingle()->StopEffect(slatst.c_str());
+				SoundManager::sharedSoundManager()->StopSound(slatst.c_str());
 				slatst = tmp->getstring("audio");
 				SoundManager::sharedSoundManager()->PlaySound(slatst.c_str());
 				break;
@@ -702,8 +698,13 @@ void GameScene::DerChange(Script* s){
 			default:
 				break;
 			}
-
-
+			break;
+		}
+	case 10: //Back
+		{
+			this->PreQuit();
+			GameManager::sharedGameManager()->runSceneWithId(GameManager::SceneId::SCENE_MENU);
+			
 			break;
 		}
 	}
@@ -745,7 +746,7 @@ void GameScene::e_act(){
 
 void GameScene::e_gonext(){
 	//CCLOG("Go next being called!!!!!!");
-	if(m_StageState == 4) return;
+	if(m_flag>0) return;
 	switch(e_State){
 	case 0:
 		{
@@ -796,13 +797,11 @@ void GameScene::e_jump(int j){
 void GameScene::FlagRelease(){
 	--m_flag;
 	if(m_flag<1) {
-		m_StageState = 3;
 		e_gonext();
 	}
 	
 }
 
 void GameScene::FlagRetain(){
-	m_StageState = 4;
 	++m_flag;
 }

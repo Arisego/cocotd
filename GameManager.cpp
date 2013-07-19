@@ -160,7 +160,7 @@ void GameManager::runSceneWithId(SceneId id)
 	{
 		CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames();
 		CCTextureCache::sharedTextureCache()->removeAllTextures();
-		ALSingle::sharedALSingle()->KillALLoadedData();
+		ALSingle::sharedALSingle()->KillALData();
 		
 
 		//mdl->noConfig(0);
@@ -175,7 +175,7 @@ void GameManager::runSceneWithId(SceneId id)
 			CCDirector::sharedDirector()->runWithScene(newScene);
 		else
 		{
-			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::transitionWithDuration(0.1f, newScene));
+			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::transitionWithDuration(0.5f, newScene));
 
 		}
 		

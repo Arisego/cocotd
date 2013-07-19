@@ -164,8 +164,10 @@ void ALSingle::stopBackgroundMusic(){
 void ALSingle::StopEffect(const char* pszFilePath){
 	ALuint t;
 	t = EffectList[pszFilePath];
-	if(t) alSourceStop(t);
-	else EffectList.erase(pszFilePath);
+	if(t) 
+		alSourceStop(t);
+	else 
+		EffectList.erase(pszFilePath);
 }
 
 void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³ýÇ°Ò»¸öÏàÍ¬ÒôÐ§²¢²¥·Å
@@ -173,8 +175,9 @@ void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³
 	ALuint t;
 	bool iner = false;
 	int c = 0;
-
+	CCLOG(">[ALMIXBUG]:Begin Play...|%s",pszFilePath);
 	t = EffectList[pszFilePath];
+	CCLOG(">[ALMIXBUG]:Tring to get buffered source...|%d",t);
 	if(!t)
 	{
 		for (vector<ALuint>::iterator iter = Sources.begin(); iter != Sources.end(); ++iter)
@@ -185,6 +188,7 @@ void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³
 			if(i == AL_STOPPED) {
 				iner = true;
 				t = tmp;
+				CCLOG(">[ALMIXBUG]:Find a empty source...|%d",t);
 				break;
 			}
 		}
@@ -192,10 +196,12 @@ void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³
 		if(c>NUM_EFFECT) {
 			t = Sources[0];
 			alSourceStop(t);
+			CCLOG(">[ALMIXBUG]:No empty,get the first one and stop it...|%d",t);
 		}
 		if(!iner){
 			alGenSources(1,&t);
 			Sources.push_back(t);
+			CCLOG(">[ALMIXBUG]:Generate a new source,empty...|%d",t);
 		}
 
 		
@@ -203,7 +209,9 @@ void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³
 
 	alDeleteSources(1,&t);
 	alGenSources(1,&t);
+	
 	ALuint buffer = GetLoadedALBuffer(pszFilePath);
+	CCLOG(">[ALMIXBUG]:Ready for play...|%d,buf:%d",t,buffer);
 
 	alSourcei (t, AL_BUFFER, buffer );
 	alSourcef (t, AL_PITCH, 1.0 );

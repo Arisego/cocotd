@@ -511,15 +511,18 @@ private:
 
 		for(vector<string>::iterator iter = LoadedFiles.begin(); iter != LoadedFiles.end(); ++iter, count++)
 		{
-			if(!(*iter).compare(path))
+			if(!(*iter).compare(path)){
+				CCLOG(">Buffered Buffer:%d",Buffers[count]);
 				return Buffers[count];
+			}
+				
 		} 
 		buffer = LoadALBuffer(path); 
 
-
+		CCLOG(">Read buffer&Push to List:%d,%s",buffer,path.c_str());
 		// 添加缓冲区到列表，记录他已添加.
 		Buffers.push_back(buffer); 
-		LoadedFiles.push_back(path); 
+		LoadedFiles.push_back(path.c_str()); 
 
 
 		return buffer;
@@ -549,7 +552,7 @@ private:
 		Sources.push_back(source); 
 		return source;
 	}
-public:
+private:
 	void KillALLoadedData()
 	{
 		LoadedFiles.clear();
