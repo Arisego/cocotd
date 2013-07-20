@@ -2,6 +2,7 @@
 
 #include "GameManager.h"
 #include "StateCenter.h"
+#include "SoundManager.h"
 
 #include "utils/MouseMenu.h"
 
@@ -12,6 +13,8 @@
 #define FONT_WIDTH 26			// [AT]: If you change this value remember to change the size of "Images/block.png" to FW + 1.
 
 using namespace std;
+
+static const char* tBtnString[] = {"AUTO","SKIP","SYS","SAVE","LOAD","LOG","HIDE"};
 
 CCDictionary* TextLayer::lockstate = NULL;
 
@@ -79,6 +82,7 @@ void TextLayer::onEnter()
 {
 	lockstate	=	NULL;
 
+
 	TagMap.clear();
 	PathMap.clear();
 	s = CCDirector::sharedDirector()->getWinSize();
@@ -117,29 +121,102 @@ void TextLayer::onEnter()
 	//m_Name->setColor(ccWHITE);
 	addChild(m_Name,1);
 
-	CCMenuItemFont *item4 = CCMenuItemFont::create("Fade", this, menu_selector(TextLayer::FadeText) );
-	item4->setFontSizeObj(20);
-	item4->setFontName("Marker Felt");
-
-	CCMenuItemFont *item5 = CCMenuItemFont::create("Auto", this, menu_selector(TextLayer::StartAuto) );
-	item5->setFontSizeObj(20);
-	item5->setFontName("Marker Felt");
-
-	CCMenuItemFont *item6 = CCMenuItemFont::create("Skip", this, menu_selector(TextLayer::StartSkip) );
-	item6->setFontSizeObj(20);
-	item6->setFontName("Marker Felt");
-
-	menu = MouseMenu::menuWithItems(item4, item5, item6, NULL);;
-	menu->alignItemsHorizontallyWithPadding(2);
-
-	menu->setPosition(ccp((s.width + m_avatarwidth )/ 2, m_height + FONT_WIDTH));
-	menu->setAnchorPoint(CCPoint(0.5,0));
+	//Prepare for menu view.
+	mvBtns.clear();
+	float t_left = 870;
+	float t_bottom = 10;
 	
-	addChild(menu,1);
+	// auto skip save load log hid
+	TlBtn* tb_auto;
+	for(int i = 0;i<7;++i){
+		tb_auto = new TlBtn();
+		tb_auto->setAnchorPoint(CCPointZero);
+		tb_auto->setPosition(ccp(t_left,t_bottom));
+		tb_auto->setTag(i);
+		tb_auto->setstring(tBtnString[i]);
+		tb_auto->setactivator(this,menu_selector(TextLayer::tlbback));
+		mvBtns.push_back(tb_auto);
+		addChild(tb_auto);
+		t_left += 45;
+	}
+
+
+	//CCMenuItemFont *item4 = CCMenuItemFont::create("Fade", this, menu_selector(TextLayer::FadeText) );
+	//item4->setFontSizeObj(20);
+	//item4->setFontName("Marker Felt");
+
+	//CCMenuItemFont *item5 = CCMenuItemFont::create("Auto", this, menu_selector(TextLayer::StartAuto) );
+	//item5->setFontSizeObj(20);
+	//item5->setFontName("Marker Felt");
+
+	//CCMenuItemFont *item6 = CCMenuItemFont::create("Skip", this, menu_selector(TextLayer::StartSkip) );
+	//item6->setFontSizeObj(20);
+	//item6->setFontName("Marker Felt");
+
+	//menu = MouseMenu::menuWithItems(item4, item5, item6, NULL);;
+	//menu->alignItemsHorizontallyWithPadding(2);
+
+	//menu->setPosition(ccp((s.width + m_avatarwidth )/ 2, m_height + FONT_WIDTH));
+	//menu->setAnchorPoint(CCPoint(0.5,0));
+	//
+	//addChild(menu,1);
 	BYLayerModal::onEnter();
 	
 	
 }
+
+//static const char* tBtnString[] = {"AUTO","SKIP","SYS","SAVE","LOAD","LOG","HIDE"};
+void TextLayer::tlbback( CCObject* sender )
+{
+	TlBtn* ttlbtn = (TlBtn*) sender;
+	int tag = ttlbtn->getTag();
+	switch (tag)
+	{
+	case 0:
+		{
+			StartAuto(sender);
+			if(m_bIsAuto) ttlbtn->onSelect();
+			else ttlbtn->onNormal();
+			break;
+		}
+	case 1:
+		{
+			StartSkip(sender);
+			if(m_bIsSkip) ttlbtn->onSelect();
+			else ttlbtn->onNormal();
+			break;
+		}
+	case 2:
+		{
+			GameManager::sharedGameManager()->goConfig();
+			ttlbtn->onNormal();
+			break;
+		}
+	case 3:
+		{
+			 GameManager::sharedGameManager()->preConfig(0x1f,0x08,0);
+			 ttlbtn->onNormal();
+			 break;
+		}
+	case 4:
+		{
+			GameManager::sharedGameManager()->preConfig(0x1f,0x08,1);
+			ttlbtn->onNormal();
+			break;
+		}
+	case 6:
+		{
+			FadeText(sender);
+			ttlbtn->onNormal();
+			SoundManager::sharedSoundManager()->PlayHitSFX();
+			break;
+		}
+	default:
+		CCLOG(">[GS]Tag error, tlb mis.");
+		break;
+	}
+}
+
 
 void TextLayer::menucallback(CCObject* sender)
 {
@@ -200,7 +277,7 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	tmp->setTag(tag);
 	tmp->setRotation(ts->getfloat("angel"));
 	tmp->setOpacity(200);									// Change default to No. If more is need, change the x flag.
-	addChild(tmp);
+	addChild(tmp,ts->getint("zorder"));
 	TagMap[name] = tag;
 	PathMap[name] = filename;
 

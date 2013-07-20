@@ -29,7 +29,7 @@ typedef enum
 	tLyCG,
 	tLyText,
 	tLyMovie,
-	tLyMod
+	tLyMask
 }LayerTag;
 
 CCDictionary* Imgstack = NULL;
@@ -232,6 +232,7 @@ void GameScene::f_initover(){
 	//±³¾°²ã
 	bg = CCLayer::create();
 	BgImg = NULL;
+	ms_Mask = NULL;
 	this->addChild(bg,tLyCG);
 	
 
@@ -706,6 +707,34 @@ void GameScene::DerChange(Script* s){
 			GameManager::sharedGameManager()->runSceneWithId(GameManager::SceneId::SCENE_MENU);
 			
 			break;
+		}
+	case 11:	//Mask for all.
+		{
+			CCLOG(">[GS]Mask action prepare.");
+			switch (s->getint("val"))
+			{
+			case 0:			//fade in [black] mask.
+				{
+					if(!ms_Mask){					
+						ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
+						addChild(ms_Mask,tLyMask);
+					}
+					ms_Mask->runAction(CCSequence::create(FRETAIN,CCFadeIn::create(s->getfloat("time")),FRELEASE,NULL));
+					break;
+				}
+			case 1:			//face out [black] mask.
+				{
+					if(!ms_Mask){					
+						//ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
+						//addChild(ms_Mask,tLyMask);
+						return;
+					}
+					ms_Mask->runAction(CCSequence::create(FRETAIN,CCFadeOut::create(s->getfloat("time")),FRELEASE,NULL));
+					break;
+				}
+			default:
+				break;
+			}
 		}
 	}
 }

@@ -89,8 +89,10 @@ public:
 
 	CCLayer* bg;
 	MovieLayer* tMovie;
-	ModelLayer* tMod;
 	CCSprite* BgImg;
+
+	CCLayerColor* ms_Mask;
+
 	void DerChange(Script* s);
 
 	CCImage* snapshot;

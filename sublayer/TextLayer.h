@@ -8,6 +8,7 @@
 #include "utils/MouseMenu.h"
 #include "utils/States.h"
 #include "byeven/BYCocos.h"
+#include "sublayer/TextLayerBtn.h"
 
 USING_NS_CC;
 using namespace std;
@@ -25,6 +26,9 @@ private:
 	CCSize s;
 	float mSingeWidth,mLineCount;
 	float m_fTAuto,m_fTText;
+
+	vector<TlBtn*> mvBtns;
+	void tlbback(CCObject* sender);
 
 public:
 	~TextLayer();
