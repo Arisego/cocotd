@@ -29,6 +29,7 @@ private:
 
 	vector<TlBtn*> mvBtns;
 	void tlbback(CCObject* sender);
+	//bool mtblockclick;
 
 public:
 	~TextLayer();
@@ -62,7 +63,7 @@ public:
 	CCSpriteBatchNode*	cns_blocks;
 
 	CCSprite* m_sBox;
-	MouseMenu* menu;
+	//MouseMenu* menu;
 
 	void FadeText(CCObject* sender);
 	bool m_bIsNoFade;
@@ -98,6 +99,9 @@ public:
 	void menucallback(CCObject* sender);
 
 	//////////////////////////////////////////////////////////////////////////
+	// 2013-7-21
+	void GS_Lock();
+	void GS_unLock();
 
 protected:
 	bool m_bIsAuto;
@@ -111,12 +115,15 @@ protected:
 	void StepNext();
 
 	bool click(CCTouch *touch, CCEvent * pEvent);
-
-	//virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
-	//	BYLayerModal::ccTouchBegan(pTouch,pEvent);
-	//	return true;
-	//}
 	
+	virtual bool byTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
+		if(isVisible()) return BYLayerModal::byTouchBegan(pTouch,pEvent);
+		setVisible(true);
+		bool tb = BYLayerModal::byTouchBegan(pTouch,pEvent);
+		setVisible(false);
+		return tb;
+	}
+
 	bool m_bTouchProt;
 	virtual void ccTouchEnded(CCTouch *touch, CCEvent * pEvent){
 		m_bTouchProt = true;

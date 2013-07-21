@@ -12,6 +12,8 @@
 #define SKIP_TIME 0.1
 #define FONT_WIDTH 26			// [AT]: If you change this value remember to change the size of "Images/block.png" to FW + 1.
 
+#define UI_ZORDER 100
+
 using namespace std;
 
 static const char* tBtnString[] = {"AUTO","SKIP","SYS","SAVE","LOAD","LOG","HIDE"};
@@ -95,7 +97,7 @@ void TextLayer::onEnter()
 	m_sBox->setAnchorPoint(CCPoint(0.5,0));
 	m_sBox->setPosition(ccp(s.width/2,0));
 	m_sBox->ignoreAnchorPointForPosition(false);
-	addChild(m_sBox, 1);
+	addChild(m_sBox, UI_ZORDER);
 
 	m_Label = CCLabelTTF::create("", FNT_AVG_TTF, FONT_WIDTH, CCSize(m_textwidth, m_height), kCCTextAlignmentLeft);
 	mSingeWidth = FONT_WIDTH;
@@ -119,11 +121,11 @@ void TextLayer::onEnter()
 	m_Name->setAnchorPoint(CCPointZero);
 	m_Name->setPosition(ccp(60,130));
 	//m_Name->setColor(ccWHITE);
-	addChild(m_Name,1);
+	addChild(m_Name,UI_ZORDER);
 
 	//Prepare for menu view.
 	mvBtns.clear();
-	float t_left = 870;
+	float t_left = 535;
 	float t_bottom = 10;
 	
 	// auto skip save load log hid
@@ -136,10 +138,9 @@ void TextLayer::onEnter()
 		tb_auto->setstring(tBtnString[i]);
 		tb_auto->setactivator(this,menu_selector(TextLayer::tlbback));
 		mvBtns.push_back(tb_auto);
-		addChild(tb_auto);
+		addChild(tb_auto,UI_ZORDER);
 		t_left += 45;
 	}
-
 
 	//CCMenuItemFont *item4 = CCMenuItemFont::create("Fade", this, menu_selector(TextLayer::FadeText) );
 	//item4->setFontSizeObj(20);
@@ -170,6 +171,7 @@ void TextLayer::tlbback( CCObject* sender )
 {
 	TlBtn* ttlbtn = (TlBtn*) sender;
 	int tag = ttlbtn->getTag();
+	m_bTouchProt = false;
 	switch (tag)
 	{
 	case 0:
@@ -204,11 +206,16 @@ void TextLayer::tlbback( CCObject* sender )
 			ttlbtn->onNormal();
 			break;
 		}
+	case 5:
+		{
+			SoundManager::sharedSoundManager()->PlayHitSFX();
+			ttlbtn->onNormal();
+			break;
+		}
 	case 6:
 		{
 			FadeText(sender);
-			ttlbtn->onNormal();
-			SoundManager::sharedSoundManager()->PlayHitSFX();
+			ttlbtn->onNormal();			
 			break;
 		}
 	default:
@@ -251,7 +258,7 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	case 0:  // 0:change the color;
 		{
 			CCSprite* tcs =(CCSprite*) getChildByTag(last);
-			if(tcs) tcs->setOpacity(200);
+			if(last != 0&&tcs) tcs->setOpacity(200);
 			tcs =(CCSprite*) getChildByTag(tag);
 			if(tcs) tcs->setOpacity(255);
 
@@ -265,7 +272,8 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	}
 
 	x = ts->getfloat("x");
-	y = 100;
+	y = ts->getfloat("y");
+	if(y == 0) y = 100;
 
 	string name = ts->getstring("name");
 	removeChildByTag(tag);
@@ -276,7 +284,9 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 	tmp->setAnchorPoint(CCPoint(0.5,0.5));
 	tmp->setTag(tag);
 	tmp->setRotation(ts->getfloat("angel"));
-	tmp->setOpacity(200);									// Change default to No. If more is need, change the x flag.
+	int alpha = ts->getint("alpha");
+	if(alpha == 0) alpha = 200;
+	tmp->setOpacity(alpha);									// Change default to No. If more is need, change the x flag.
 	addChild(tmp,ts->getint("zorder"));
 	TagMap[name] = tag;
 	PathMap[name] = filename;
@@ -358,6 +368,8 @@ CCAction* TextLayer::DerAction(Script* ts, int indent){				//如果有新的效�
 			tmp = CCRotateBy::create(ts->getfloat("duration"), ts->getfloat("x"),ts->getfloat("y"));
 		}else if(strcmp(type,"rotateto") == 0){
 			tmp =  CCRotateTo::create(ts->getfloat("duration"), ts->getfloat("x"),ts->getfloat("y"));
+		}else if(strcmp(type,"fadeto") == 0){
+			tmp =  CCFadeTo::create(ts->getfloat("duration"), ts->getint("alpha"));
 		}
 
 
@@ -414,7 +426,7 @@ void TextLayer::FadeText(CCObject* sender){
 	m_bIsNoFade = !m_bIsNoFade;
 	setVisible(m_bIsNoFade);
 	m_sBox->setVisible(m_bIsNoFade);
-	menu->setVisible(m_bIsNoFade);
+	//menu->setVisible(m_bIsNoFade);
 	//AT:将不会暂停正在运行的立绘的动作。因为需求比较小而遍历的成本相对较高。
 	if(!m_bIsNoFade) pauseSchedulerAndActions();
 	else resumeSchedulerAndActions();
@@ -567,6 +579,7 @@ void TextLayer::StartSkip(CCObject* sender){
 		m_bIsSkip = false;
 		if(e_layerstate == 4) e_layerstate = 0;
 		unscheduleUpdate();
+		if(m_bIsAuto) RegistAA();
 	}else{
 		if(e_layerstate != 1){
 			m_bIsSkip = true;
@@ -598,13 +611,15 @@ void TextLayer::AutoNext(){
 	CCLOG(">Auto Next");
 	e_layerstate = 3;
 	stopActionByTag(AUTO_ACTION_TAG);
-	StepNext();
+	if(SoundManager::sharedSoundManager()->QuerySound()) StepNext();
+	else RegistAA();
 }
 
 void TextLayer::RegistAA(){
 	if(e_layerstate == 1) return;
 	e_layerstate = 3;
 	CCLOG(">RegistAA");
+	stopActionByTag(AUTO_ACTION_TAG);
 	CCAction* au = CCSequence::create(CCDelayTime::create(m_fTAuto),CCCallFunc::create(this,callfunc_selector(TextLayer::AutoNext)),NULL);
 	au->setTag(AUTO_ACTION_TAG);
 	runAction(au);
@@ -671,6 +686,7 @@ void TextLayer::StepNext(){
 bool TextLayer::click(CCTouch *touch, CCEvent * pEvent)
 {
 	if(!m_bIsNoFade) { FadeText(NULL);return true;}
+	if(!this->isTouchEnabled()) return true;
 	switch(e_layerstate){
 	case 0:	//text showing
 		{
@@ -700,6 +716,7 @@ bool TextLayer::click(CCTouch *touch, CCEvent * pEvent)
 	case 4: //Skip Mode接受Click后直接结束
 		{
 			StartSkip(NULL);
+			mvBtns[1]->onNormal();
 			break;
 		}
 	}
@@ -763,4 +780,28 @@ void TextLayer::aftersnap()
 	//addChild(cpn_textcn);
 	cpn_textcn->setInverted(m_bSnap);
 	cns_blocks->setVisible(true);
+}
+
+void TextLayer::GS_Lock()
+{
+	setTouchEnabled(false);
+
+	if(m_bIsSkip) StartSkip(NULL);
+	//if(!m_bIsAuto) StartAuto(NULL);
+	if(!m_bIsNoFade)  FadeText(NULL);
+
+	m_bIsAuto = true;
+	if(e_layerstate == 0){
+		if(m_bIsShownOver) 
+			RegistAA();
+	}
+	mvBtns[0]->onSelect();
+	mvBtns[1]->onNormal();
+}
+
+void TextLayer::GS_unLock()
+{
+	StartAuto(NULL);
+	mvBtns[0]->onNormal();
+	setTouchEnabled(true);
 }

@@ -111,10 +111,16 @@ void SoundManager::PlaySound( const char* path )
 	if(strlen(path)<1) return;
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
 	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
+	m_sLast = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path);
 }
 
 void SoundManager::StopSound(const char* path){
 	if(strlen(path)<1) return;
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
 	audioEngine->StopEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
+}
+
+bool SoundManager::QuerySound()
+{
+	return ALSingle::sharedALSingle()->QueryEffect(m_sLast.c_str());
 }

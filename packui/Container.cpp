@@ -286,6 +286,6 @@ void Container::setstringnull()
 
 void Container::setstring(string s){
 	labelAtlas->setString(s.c_str());
-	labelAtlas->setPosition(ccp(m_obContentSize.width/2,m_obContentSize.height/2));
+	labelAtlas->setPosition(ccp(0,0));
 	labelAtlas->setVisible(true);
 }

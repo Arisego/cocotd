@@ -53,6 +53,9 @@ public:
 	void stopBackgroundMusic();
 	void playEffect(const char* pszFilePath);
 	void StopEffect(const char* pszFilePath);
+	
+	/* For SoundManager use only, never call it directly. */
+	bool QueryEffect(const char* pszFilePath);
 
 	void SetListenervalues()
 	{

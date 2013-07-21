@@ -188,7 +188,7 @@ void GameManager::showinfo(){
 	if(cs){
 		StatesManager* scs = (dynamic_cast<StatesManager*> (cs));
 		if(!scs) return; 
-		if(scs->miFlag == 0 || scs->e_State == -1) return;
+		if(scs->e_State == -1) return;
 		scs->PreQuit();
 		m_bInfo = true;
 		cs->addChild(InfoTab::sharedInfoTab(),98);
@@ -233,6 +233,10 @@ void GameManager::noQuit(){
 		if(!mdl) {
 			if(!m_bInfo)
 				(dynamic_cast<StatesManager*> (cs))->NoQuit();
+			else{
+				InfoTab::sharedInfoTab()->m_bIsEnabled = true;
+				InfoTab::sharedInfoTab()->setTouchEnabled(true);
+			}
 		}
 		else {
 			if(m_bInfo) {
@@ -271,7 +275,7 @@ void GameManager::preConfig(int type, int flag, int tab){
 		if(!mdl) {
 			mdl = new ModelLayer();
 //			mdl->autorelease();				//Manual Control is implied.
-			cs->addChild(mdl);
+			cs->addChild(mdl,98);
 		}
 		mdl->preConfig(type,flag,tab);
 

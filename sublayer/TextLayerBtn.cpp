@@ -15,9 +15,17 @@ TlBtn::TlBtn()
 	spriteSelected->setVisible(false);
 	addChild(spriteSelected);
 
-	labelAtlas = CCLabelBMFont::create("", FNT_ENG_NUM);
+	//spriteNormal	= CCSprite::create("Images/ui_tlb_sel.png");
+	//spriteNormal->setAnchorPoint(CCPointZero);
+	//spriteNormal->setPosition(ccp(0,0));
+	//spriteNormal->setVisible(false);
+	//addChild(spriteNormal);
+
+	labelAtlas = CCLabelBMFont::create("", FNT_CHN);	
 	labelAtlas->setAnchorPoint(CCPointZero);
-	labelAtlas->setPosition(ccp(0,0));
+	labelAtlas->setPosition(ccp(0,-6));
+	labelAtlas->setScale(0.8);
+	labelAtlas->setColor(COLOUR_NORMAL);
 	this->addChild(labelAtlas,1);
 
 	m_obContentSize.width = 40;
@@ -40,11 +48,13 @@ void TlBtn::onNormal()
 void TlBtn::onHover()
 {
 	Container::onHover();
+	labelAtlas->setColor(ccRED);
 }
 
 void TlBtn::onSelect()
 {
 	Container::onSelect();
+	labelAtlas->setColor(ccBLUE);
 }
 
 void TlBtn::onDisable()

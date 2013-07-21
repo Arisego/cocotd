@@ -16,6 +16,7 @@
 
 
 #define SELTAG 1010
+#define BLENDTAG 1011
 #define FRETAIN CCCallFunc::create(this,callfunc_selector(GameScene::FlagRetain))
 #define FRELEASE CCCallFunc::create(this,callfunc_selector(GameScene::FlagRelease))
 
@@ -725,11 +726,47 @@ void GameScene::DerChange(Script* s){
 			case 1:			//face out [black] mask.
 				{
 					if(!ms_Mask){					
-						//ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
-						//addChild(ms_Mask,tLyMask);
 						return;
 					}
 					ms_Mask->runAction(CCSequence::create(FRETAIN,CCFadeOut::create(s->getfloat("time")),FRELEASE,NULL));
+					break;
+				}
+			case 2:		//ahead after some time.
+				{
+					runAction(CCSequence::create(FRETAIN,CCDelayTime::create(s->getfloat("time")),FRELEASE,NULL));
+					break;
+				}
+			case 3:		// block all
+				{
+					miFlag = 0;
+					te->GS_Lock();
+					
+					break;
+				}
+			case 4:  //unblock all
+				{
+					te->GS_unLock();
+					miFlag = 1;
+					break;
+				}
+			case 5:		// Add Blend.
+				{
+					CCLayerColor* layer = CCLayerColor::create( ccc4(255, 255, 255, 80) );
+					te->addChild(layer,99,BLENDTAG);
+
+					GLenum src;
+					GLenum dst;
+
+					src = GL_ONE_MINUS_DST_COLOR;
+					dst = GL_ZERO;
+
+					ccBlendFunc bf = {src, dst};
+					layer->setBlendFunc( bf );
+					break;
+				}
+			case 6:		// Remove the blend.
+				{
+					te->removeChildByTag(BLENDTAG);
 					break;
 				}
 			default:

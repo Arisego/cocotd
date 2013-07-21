@@ -17,8 +17,13 @@ public:
 	void PlayLaserSFX();
 	void PlayHitSFX();
 	void update(float dt);
+
+	//For CV voice only. Never call it for other use.
 	void PlaySound(const char* path);
 	void StopSound(const char* path);
+	bool QuerySound();		//Return true if last cv sound is stopped.
+
+	std::string m_sLast;
 
 protected:
 	SoundManager();

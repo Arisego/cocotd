@@ -266,3 +266,17 @@ default:
 	break;
 };
 }
+
+bool ALSingle::QueryEffect( const char* pszFilePath )
+{
+	ALuint t;		//src
+	ALint i;		//state
+
+	t = EffectList[pszFilePath];
+	if(t){
+		alGetSourcei(t,AL_SOURCE_STATE,&i);
+		return i == AL_STOPPED;
+	}else{
+		CCLog(">[ALSingle]QueryEffect get an incorect string from soundmanager:%s",pszFilePath);
+	}
+}
