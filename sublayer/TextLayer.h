@@ -103,6 +103,11 @@ public:
 	void GS_Lock();
 	void GS_unLock();
 
+	//////////////////////////////////////////////////////////////////////////
+	// 2013-7-23
+	void StepNext();	//Changing to Public.
+	bool mLockNext;	//Lock for change color.
+
 protected:
 	bool m_bIsAuto;
 	bool m_bIsSkip;
@@ -112,7 +117,7 @@ protected:
 	void StartAuto(CCObject* sender);
 	void StartSkip(CCObject* sender);
 
-	void StepNext();
+
 
 	bool click(CCTouch *touch, CCEvent * pEvent);
 	

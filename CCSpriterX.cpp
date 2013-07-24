@@ -812,7 +812,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
 	msCur = name;
 	entity->PlayTarget(name);
 	msLast = alast;
-	//[SPX]CCLOG(">Coding Last:%s",msLast.c_str());
+	CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
 }
 

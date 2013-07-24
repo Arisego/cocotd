@@ -43,6 +43,10 @@ private:
 	void FlagRetain();
 	void FlagRelease();
 
+	string slatst;
+	bool m_bdLoop;
+	void DelayPlay();
+
 public:
 	TextLayer* te;
 	MapLayer* ml;

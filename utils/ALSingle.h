@@ -21,8 +21,8 @@ using namespace std;
 USING_NS_CC;
 
 #define NUM_EFFECT		20			//用于播放effect的源的个数
-#define BUFFER_SIZE     10240       // 
-#define BUFFER_NUM		50			//根据具体的update的频率来决定一个性能上最好的值，最好是1s一次！！
+#define BUFFER_SIZE     20480       // 
+#define BUFFER_NUM		60			//根据具体的update的频率来决定一个性能上最好的值，最好是1s一次！！
 
 
 class ALSingle
@@ -51,7 +51,7 @@ public:
 	}
 
 	void stopBackgroundMusic();
-	void playEffect(const char* pszFilePath);
+	void playEffect(const char* pszFilePath, ALfloat x = 0.0, ALfloat y= 0.0, ALfloat z = 0.0, bool aloop = false);
 	void StopEffect(const char* pszFilePath);
 	
 	/* For SoundManager use only, never call it directly. */

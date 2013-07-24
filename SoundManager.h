@@ -18,8 +18,9 @@ public:
 	void PlayHitSFX();
 	void update(float dt);
 
+	void PlayEffect(const char* path, float x = 0, float y = 0, float z = 0, bool aloop = false);
 	//For CV voice only. Never call it for other use.
-	void PlaySound(const char* path);
+	void PlaySound(const char* path, float x = 0, float y = 0, float z = 0, bool aloop = false);
 	void StopSound(const char* path);
 	bool QuerySound();		//Return true if last cv sound is stopped.
 

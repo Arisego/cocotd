@@ -55,7 +55,7 @@ bool ALSingle::init()
 		alutInit(NULL, 0);
 
 		// Ô´ÉùÒôµÄÎ»ÖÃ.  
-		SourcePos[0] = -0.9;
+		SourcePos[0] = 0.0;
 		SourcePos[1] = 0.0;
 		SourcePos[2] = 0.0;  
 
@@ -77,10 +77,10 @@ bool ALSingle::init()
 		// ÌýÕßµÄ·½Ïò (first 3 elements are "at", second 3 are "up")  
 		ListenerOri[0] = 0.0;
 		ListenerOri[1] = 0.0;
-		ListenerOri[2] = -1.0;
+		ListenerOri[2] = -1;
 		ListenerOri[3] = 0.0;
-		ListenerOri[4] = 1.0;
-		ListenerOri[5] = 0.0;  
+		ListenerOri[4] = 1;
+		ListenerOri[5] = 0;  
 
 		SetListenervalues();
 		alGenSources(1 ,&bgm_player); 
@@ -170,12 +170,24 @@ void ALSingle::StopEffect(const char* pszFilePath){
 		EffectList.erase(pszFilePath);
 }
 
-void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³ýÇ°Ò»¸öÏàÍ¬ÒôÐ§²¢²¥·Å
+void ALSingle::playEffect(const char* pszFilePath, ALfloat x, ALfloat y, ALfloat z, bool aloop){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³ýÇ°Ò»¸öÏàÍ¬ÒôÐ§²¢²¥·Å
 	ALint i;
 	ALuint t;
+
+	static ALfloat EfSourcePos[3];
+	EfSourcePos[0] = x;
+	EfSourcePos[1] = y;
+	EfSourcePos[2] = z;  
+
+	double theta = (double) (rand() % 360) * 3.14 / 180.0;
+
+	EfSourcePos[0] = -float(cos(theta));
+	EfSourcePos[1] = -float(rand()%2);
+	EfSourcePos[2] = -float(sin(theta));
+
 	bool iner = false;
 	int c = 0;
-	CCLOG(">[ALMIXBUG]:Begin Play...|%s",pszFilePath);
+	CCLog(">[ALMIXBUG]:Begin Play...|%s_pos:%f,%f,%f.",pszFilePath,EfSourcePos[0],EfSourcePos[1],EfSourcePos[2]);
 	t = EffectList[pszFilePath];
 	CCLOG(">[ALMIXBUG]:Tring to get buffered source...|%d",t);
 	if(!t)
@@ -216,9 +228,9 @@ void ALSingle::playEffect(const char* pszFilePath){		//²¥·ÅEffect£¬Ä¬ÈÏÐÐÎª£ºÈ¥³
 	alSourcei (t, AL_BUFFER, buffer );
 	alSourcef (t, AL_PITCH, 1.0 );
 	alSourcef (t, AL_GAIN, f_gEffect );
-	alSourcefv(t, AL_POSITION, SourcePos);
+	alSourcefv(t, AL_POSITION, EfSourcePos);
 	alSourcefv(t, AL_VELOCITY, SourceVel);
-	alSourcei (t, AL_LOOPING, false ); 
+	alSourcei (t, AL_LOOPING, aloop ); 
 
 	
 	string moto = ListedEffect[t];
@@ -278,5 +290,6 @@ bool ALSingle::QueryEffect( const char* pszFilePath )
 		return i == AL_STOPPED;
 	}else{
 		CCLog(">[ALSingle]QueryEffect get an incorect string from soundmanager:%s",pszFilePath);
+		return false;
 	}
 }

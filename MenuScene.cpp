@@ -47,18 +47,18 @@ bool MenuScene::init()
         
 		CCImage* image = new CCImage();
 		unsigned long filesize;
-		FileIO* fi = new FileIO("Images/background.cop");
-		unsigned char* pBuffer = fi->getFileData("background.png",&filesize);
+		FileIO* fi = new FileIO("Images/fg.cop");
+		unsigned char* pBuffer = fi->getFileData("fg.png",&filesize);
 		image->initWithImageData((void*)pBuffer, filesize, CCImage::kFmtPng);
 		delete pBuffer;
-		CCTextureCache::sharedTextureCache()->addUIImage(image,"Images/cabackground.png");	//Mask?
+		CCTextureCache::sharedTextureCache()->addUIImage(image,"Images/fg.png");	//Mask?
 		image->autorelease();
 		//CCSprite::createWithTexture(CCTextureCache::sharedTextureCache()->addUIImage(image,"Images/background.png"));
 		CC_SAFE_DELETE(fi);
 
 		//背景层
 		CCLayer* bg = CCLayer::create();
-		CCSprite* BgImg = CCSprite::create("Images/cabackground.png");	//将文件标识与目录设置相同以做调试用，现在没有设置。
+		CCSprite* BgImg = CCSprite::create("Images/fg.png");	//将文件标识与目录设置相同以做调试用，现在没有设置。
 
 
 		//BgImg->setAnchorPoint(CCPoint(0.5,0.5));

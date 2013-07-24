@@ -35,7 +35,7 @@ TileMap::~TileMap(){
 
 //
 //bool l_stop;
-
+//Called by GS. & Apply magic effect here.[TODO_0722]
 void TileMap::DerMapAct(Script* s){
 	int type = s->getint("type");
 	switch(type){

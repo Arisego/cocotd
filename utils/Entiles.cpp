@@ -36,6 +36,13 @@ void Entiles::initFiles(const char *pszFileName)
 
 	m_sprite->setOpacity(0);
 
+	//CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+	//CCSpriteBatchNode *sheet = CCSpriteBatchNode::create("sprite/gongbin.png");
+	//cache->addSpriteFramesWithFile("sprite/gongbin.plist");
+	//SplashLayer->addChild(sheet);
+	//CCSpriterX *animator;
+	//animator = CCSpriterX::create("sprite/gongbin.SCML");
+
 	CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 	CCSpriteBatchNode *sheet = CCSpriteBatchNode::create(CCString::createWithFormat("%s.png",pszFileName)->getCString());
 	cache->addSpriteFramesWithFile(CCString::createWithFormat("%s.plist",pszFileName)->getCString());

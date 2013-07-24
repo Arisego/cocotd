@@ -249,47 +249,122 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 
 	int x,y;
 	int tag		= ts->getint("tag");
-	int flag	= ts->getfloat("x");
+	int flag	= ts->getint("flag");
 
 	static int last = 0;
 
 	switch (flag)
 	{
-	case 0:  // 0:change the color;
+	case -1: //Grey it
 		{
+			CCSprite* tcs =(CCSprite*) getChildByTag(tag);
+			if(tcs) {
+				tcs->runAction(CCTintBy::create(0,-130,-130,-130));
+				CCLog(">[GS]:gray the tj:%d",tag);
+			}
+				
+			break;
+		}
+	case 1:  // 0:change the color;
+		{
+			CCLog(">[GS]change color:fade-%d,light-%d",last,tag);
 			CCSprite* tcs =(CCSprite*) getChildByTag(last);
-			if(last != 0&&tcs) tcs->setOpacity(200);
+			if(last != 0&&tcs) {
+				tcs->runAction(CCTintBy::create(0,-130,-130,-130));
+				CCLog(">[GS]:fade succes");
+			}
+				
 			tcs =(CCSprite*) getChildByTag(tag);
-			if(tcs) tcs->setOpacity(255);
+			CCFiniteTimeAction* dr = CCTintBy::create(0,-130,-130,-130);
+			if(tcs) {
+				tcs->runAction(dr->reverse());
+				CCLog(">[GS]:Light succes");
+			}
+				
 
 			last = tag;
 			return true;
-		}		
-	case 1:
-		break;
+		}			
+	case 2:
+		{
+			x = ts->getfloat("x");
+			y = ts->getfloat("y");
+
+			removeChildByTag(tag);
+			string name = ts->getstring("name");
+
+			CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+			GameManager::sharedLogicCenter()->f_cachetest(CCString::createWithFormat("%s.png",filename)->getCString());
+			CCSpriteBatchNode *sheet = CCSpriteBatchNode::create(CCString::createWithFormat("%s.png",filename)->getCString());
+			cache->addSpriteFramesWithFile(CCString::createWithFormat("%s.plist",filename)->getCString());
+
+			CCSpriterX* m_animator = CCSpriterX::create(CCString::createWithFormat("%s.SCML",filename)->getCString());
+
+
+			m_animator->setPosition(ccp(x,y));
+			m_animator->setAnchorPoint(CCPoint(0.5,0.5));
+			m_animator->setTag(tag);
+			m_animator->setRotation(ts->getfloat("angel"));
+
+			float scalex = ts->getfloat("scalex");
+			float scaley = ts->getfloat("scaley");
+			//if(scalex != 0)
+			//	m_animator->setScaleX(scalex);
+			//if(scaley != 0) 
+			//	m_animator->setScaleY(scaley);
+
+			if(scalex != 0) {
+				m_animator->setScale(scalex);
+				CCLog(">Scale.");
+			}
+			int zorder = ts->getint("zorder");
+
+			TagMap[name] = tag;
+			PathMap[name] = filename;
+
+			m_animator->PlayAnim(ts->getstring("animate"),ts->getint("repeat"));
+			sheet->addChild(m_animator);
+			addChild(sheet,ts->getint("zorder"),tag);
+			break;
+		}
 	default:
-		break;
+		{
+			x = ts->getfloat("x");
+			y = ts->getfloat("y");
+			if(y == 0) y = 100;
+
+			string name = ts->getstring("name");
+			removeChildByTag(tag);
+
+			GameManager::sharedLogicCenter()->f_cachetest(filename);		//读入缓存文件，如果文件未缓存而filename不是本地文件，将会出现错误。
+			CCSprite* tmp = CCSprite::create(filename);
+			tmp->setPosition(ccp(x,y));
+			tmp->setAnchorPoint(CCPoint(0.5,0.5));
+			tmp->setTag(tag);
+			tmp->setRotation(ts->getfloat("angel"));
+			int alpha = ts->getint("alpha");
+			if(alpha == 0) alpha = 255;
+			tmp->setOpacity(alpha);									// Change default to No. If more is need, change the x flag.
+
+			CCLog(">[GS]:Loading...");
+			int zorder = ts->getint("zorder");
+			addChild(tmp,ts->getint("zorder"));
+			if(zorder == 0 && ts->getint("link") == 0){
+				tmp->runAction(CCTintBy::create(0,-130,-130,-130));
+				CCLog(">[GS]:Load and grey:%d",tag);
+			}
+			if(ts->getint("link") == 1) {		
+				last = tag;
+				CCLog(">[GS]:Load and remain:%d",tag);
+			}
+			TagMap[name] = tag;
+			PathMap[name] = filename;
+			return true;
+			break;
+		}
 	}
 
-	x = ts->getfloat("x");
-	y = ts->getfloat("y");
-	if(y == 0) y = 100;
-
-	string name = ts->getstring("name");
-	removeChildByTag(tag);
-
-	GameManager::sharedLogicCenter()->f_cachetest(filename);		//读入缓存文件，如果文件未缓存而filename不是本地文件，将会出现错误。
-	CCSprite* tmp = CCSprite::create(filename);
-	tmp->setPosition(ccp(x,y));
-	tmp->setAnchorPoint(CCPoint(0.5,0.5));
-	tmp->setTag(tag);
-	tmp->setRotation(ts->getfloat("angel"));
-	int alpha = ts->getint("alpha");
-	if(alpha == 0) alpha = 200;
-	tmp->setOpacity(alpha);									// Change default to No. If more is need, change the x flag.
-	addChild(tmp,ts->getint("zorder"));
-	TagMap[name] = tag;
-	PathMap[name] = filename;
+	
 
 	//int x = ts->getfloat("x");
 	//int y = ts->getfloat("y");
@@ -540,7 +615,7 @@ void TextLayer::FormText(){
 		m_iTextcount++;
 	}
 	//lines = fulline;
-	CCLOG("forming text:\n%s",lines.c_str());
+	CCLog("forming text:\n%s",lines.c_str());
 }
 
 void TextLayer::ShowText(const char* line, const char* name){
@@ -583,6 +658,7 @@ void TextLayer::StartSkip(CCObject* sender){
 	}else{
 		if(e_layerstate != 1){
 			m_bIsSkip = true;
+			mLockNext = true;
 			e_layerstate = 4;
 			FlushText(NULL,true);
 			scheduleUpdate();
@@ -640,13 +716,19 @@ void TextLayer::StopStream(){					//文字显示完成后调用
 
 void TextLayer::update(float dt)
 {
-	if(e_layerstate == 1) return;
-	static float skip = 0;
-	skip += dt;
-	if(skip > SKIP_TIME){
-		skip = 0;
-		StepNext();
+	if(mLockNext){
+		if(e_layerstate == 1) return;
+		static float skip = 0;
+		skip += dt;
+		if(skip > SKIP_TIME){
+			skip = 0;
+			StepNext();
+		}
+	}else{
+		GameManager::sharedLogicCenter()->e_gonext();
+		mLockNext = true;
 	}
+
 }
 
 void TextLayer::StepNext(){
@@ -680,7 +762,8 @@ void TextLayer::StepNext(){
 		if(jp) StateCenter::sharedStateCenter()->g_lock_change(jp);
 		CC_SAFE_RELEASE_NULL(lockstate);
 	}
-	GameManager::sharedLogicCenter()->e_gonext();
+	if(m_bIsSkip) mLockNext = false;
+	else GameManager::sharedLogicCenter()->e_gonext();
 }
 
 bool TextLayer::click(CCTouch *touch, CCEvent * pEvent)

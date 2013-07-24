@@ -106,11 +106,17 @@ void SoundManager::PlayHitSFX()
 
 }
 
-void SoundManager::PlaySound( const char* path )
+void SoundManager::PlayEffect(const char* path, float x, float y, float z, bool aloop){
+	if(strlen(path)<1) return;
+	ALSingle *audioEngine = ALSingle::sharedALSingle();
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path),  x,  y, z, aloop);
+}
+
+void SoundManager::PlaySound( const char* path, float x, float y, float z, bool aloop)
 {
 	if(strlen(path)<1) return;
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path),  x,  y, z, aloop);
 	m_sLast = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path);
 }
 

@@ -354,26 +354,42 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 
 			// Get window size and place the label upper. 
 			CCSize size = CCDirector::sharedDirector()->getWinSize();
+
+			//Sun
+			CCParticleSystem* sun = CCParticleSun::create();
+			sun->setTexture(CCTextureCache::sharedTextureCache()->addImage("Images/fire.png"));
+			sun->setPosition( ccp(size.width/2,size.height/2) );
+
+			sun->setTotalParticles(130);
+			sun->setLife(0.6f);
+			SplashLayer->addChild(sun);
+
 			pLabel->setPosition(ccp(size.width / 2, size.height - 50));
+
+			CCFiniteTimeAction* fate = CCSpawn::create(CCTintBy::create(0.1,-100,-100,-200),CCFadeOut::create(0.1),NULL);
+			pLabel->runAction( CCRepeatForever::create(
+				(CCActionInterval*)(CCSequence::create(fate, fate->reverse(), NULL ))
+				)
+				);
 
 			// Add the label to HelloWorld layer as a child layer.
 			SplashLayer->addChild(pLabel, 1);
 			SplashLayer->setTouchEnabled(false);
 
-			CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
-			CCSpriteBatchNode *sheet = CCSpriteBatchNode::create("sprite/gongbin.png");
-			cache->addSpriteFramesWithFile("sprite/gongbin.plist");
-			SplashLayer->addChild(sheet);
-			CCSpriterX *animator;
-			animator = CCSpriterX::create("sprite/gongbin.SCML");
+			//CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+			//CCSpriteBatchNode *sheet = CCSpriteBatchNode::create("sprite/gongbin.png");
+			//cache->addSpriteFramesWithFile("sprite/gongbin.plist");
+			//SplashLayer->addChild(sheet);
+			//CCSpriterX *animator;
+			//animator = CCSpriterX::create("sprite/gongbin.SCML");
 
 
-			animator->setPosition(ccp(400, 100));
-			animator->setAnchorPoint(ccp(0,0));
-			animator->setScale(0.8f);
-			animator->PlayAnim("Idle");
+			//animator->setPosition(ccp(400, 100));
+			//animator->setAnchorPoint(ccp(0,0));
+			//animator->setScale(0.8f);
+			//animator->PlayAnim("Idle");
 
-			sheet->addChild(animator);
+			//sheet->addChild(animator);
 
 			this->addChild(SplashLayer,100,tLySpalash);
 			//SoundManager::sharedSoundManager()->PlayMusic();
@@ -540,10 +556,12 @@ void GameScene::e_handlecurs(Script* s){
 		case sShowText:
 			{
 				te->ShowText(tmp->getstring("content"),tmp->getstring("name"));
-				static string slatst = "";
+
 				SoundManager::sharedSoundManager()->StopSound(slatst.c_str());
 				slatst = tmp->getstring("audio");
-				SoundManager::sharedSoundManager()->PlaySound(slatst.c_str());
+				if(tmp->getfloat("delay") == 0) SoundManager::sharedSoundManager()->PlaySound(slatst.c_str(),tmp->getfloat("x"),tmp->getfloat("y"),tmp->getfloat("z"),false);
+				else runAction(CCSequence::create(FRETAIN,CCDelayTime::create(tmp->getfloat("delay")),CCCallFunc::create(this,callfunc_selector(GameScene::DelayPlay)),FRELEASE,NULL));
+
 				break;
 			}
 		case sSelect:
@@ -663,6 +681,7 @@ void GameScene::DerChange(Script* s){
 		}
 	case 6://test 
 		{
+			CCLog(">[GS]:show info.");
 			InfoTab* it = InfoTab::sharedInfoTab();
 			it->showinfo(s->getstring("content"));
 			
@@ -676,6 +695,24 @@ void GameScene::DerChange(Script* s){
 /*				test_lock = false;
 			}
 	*/		
+			break;
+		}
+	case -8:	//Play Effect
+		{
+			switch (s->getint("val"))
+			{
+			case 1:
+				{
+					SoundManager::sharedSoundManager()->StopSound(s->getstring("content"));
+					break;
+				}
+			default:
+				{
+					SoundManager::sharedSoundManager()->PlayEffect(s->getstring("content"),s->getfloat("x"),s->getfloat("y"),s->getfloat("z"),s->getint("loop") != 0);
+					break;
+				}
+				
+			}
 			break;
 		}
 	case 8://play bgm
@@ -723,6 +760,14 @@ void GameScene::DerChange(Script* s){
 					ms_Mask->runAction(CCSequence::create(FRETAIN,CCFadeIn::create(s->getfloat("time")),FRELEASE,NULL));
 					break;
 				}
+			case -1:
+				{
+					if(!ms_Mask){					
+						return;
+					}
+					ms_Mask->runAction(CCSequence::create(FRETAIN,CCFadeTo::create(s->getfloat("time"),s->getint("alpha")),FRELEASE,NULL));
+					break;
+				}
 			case 1:			//face out [black] mask.
 				{
 					if(!ms_Mask){					
@@ -745,6 +790,7 @@ void GameScene::DerChange(Script* s){
 				}
 			case 4:  //unblock all
 				{
+					CCLog(">[GS]Unlock all");
 					te->GS_unLock();
 					miFlag = 1;
 					break;
@@ -773,7 +819,8 @@ void GameScene::DerChange(Script* s){
 				break;
 			}
 		}
-	}
+
+	}//End of switch.
 }
 
 void GameScene::e_act(){
@@ -863,11 +910,18 @@ void GameScene::e_jump(int j){
 void GameScene::FlagRelease(){
 	--m_flag;
 	if(m_flag<1) {
-		e_gonext();
+		//e_gonext();
+		te->StepNext();
 	}
 	
 }
 
 void GameScene::FlagRetain(){
 	++m_flag;
+}
+
+void GameScene::DelayPlay()
+{
+	CCLOG(">[GS]Delayplay");
+	SoundManager::sharedSoundManager()->PlaySound(slatst.c_str());
 }
