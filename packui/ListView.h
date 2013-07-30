@@ -82,7 +82,7 @@ public:
 			point = this->getContainer()->convertTouchToNodeSpace(pTouch);
 
 			index = this->_indexFromOffset(point);
-			cell  = this->_cellWithIndex(index);
+			cell  = this->cellAtIndex(index);
 
 			if (cell) {
 				m_pTableViewDelegate->tableCellTouched(this, cell);

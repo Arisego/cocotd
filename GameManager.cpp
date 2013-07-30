@@ -175,7 +175,7 @@ void GameManager::runSceneWithId(SceneId id)
 			CCDirector::sharedDirector()->runWithScene(newScene);
 		else
 		{
-			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::transitionWithDuration(0.5f, newScene));
+			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, newScene));
 
 		}
 		
@@ -316,6 +316,6 @@ void GameManager::fullPathFromRelativePath( const char *pszRelativePath,string &
 	do 
 	{
 		psz.clear();
-		psz = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pszRelativePath);
+		psz = CCFileUtils::sharedFileUtils()->fullPathForFilename(pszRelativePath);
 	} while (psz.length() == 0);
 }

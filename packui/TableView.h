@@ -150,7 +150,7 @@ public:
 				break;
 			}
 		} while (1);
-		CCTableViewCell *cell  = this->_cellWithIndex(idx);
+		CCTableViewCell *cell  = this->cellAtIndex(idx);
 
 		if (cell) {
 			m_pTableViewDelegate->tableCellTouched(this, cell);

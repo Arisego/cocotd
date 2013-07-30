@@ -2,6 +2,8 @@
 
 #include "GameManager.h"
 
+#define ASTAR_DEPTH 2500
+
 BattleMap::~BattleMap(){
 	CC_SAFE_RELEASE_NULL(m_touch);
 	CC_SAFE_RELEASE_NULL(m_caTarget);
@@ -153,6 +155,8 @@ void BattleMap::f_decide(int i, int j){		//通过新的选中tile对map进行重构。 use t
 	imply_set(ts_last,0);
 	ts_last.clear();
 
+	imply_set(cs_block,c_y);
+
 	CCTMXTiledMap* map = (CCTMXTiledMap*) getChildByTag(kTagMap);
 	CCTMXLayer* layer = map->layerNamed("Battle");
 
@@ -161,6 +165,7 @@ void BattleMap::f_decide(int i, int j){		//通过新的选中tile对map进行重构。 use t
 	draw_mouse_range(ccp(i,j));
 
 	m_mou_cur = ccp(i,j);
+	
 	imply_set(ts_last,c_r);
 	imply_set(cs_dis,c_b);			//blue is higher than red.
 
@@ -170,12 +175,12 @@ void BattleMap::update(float dt)
 {
 	if(m_touch){
 		switch(b_battle){
-		case(1):						// state == 1 : Looking for target, if it's a controller, then pop up the menu.
+		case(1):						// state == 1 : <点击选择单位.
 			{
 				checkpoint(m_touch);
 				break;
 			}
-		case(3):						// state == 3 : Moving mouse and select a target.
+		case(3):						// state == 3 : <移动鼠标并选择目标.
 			{		
 				m_touchpoint = this->convertTouchToNodeSpace(m_touch);
 
@@ -191,19 +196,8 @@ void BattleMap::update(float dt)
 			}
 		case(4):		// state == 4 : Map is bussy moving charaentile.
 			{
-				if(m_controller->direc ==  MS_STOP){
-					int t_isize = vc_path.size();
-					if(t_isize > 0){
-						CCPoint t_d = vc_path.at(t_isize - 1);
-						m_controller->SCMoveto(t_d);
-						vc_path.pop_back();
-
-					}else{
-						CCLOG(">Moving over...");
-						//b_battle = 1;
-						control_switch();
-					}
-				}
+				((EChessComp*) m_controller->getComponent("controller"))->move_by_path(vc_path);
+				b_battle = -1;
 				break;
 			}
 		}
@@ -463,7 +457,8 @@ void BattleMap::draw_moving_tile()
 	dps_range(m_con_cur, cs_y, t_iMove);
 	imply_set(cs_y,c_y);			//Imply.
 	imply_set(cs_dis,c_b);
-
+	//imply_set(cs_block,c_y);
+	CCLog(">[BM]cs_dis:%d|cs_block:%d",cs_dis.size(),cs_block.size());
 
 }
 
@@ -487,7 +482,7 @@ void BattleMap::draw_moving_block()
 			int t_range = 2;							//TODO: Test. ZOC Range = 1; type = ring
 			dps_ring(t_ec->pos, cs_block, t_range);
 		}else{
-			cs_block.insert(make_pair(t_x,t_y));
+			cs_block.insert(make_pair(t_x,t_y));		// <友军所站的位置不能停泊。
 		}
 	}
 
@@ -587,13 +582,13 @@ bool BattleMap::move_control()
 	do 
 	{
 		pair<int,int> t_pii = make_pair(m_mou_cur.x,m_mou_cur.y);
-		CC_BREAK_IF(cs_y.count(t_pii) == 0);
+		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
 		CC_BREAK_IF(cs_dis.count(t_pii) > 0);
 
-		CCLOG(">Try to move all the element.");
+		CCLog(">Try to move all the element.");
 		a_star();
 		b_battle = 4;
-		vc_path.pop_back();		//last is start no use for moving scripte;
+		vc_path.pop_back();		// <最后一个点是起点，所以将其弹出。
 
 		((EChesses*) m_controller)->pos = m_mou_cur;
 		m_mou_cur = ccp(-1,-1);
@@ -602,7 +597,7 @@ bool BattleMap::move_control()
 	return false;
 }
 
-void BattleMap::a_star()
+void BattleMap::a_star()		// <结果被存储在vc_path中。
 {
 	list<StepNode> lsn = getSearchPath(m_con_cur,m_mou_cur);
 	vc_path.push_back(m_mou_cur);
@@ -612,7 +607,7 @@ void BattleMap::a_star()
 	StepNode t_sn = lsn.back();
 	int dx = m_mou_cur.x - t_sn.x;
 	int dy = m_mou_cur.y - t_sn.y;
-	CCLOG(">BEGIN POINT:%f,%f.",m_mou_cur.x,m_mou_cur.y);
+	CCLog(">BEGIN POINT:%f,%f.",m_mou_cur.x,m_mou_cur.y);
 
 	if(dx > 0) t_idirect = 3;
 	else if(dx < 0) t_idirect = 2;
@@ -632,7 +627,7 @@ void BattleMap::a_star()
 		if(t_ps.count(make_pair(dx,dy)) > 0) continue;
 		t_ps.insert(make_pair(dx,dy));
 		t_sn = *it;
-		CCLOG(">NextParentGot:%d,%d G:%d H:%d F:%d",dx,dy,t_sn.G,t_sn.H,t_sn.getF());
+		CCLog(">NextParentGot:%d,%d G:%d H:%d F:%d",dx,dy,t_sn.G,t_sn.H,t_sn.getF());
 
 
 		if(t_sn.status != t_idirect){
@@ -640,9 +635,9 @@ void BattleMap::a_star()
 			
 			t_idirect = t_sn.status;
 			turn_lock = true;
-			CCLOG(">Turned:%d,%d.",dx,dy);
+			CCLog(">Turned:%d,%d.",dx,dy);
 		}else{
-			CCLOG(">UnTurned:%d,%d.",dx,dy);
+			CCLog(">UnTurned:%d,%d.",dx,dy);
 			turn_lock = false;
 		}	
 		
@@ -669,9 +664,9 @@ void BattleMap::a_star()
 		vc_path.push_back(m_con_cur);
 	}
 
-	CCLOG(">A_STAR is over. Try to check the path.");
+	CCLog(">A_STAR is over. Try to check the path.");
 	for(vector<CCPoint>::iterator it = vc_path.begin(); it != vc_path.end(); ++it){
-		CCLOG(">Point:%f,%f.",it->x,it->y);
+		CCLog(">Point:%f,%f.",it->x,it->y);
 	}
 }
 
@@ -680,12 +675,13 @@ void BattleMap::clean_cs()
 	imply_set(cs_y,0,true);
 	imply_set(cs_dis,0,true);
 	imply_set(ts_last,0,true);
+	imply_set(cs_block,0,true);
 }
 
 ///A*寻路算法
-int BattleMap::getNodeH(CCPoint to, StepNode& node)
+float BattleMap::getNodeH(CCPoint to, StepNode& node)
 {
-	return (abs(to.x - node.x) + abs( to.y - node.y));
+	return std::sqrt( std::pow((to.x - node.x),2) + std::pow(( to.y - node.y),2) );
 }
 
 StepNode BattleMap::getNodeChild(StepNode sn, int i)			
@@ -744,8 +740,6 @@ StepNode BattleMap::getNodeChild(StepNode sn, int i)
 	return point;
 }
 
-//int t_ix,t_iy;
-
 bool compare_index(const StepNode t1,const StepNode t2){  
 	//printf("CompareIndex:%d,%d/n",t1->index,t2->index); 
 	int i_t = (t1.G + t1.H) - (t2.G + t2.H);
@@ -764,36 +758,46 @@ bool compare_index(const StepNode t1,const StepNode t2){
 list<StepNode> BattleMap::getSearchPath(CCPoint startPos, CCPoint to)
 {
 	vector<StepNode> openNodeVec;				//space to time; it works.
+	map<int,map<int,int>> mStatuDmaps;
+
 	list<StepNode> pathList;
 	//查找steps格范围内的目标
-	int steps = 500;			//20x20 = 400; IN:小心
+	int steps = ASTAR_DEPTH;			//20x20 = 400; IN:小心
 	int last_f = 500;
 	//初始点
 	StepNode startNode;
 	startNode.x = startPos.x;
 	startNode.y = startPos.y;
 	startNode.G = 0;
-	startNode.H = 0;
+	startNode.H = getNodeH(to, startNode);;
 	startNode.status = 1;
+	CCLog(">[BM]StartNode Began>Start End---[%d,%d]-[%f,%f]",startNode.x,startNode.y,to.x,to.y);
 
 	//记录点
 	openNodeVec.push_back(startNode);
 
 	bool isFind = false;
+	
+	StepNode nNod;
+	nNod = startNode;
+
 	while (!isFind && steps > 0){
 		//以F值从大到小 降序排列
 		sort(openNodeVec.begin(), openNodeVec.end(), compare_index);
 		
 		if (openNodeVec.size() > 0){					//TODO: Is this check necessary?
 			StepNode curNode = openNodeVec[openNodeVec.size()-1];
-			static StepNode nNod;
-			if(last_f <= curNode.getF() && as_checkpoint(nNod.x, nNod.y))
+			
+			if(last_f <= curNode.getF() && as_checkpoint(nNod.x, nNod.y)){
 				curNode = nNod;
-			else{
+				
+			}else{
 				openNodeVec.pop_back();
 			}	
 		
+			mStatuDmaps[curNode.x][curNode.y] = 1;
 			pathList.push_back(curNode);
+			CCLog(">[BM]Layer count:%d||The Next Node is Added:%d,%d G:%d H:%f F:%f",ASTAR_DEPTH-steps,curNode.x,curNode.y,curNode.G,curNode.H,curNode.getF());
 			//////////////////////////////////////////////////////////////////////////
 			nNod = getNodeChild(curNode,curNode.status);
 			nNod.status = curNode.status;
@@ -815,24 +819,20 @@ list<StepNode> BattleMap::getSearchPath(CCPoint startPos, CCPoint to)
 					){
 					int g = //((nextNode.x == curNode.x || nextNode.y == curNode.y) ? 1 : 2) 
 						1 + curNode.G;
-					int h = getNodeH(to, curNode);
-					if (nextNode.status == 0){
+					int h = getNodeH(to, nextNode);
+					if (mStatuDmaps[nextNode.x][nextNode.y]== 0){
 						nextNode.G = g;
 						nextNode.H = h;
 						nextNode.status = i;
 						openNodeVec.push_back(nextNode);
 					}
-					else if (nextNode.getF() > g + h) {
-						nextNode.G = g;
-						nextNode.H = h;
-						nextNode.status = i;
-						openNodeVec.push_back(nextNode);
-					}
+
 				}
 			}
 		}
 		steps--;
 	}
+	CCLog(">[BM]A star is over, depth:%d",ASTAR_DEPTH-steps);
 	return pathList;
 }
 
@@ -877,6 +877,7 @@ void BattleMap::draw_mouse_range(CCPoint a_cp)
 	}
 }
 
+// <检查范围内是否有指定的单位类型
 bool BattleMap::arange_target( int a_type )
 {
 	CCDictElement* t_cde = NULL;
@@ -927,7 +928,7 @@ void BattleMap::show_text(EChesses* a_ec,string s)
 	//	mt_EffectList->addObject(c_ttlbmf);
 
 	CCActionInterval* t_cai = CCSpawn::createWithTwoActions(CCMoveTo::create(0.3,ccpAdd(c_ttlbmf->getPosition(),ccp(0,100))),CCFadeOut::create(0.3));
-	c_ttlbmf->runAction(CCSequence::createWithTwoActions(t_cai,CCCallFuncO::actionWithTarget(this,callfuncO_selector(WalkMap::effectback),c_ttlbmf)));
+	c_ttlbmf->runAction(CCSequence::createWithTwoActions(t_cai,CCCallFuncO::create(this,callfuncO_selector(WalkMap::effectback),c_ttlbmf)));
 }
 
 void BattleMap::show_text( string s )

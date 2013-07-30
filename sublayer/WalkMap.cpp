@@ -44,7 +44,7 @@ void WalkMap::show_text(string s)
 //	mt_EffectList->addObject(c_ttlbmf);
 
 	CCActionInterval* t_cai = CCSpawn::createWithTwoActions(CCMoveTo::create(0.3,ccpAdd(c_ttlbmf->getPosition(),ccp(0,100))),CCFadeOut::create(0.3));
-	c_ttlbmf->runAction(CCSequence::createWithTwoActions(t_cai,CCCallFuncO::actionWithTarget(this,callfuncO_selector(WalkMap::effectback),c_ttlbmf)));
+	c_ttlbmf->runAction(CCSequence::createWithTwoActions(t_cai,CCCallFuncO::create(this,callfuncO_selector(WalkMap::effectback),c_ttlbmf)));
 }
 
 void WalkMap::effectback(CCObject* pSender)

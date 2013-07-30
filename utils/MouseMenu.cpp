@@ -82,7 +82,7 @@ bool MouseMenu::ccTouchBegan(CCTouch* touch, CCEvent* event)
     CC_UNUSED_PARAM(event);
     if (
 		m_eState != kCCMenuStateWaiting || 
-		! m_bVisible || !m_bEnabled)
+		! m_bVisible || !isEnabled())
     {
         return false;
     }

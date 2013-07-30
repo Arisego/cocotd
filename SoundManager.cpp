@@ -42,10 +42,10 @@ bool SoundManager::init()
     do 
     {
 		ALSingle *audioEngine = ALSingle::sharedALSingle();
-		//audioEngine->OpenOgg(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath("1.ogg"));
+		//audioEngine->OpenOgg(CCFileUtils::sharedFileUtils()->fullPathForFilename("1.ogg"));
 
-		audioEngine->preloadEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath("sound/laser.wav"));
-		audioEngine->preloadEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath("sound/hit.wav"));
+		audioEngine->preloadEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename("sound/laser.wav").c_str());
+		audioEngine->preloadEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename("sound/hit.wav").c_str());
 
         bRet = true;
 
@@ -72,13 +72,13 @@ SoundManager::~SoundManager()
 void SoundManager::PreLoadSrc(const char* pszFile){
 	CCLOG(">Sound Manager Preload:%s",pszFile);
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->preloadBackgroundMusic(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pszFile));
+	audioEngine->preloadBackgroundMusic(CCFileUtils::sharedFileUtils()->fullPathForFilename(pszFile).c_str());
 }
 
 void SoundManager::PlayMusic(const char* pszFile)
 {
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->playBackgroundMusic(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pszFile));
+	audioEngine->playBackgroundMusic(CCFileUtils::sharedFileUtils()->fullPathForFilename(pszFile).c_str());
 
 }
 	
@@ -94,7 +94,7 @@ void SoundManager::StopMusic()
 void SoundManager::PlayLaserSFX()
 {
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath("sound/laser.wav"));
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename("sound/laser.wav").c_str());
 
 }
 	
@@ -102,28 +102,28 @@ void SoundManager::PlayLaserSFX()
 void SoundManager::PlayHitSFX()
 {
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath("sound/hit.wav"));
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename("sound/hit.wav").c_str());
 
 }
 
 void SoundManager::PlayEffect(const char* path, float x, float y, float z, bool aloop){
 	if(strlen(path)<1) return;
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path),  x,  y, z, aloop);
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename(path).c_str(),  x,  y, z, aloop);
 }
 
 void SoundManager::PlaySound( const char* path, float x, float y, float z, bool aloop)
 {
 	if(strlen(path)<1) return;
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path),  x,  y, z, aloop);
-	m_sLast = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path);
+	audioEngine->playEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename(path).c_str(),  x,  y, z, aloop);
+	m_sLast = CCFileUtils::sharedFileUtils()->fullPathForFilename(path);
 }
 
 void SoundManager::StopSound(const char* path){
 	if(strlen(path)<1) return;
 	ALSingle *audioEngine = ALSingle::sharedALSingle();
-	audioEngine->StopEffect(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
+	audioEngine->StopEffect(CCFileUtils::sharedFileUtils()->fullPathForFilename(path).c_str());
 }
 
 bool SoundManager::QuerySound()

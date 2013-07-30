@@ -22,6 +22,7 @@ Entiles::Entiles()
 	b_Dirty = true;
 	b_IsControler = false;
 	b_Re = false;
+
 }
 
 void Entiles::initFiles(const char *pszFileName, const CCRect& rect)

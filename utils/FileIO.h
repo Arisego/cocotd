@@ -32,7 +32,7 @@ public:
 		do 
 		{
 			path.clear();
-			path= CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(filename);
+			path= CCFileUtils::sharedFileUtils()->fullPathForFilename(filename);
 		} while (path.length() < 1);
 		
 		char *buffer = (char *)CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &filesize);

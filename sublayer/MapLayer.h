@@ -17,6 +17,8 @@
 #include "hud/ElementTicker.h"
 #include "packui/ListDBView.h"
 
+#include "Component/MapLayerComp.h"
+
 USING_NS_CC;
 using namespace std;
 
@@ -97,7 +99,7 @@ protected:
 	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map
 	int m_iFuncType;
 
-	void draw_func();			//Run the specified function.
+	void click_act();			//Run the specified function.
 	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
 	ItemCellData* m_sIcd;

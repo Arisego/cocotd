@@ -7,6 +7,8 @@
 
 USING_NS_CC;
 
+#include "Component/EChessComp.h"
+
 // The Entitle For Battle Map. 
 // As BattleMap has limited functions, we only use EChesses as the main object.
 // You may not need a bullet or some other thing, the only thing need by BattleMap is animation.
@@ -34,8 +36,11 @@ public:
 		m_pChara = NULL;
 		state = 0;
 		m_bMoving = false;
+		EChessComp* ecp = new EChessComp();
+		ecp->autorelease();
+		addComponent(ecp);
+		//scheduleUpdate();
 	}
-
 
 	void lin();
 	b2AABB* f_search();

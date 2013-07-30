@@ -452,7 +452,7 @@ void GameScene::Snap(){
 	CCDirector::sharedDirector()->setNextDeltaTimeZero(true);
 	CCSize winsize = CCDirector::sharedDirector()->getWinSize();
 	//CCLayerColor* whitePage = CCLayerColor::layerWithColor(ccc4(255, 255, 255, 0), winsize.width, winsize.height);
-	CCRenderTexture* rtx = CCRenderTexture::renderTextureWithWidthAndHeight(winsize.width, winsize.height);
+	CCRenderTexture* rtx = CCRenderTexture::create(winsize.width, winsize.height);
 	rtx->setPosition(winsize.width / 2, winsize.height / 2);
 	//rtx->beginWithClear(0.5,1,1,0);
 	rtx->begin();

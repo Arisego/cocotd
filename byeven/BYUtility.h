@@ -28,10 +28,10 @@ public:
     {
         bool bDoubleClick = false;
         
-        gettimeofday( &m_Now, NULL );
+        CCTime::gettimeofdayCocos2d( &m_Now, NULL );
         
-        float fTimeDelta = ( m_Now.tv_sec - m_Prev.tv_sec ) + ( m_Now.tv_usec - m_Prev.tv_usec ) * 0.000001f;
-        
+        double fTimeDelta = CCTime::timersubCocos2d((struct cc_timeval *)&m_Prev, (struct cc_timeval *)&m_Now);
+
         if( fTimeDelta < BY_DOUBLE_CLICK_DELTA )
         {
             bDoubleClick = true;
@@ -42,11 +42,11 @@ public:
         return bDoubleClick;
     }
     
-    timeval& getNow(){  return m_Now;   }
-    timeval& getPrev(){ return m_Prev;  }
+    cc_timeval& getNow(){  return m_Now;   }
+    cc_timeval& getPrev(){ return m_Prev;  }
 private:
-    timeval m_Prev;
-    timeval m_Now;
+    cc_timeval m_Prev;
+    cc_timeval m_Now;
 };
 
 class BYClock
@@ -60,12 +60,12 @@ public:
     
     void begin()
     {
-        gettimeofday( &m_BeginTime, NULL );
+        CCTime::gettimeofdayCocos2d( &m_BeginTime, NULL );
     }
     
     void end()
     {
-        gettimeofday( &m_EndTime, NULL );
+        CCTime::gettimeofdayCocos2d( &m_EndTime, NULL );
         m_DeltaTime = ( m_EndTime.tv_sec - m_BeginTime.tv_sec ) + ( m_EndTime.tv_usec - m_BeginTime.tv_usec ) * 0.000001;
     }
     
@@ -73,8 +73,8 @@ public:
     void printDelta() { std::cout << "BYClock::PrintDelta = " << m_DeltaTime << " second." << std::endl; }
     
 private:
-    timeval m_BeginTime;
-    timeval m_EndTime;
+    cc_timeval m_BeginTime;
+    cc_timeval m_EndTime;
     float m_DeltaTime;
 };
 

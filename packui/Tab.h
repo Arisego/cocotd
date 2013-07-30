@@ -92,30 +92,30 @@ public:
 		string s;
 		int v;
 
-		cm->GetConfigV(CM_FULLSCREEN,v);
-		s = cm->GetConfigS("full_screen");
+		//cm->GetConfigV(CM_FULLSCREEN,v);
+		//s = cm->GetConfigS("full_screen");
 
-		CCLabelBMFont* labelAtlas = CCLabelBMFont::create(s.c_str(), FNT_CHN);
-		mControlSwith *switchControl = new mControlSwith();
-		switchControl->initWithMaskSprite(
-			CCSprite::create("extensions/switch-mask.png"),
-			CCSprite::create("extensions/switch-on.png"),
-			CCSprite::create("extensions/switch-off.png"),
-			CCSprite::create("extensions/switch-thumb.png"),
-			CCLabelTTF::create("On", "Arial-BoldMT", 16),
-			CCLabelTTF::create("Off", "Arial-BoldMT", 16)
-			);
-		//switchControl->setAnchorPoint(ccp(0,0));
-		switchControl->setPosition(ccp(m_frwidth, s_fheight));
+		//CCLabelBMFont* labelAtlas = CCLabelBMFont::create(s.c_str(), FNT_CHN);
+		//mControlSwith *switchControl = new mControlSwith();
+		//switchControl->initWithMaskSprite(
+		//	CCSprite::create("extensions/switch-mask.png"),
+		//	CCSprite::create("extensions/switch-on.png"),
+		//	CCSprite::create("extensions/switch-off.png"),
+		//	CCSprite::create("extensions/switch-thumb.png"),
+		//	CCLabelTTF::create("On", "Arial-BoldMT", 16),
+		//	CCLabelTTF::create("Off", "Arial-BoldMT", 16)
+		//	);
+		////switchControl->setAnchorPoint(ccp(0,0));
+		//switchControl->setPosition(ccp(m_frwidth, s_fheight));
 
-		//labelAtlas->setAnchorPoint(ccp(0,0));
-		labelAtlas->setPosition(ccp(m_flwidth,s_fheight));
-		switchControl->setOn(v);
-		valMo[CM_FULLSCREEN] = v;
-		switchControl->autorelease();
-		addChild(labelAtlas);
-		addChild(switchControl);
-		switchControl->addTargetWithActionForControlEvents(this, cccontrol_selector(ConfigTab::valueChanged), CCControlEventValueChanged);
+		////labelAtlas->setAnchorPoint(ccp(0,0));
+		//labelAtlas->setPosition(ccp(m_flwidth,s_fheight));
+		//switchControl->setOn(v);
+		//valMo[CM_FULLSCREEN] = v;
+		//switchControl->autorelease();
+		//addChild(labelAtlas);
+		//addChild(switchControl);
+		//switchControl->addTargetWithActionForControlEvents(this, cccontrol_selector(ConfigTab::valueChanged), CCControlEventValueChanged);
 
 		//////////////////////////////////////////////////////////////////////////
 		s_fheight -= 50;

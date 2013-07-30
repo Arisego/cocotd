@@ -103,7 +103,10 @@ void MapLayer::f_init(){
 	m_sCon			=	NULL;
 
 	m_iMLState = -1;
-	scheduleUpdate();
+	//scheduleUpdate();
+	MapLayerComp* mlp = new MapLayerComp();
+	addComponent(mlp);
+	mlp->autorelease();
 }
 
 void MapLayer::f_pauseall(){
@@ -350,7 +353,7 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 				}
 			case(3):							//Menu func is now waiting for bm click.
 				{
-					draw_func();
+					click_act();
 					break;
 				}
 			}
@@ -461,7 +464,7 @@ void MapLayer::menu_back( CCObject* pSender )
 
 }
 
-void MapLayer::draw_func()
+void MapLayer::click_act()
 {
 	//if(bm->b_battle != 3) return;
 	switch(m_iFuncType){

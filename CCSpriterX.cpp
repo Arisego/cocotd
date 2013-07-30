@@ -851,8 +851,8 @@ bool CCSpriterX::initWithFile(const char *filename)
 	mCurrEntity = 0;
 
 	unsigned long filesize;
-	const char *path = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(filename);
-	char *buffer = (char *)CCFileUtils::sharedFileUtils()->getFileData(path, "rb", &filesize);
+	string path = CCFileUtils::sharedFileUtils()->fullPathForFilename(filename);
+	char *buffer = (char *)CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &filesize);
 
 	if (buffer == NULL)
 		return false;

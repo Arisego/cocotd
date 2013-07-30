@@ -185,7 +185,7 @@ void CharaListView::PrepareSingle()
 		CharaState* t_cs = (CharaState*) charalist->objectAtIndex(i);
 		t_cs->settouchstate(false);
 		if(i == m_iCurs){
-			t_cs->runAction(CCSequence::createWithTwoActions(CCMoveTo::create(ANIMATE_TIME_VAL,ccp(0,1)),CCCallFuncO::actionWithTarget(this, callfuncO_selector(CharaListView::PrepareBack),t_cs)));
+			t_cs->runAction(CCSequence::createWithTwoActions(CCMoveTo::create(ANIMATE_TIME_VAL,ccp(0,1)),CCCallFuncO::create(this, callfuncO_selector(CharaListView::PrepareBack),t_cs)));
 		}else{
 			t_cs->runAction(CCSequence::createWithTwoActions(CCSpawn::createWithTwoActions(CCFadeOut::create(ANIMATE_TIME_VAL),CCScaleTo::create(ANIMATE_TIME_VAL,0.8)),CCSpawn::createWithTwoActions(CCToggleVisibility::create(),CCScaleTo::create(0.0,1.25))));
 		}

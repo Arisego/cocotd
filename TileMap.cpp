@@ -701,6 +701,7 @@ void TileMap::update_b2world(float dt){
 			Entiles *ballData = (Entiles *)b->GetUserData();  
 
 			if(ballData->b_Dirty){
+				ballData->update(dt);
 				ballData->m_sprite->setPosition(ccp(b->GetPosition().x * PTM_RATIO- dtx,  
 					b->GetPosition().y * PTM_RATIO- dty));  
 

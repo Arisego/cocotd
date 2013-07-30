@@ -9,9 +9,10 @@
 using namespace std;
 
 struct StepNode{
-	int x,y,G,H,status;
+	int x,y,G,status;
+	float H;
 
-	int getF(){
+	float getF(){
 		return G+H;
 	}
 
@@ -92,7 +93,7 @@ protected:
 	bool f_load_entile();		//inform chara-entile to map; called inside init;
 	
 	
-	int getNodeH(CCPoint to, StepNode& node);
+	float getNodeH(CCPoint to, StepNode& node);
 	StepNode getNodeChild(StepNode sn, int i);
 	list<StepNode> getSearchPath(CCPoint startPos, CCPoint to);
 	bool as_checkpoint( int x, int y );
