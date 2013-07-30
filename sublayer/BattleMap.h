@@ -82,6 +82,8 @@ public:
 
 	bool m_bAnimateOver;					//Whether the animate is over.
 	void control_switch();					//called when control is switched.
+
+	virtual void clearcontrol();
 protected:
 	CCPoint m_con_cur;			//Current controller point; inner use only.
 

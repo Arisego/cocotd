@@ -173,37 +173,47 @@ void BattleMap::f_decide(int i, int j){		//通过新的选中tile对map进行重构。 use t
 
 void BattleMap::update(float dt)
 {
-	if(m_touch){
-		switch(b_battle){
-		case(1):						// state == 1 : <点击选择单位.
-			{
-				checkpoint(m_touch);
-				break;
-			}
-		case(3):						// state == 3 : <移动鼠标并选择目标.
-			{		
-				m_touchpoint = this->convertTouchToNodeSpace(m_touch);
 
-				m_touchpoint = ccpAdd(m_touchpoint,ccp(-dtx,-dty));
-				CCPoint ti = m_getTilec(m_touchpoint);
-
-				int i = round(ti.x);
-				if(i >= max_x) i = max_x -1;
-				int j = round(ti.y);		
-				if(j >= max_y) j = max_y - 1;
-				f_decide(i,j);				
-				break;
-			}
-		case(4):		// state == 4 : Map is bussy moving charaentile.
-			{
-				((EChessComp*) m_controller->getComponent("controller"))->move_by_path(vc_path);
-				b_battle = -1;
-				break;
-			}
+	switch(b_battle){
+	case(-1):		//Wait For UnLock & Switch Control
+		{
+			CC_BREAK_IF(!cancontrol);
+			m_bAnimateOver = true;
+			break;
 		}
+	case(1):						// state == 1 : <点击选择单位.
+		{
+			CC_BREAK_IF(!m_touch);
+			checkpoint(m_touch);
+			break;
+		}
+	case(3):						// state == 3 : <移动鼠标并选择目标.
+		{		
+			CC_BREAK_IF(!m_touch);
+			m_touchpoint = this->convertTouchToNodeSpace(m_touch);
+
+			m_touchpoint = ccpAdd(m_touchpoint,ccp(-dtx,-dty));
+			CCPoint ti = m_getTilec(m_touchpoint);
+
+			int i = round(ti.x);
+			if(i >= max_x) i = max_x -1;
+			int j = round(ti.y);		
+			if(j >= max_y) j = max_y - 1;
+			f_decide(i,j);				
+			break;
+		}
+	case(4):		// state == 4 : Map is bussy moving charaentile.
+		{
+			CC_BREAK_IF(!m_touch);
+			((EChessComp*) m_controller->getComponent("controller"))->move_by_path(vc_path);
+			m_bAnimateOver = false;
+			b_battle = -1;
+			break;
+		}
+	}
 
 		
-	}
+	
 
 	update_collide();
 	update_b2world(dt);
@@ -599,6 +609,7 @@ bool BattleMap::move_control()
 
 void BattleMap::a_star()		// <结果被存储在vc_path中。
 {
+	vc_path.clear();
 	list<StepNode> lsn = getSearchPath(m_con_cur,m_mou_cur);
 	vc_path.push_back(m_mou_cur);
 	lsn.pop_back();
@@ -947,5 +958,11 @@ void BattleMap::control_switch()
 	cs_b.clear();
 	cs_dis.clear();
 
+}
+
+void BattleMap::clearcontrol()
+{
+	CC_SAFE_RELEASE_NULL(m_touch);
+	TileMap::clearcontrol();
 }
 

@@ -204,7 +204,7 @@ public:
 
 	 void DerMapAct(Script* s);
 	 bool cancontrol;
-	 void clearcontrol();
+	 virtual void clearcontrol();
 
 
 	 float round(float r);

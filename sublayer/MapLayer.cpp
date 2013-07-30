@@ -451,7 +451,7 @@ void MapLayer::menu_back( CCObject* pSender )
 			}
 			break;
 		}
-	case(32):
+	case(32):		// <ÒÆ¶¯
 		{
 			bm->draw_moving_tile();
 			bm->b_battle = 3;
@@ -556,7 +556,7 @@ void MapLayer::update( float fDelta )
 		{
 			do 
 			{
-				CC_BREAK_IF(bm->b_battle != 4);
+				CC_BREAK_IF(bm->b_battle != -1);
 				CC_BREAK_IF(!bm->m_bAnimateOver);
 
 				bm->control_switch();
