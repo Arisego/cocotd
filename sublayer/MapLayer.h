@@ -75,14 +75,21 @@ public:
 	void item_use(CCObject* pSender);
 	void menu_back(CCObject* pSender);				// Pop up menu callback.
 	//////////////////////////////////////////////////////////////////////////
+	// <EffectCenter调用接口      <[TODO]EffectCenter将被作为Script的交接者，在完成交接后失效，所有播放效果由各EChess的Component负责。
 	virtual void get_target();
 	virtual void effect_over();
 
-	virtual void show_text(string s);	//Interface的实现者必然知道应该如何显示文本，否则它就不应该实现这个Interface
-	virtual void refresh_view();		//刷新显示。
+	virtual void show_text(string s);	// <Interface的实现者必然知道应该如何显示文本，否则它就不应该实现这个Interface
+	virtual void refresh_view();		// <刷新显示。
 	virtual void handlesp(Script* sp);
+	//
 	//////////////////////////////////////////////////////////////////////////
 protected:
+	//////////////////////////////////////////////////////////////////////////
+	//
+	vector<map<string,string>> vdata;	//	<数据库中介 -- 攻击类型多是固定的，将不会被保存在数据库中。
+	//	<攻击
+	//////////////////////////////////////////////////////////////////////////
 	LinePrior* m_lpJudgement;
 	ElementTicker* m_etClock;
 	void TickBack(CCObject* pSender);
@@ -99,7 +106,7 @@ protected:
 	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map
 	int m_iFuncType;
 
-	void click_act();			//Run the specified function.
+	void click_act();			// <根据具体的功能状态相应鼠标点击事件
 	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
 	ItemCellData* m_sIcd;

@@ -210,6 +210,12 @@ void BattleMap::update(float dt)
 			b_battle = -1;
 			break;
 		}
+	case(5):
+		{
+			b_battle = -1;
+			m_bAnimateOver = false;
+			break;
+		}
 	}
 
 		

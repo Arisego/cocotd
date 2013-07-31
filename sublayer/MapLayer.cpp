@@ -372,15 +372,18 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 	return;
 }
 
+// <虽然是叫ItemBack却不知为什么现在是被用来做技能调用的
 void MapLayer::ItemBack( CCObject* pSender )
 {
-	CCLOG(">ItemBack....We use the skill directly.");
-
+	CCLOG(">ItemBack....We use the skill directly.");		// <[TODO]:为EffectCenter添加可行性检查
+	
+	// <获得对象所携带的ID
 	m_iItem = ((ItemCell*) pSender)->getTag();
-
+	// <隐藏技能选择框
 	m_ldb->setVisible(false);
+	// <置换标志位
 	bm->b_battle = 3;
-
+	// <获得usecase参数
 	m_iSUseCase = stoi(m_ldb->getval("usecase",m_iItem));		//No use; Test Only. Read out range and effect_dis from database "additional". They should be stored in pair of int value.
 	
 	vector<int> ars;
@@ -398,7 +401,7 @@ void MapLayer::menu_back( CCObject* pSender )
 {
 	Container* t_c = (Container*) pSender;
 	m_iFuncType = t_c->getTag();
-	EChesses* t_ec = (EChesses*) bm->m_controller;				// We only control with m_controller which is rolled by token.
+	EChesses* t_ec = (EChesses*) bm->m_controller;				// <控制器角色在地图上始终只有一个
 	switch(m_iFuncType){
 	case(1):
 		{
@@ -451,6 +454,36 @@ void MapLayer::menu_back( CCObject* pSender )
 			}
 			break;
 		}
+	case(16):		// <攻击
+		{
+			Chara* mpChara = t_ec->m_pChara;
+			int t_iType = mpChara->getvalue("attack");		// <从单位中获得攻击属性，注意默认取得的是0
+
+			bm->b_battle = 3;
+
+			t_bm->setVisible(false);
+			t_bm->Refresh_Button();
+
+			t_iType = 1;								// <[TestOnly] 使用上面获取的值
+
+			vdata.clear();
+			DBUtil::initDB("save.db");
+			CCString* t_csSql = CCString::createWithFormat("select * from attr_attact where id = %d",t_iType);
+			vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
+			int m_number = vdata.size();
+			DBUtil::closeDB(); 
+
+			map<string,string> t_ssm = (map<string,string>) vdata.at(0);	
+
+			vector<int> ars;
+			ars.push_back(7);
+			bm->draw_skill_range(stoi(t_ssm.at("type_id")),ars);							//	<攻击的范围绘制			-- 根据攻击配置的不同这个值需要从存档中读取
+			ars.clear();
+			ars.push_back(3);
+			bm->set_mouse_range(stoi(t_ssm.at("range_type_id")),ars);								//	<定义鼠标选择图形
+
+			break;
+		}
 	case(32):		// <移动
 		{
 			bm->draw_moving_tile();
@@ -474,13 +507,26 @@ void MapLayer::click_act()
 			//[IN]m_iSUseCase;
 			if(bm->arange_target(m_iSUseCase)){
 				CCLOG(">Prepare for EC-SkillUsing.");
-				EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);
-				bm->b_battle = 4;
+				EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
+				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
 			}else{
 				return;
 			}
 
+			break;
+		}
+	case 16:
+		{
+			if(bm->arange_target(0)){
+				
+
+				bm->b_battle = 5;
+				bm->m_bAnimateOver = false;
+
+				CCLog(">Reach here if every thing is right.....");
+			}
+			
 			break;
 		}
 	case(32):				// type == 32 | move controller.

@@ -58,7 +58,7 @@ public:
 	void draw_moving_tile();				//draw the moving range out.
 	void draw_moving_block();				//generate block and disable tiles.
 	void draw_skill_range(int a_type, vector<int> a_ran);				//draw the range of skill and item use;[IN] a_type && paralist int
-	void set_mouse_range(int a_type, vector<int> a_ran);
+	void set_mouse_range(int a_type, vector<int> a_ran);				// <设置鼠标的实时绘制图形 0 - 点 1 - 正方形
 	void draw_mouse_range(CCPoint a_cp);
 
 	void dps_ring(CCPoint a_cp, set<pair<int,int>> &a_dt, int a_max);			// Generate a set for ring. 十字架
