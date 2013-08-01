@@ -121,7 +121,7 @@ void EChesses::SCMoveto(CCPoint c){
 }
 
 void EChesses::SCGoto(CCPoint c){
-	SCMoveto(c);			//当前没有AI
+	SCMoveto(c);			// <当前没有AI ?????????
 }
 
 void EChesses::SCTarget(SimControl* tar){		//不会更新目标的位置，如果有这种需求可以使用schedule来动态调整目标

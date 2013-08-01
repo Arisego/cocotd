@@ -1,6 +1,6 @@
 #include "sublayer/MapLayer.h"
 #include "utils/EffectControler.h"
-
+#include "SingleTon/BattleFiled.h"
 
 USING_NS_CC;
 
@@ -477,7 +477,7 @@ void MapLayer::menu_back( CCObject* pSender )
 
 			vector<int> ars;
 			ars.push_back(7);
-			bm->draw_skill_range(stoi(t_ssm.at("type_id")),ars);							//	<攻击的范围绘制			-- 根据攻击配置的不同这个值需要从存档中读取
+			bm->draw_skill_range(stoi(t_ssm.at("type_id")),ars);							//	<攻击的范围绘制			arrs -- 根据攻击配置的不同这个值需要从存档中读取
 			ars.clear();
 			ars.push_back(3);
 			bm->set_mouse_range(stoi(t_ssm.at("range_type_id")),ars);								//	<定义鼠标选择图形
@@ -520,6 +520,13 @@ void MapLayer::click_act()
 		{
 			if(bm->arange_target(0)){
 				
+				map<string,string> t_ssm = (map<string,string>) vdata.at(0);
+
+				Scriptor* sp = new Scriptor();
+				sp->re_init();
+				sp->parse_string(t_ssm.at("action_sp"));
+
+				bm->HandleScriptor(sp);
 
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
@@ -705,34 +712,11 @@ void MapLayer::right_click()
 
 void MapLayer::script_over()
 {
-	CCDictElement* t_cde = NULL;
-	CCDictionary* t_cd = bm->m_itemlist;
-
-	int t_iEnemy = 0;					//Test: we should also check whether player is dead.
-
-	CCDICT_FOREACH(t_cd,t_cde){
-		EChesses* t_ec = (EChesses*) t_cde->getObject();
-		switch(t_ec->group_id)
-		{
-		case(0x02):
-			{
-				if( t_ec->m_pChara->gethp() < 1)
-				{
-					m_lpJudgement->removePin(t_ec->name);
-					bm->m_itemlist->removeObjectForKey(t_ec->name);
-					CCLOG(">Enemy Dead....Player Dead should not call like this, because the destruct of echess release the chara, may be you have to retain it while initing.");
-				}else{
-					++t_iEnemy;
-				}
-				
-			}
-		}
-	}
-
-	if(t_iEnemy == 0)				//The battle is over and player wins.
-	{
-		CCLOG(">The battle is over and player wins.");
-		switch_to_walk();
+	//m_lpJudgement->removePin(t_ec->name);
+	//bm->m_itemlist->removeObjectForKey(t_ec->name);
+	//[TODO] <注意这个函数的调用来源，它可能会被移除
+	if(BattleField::sharedBattleField()->CheckOver()) {
+		switch_to_walk();	// Change it~
 		return;
 	}
 	switch_control();

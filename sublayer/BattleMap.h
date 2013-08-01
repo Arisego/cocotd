@@ -84,6 +84,10 @@ public:
 	void control_switch();					//called when control is switched.
 
 	virtual void clearcontrol();
+	//////////////////////////////////////////////////////////////////////////
+	//	<¹¥»÷
+	virtual void HandleScriptor(Scriptor* asp);
+	int center_i,center_j;
 protected:
 	CCPoint m_con_cur;			//Current controller point; inner use only.
 

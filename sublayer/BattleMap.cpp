@@ -153,6 +153,8 @@ bool BattleMap::init()
 
 void BattleMap::f_decide(int i, int j){		//通过新的选中tile对map进行重构。 use the set to decide.
 	imply_set(ts_last,0);
+	center_i = i;
+	center_j = j;
 	ts_last.clear();
 
 	imply_set(cs_block,c_y);
@@ -950,7 +952,6 @@ void BattleMap::show_text(EChesses* a_ec,string s)
 
 void BattleMap::show_text( string s )
 {
-	CCDictElement* t_ce = NULL;
 	for(int i = 0; i< m_caTarget->count(); ++i){
 		show_text((EChesses*) m_caTarget->objectAtIndex(i),s);
 	}
@@ -970,5 +971,17 @@ void BattleMap::clearcontrol()
 {
 	CC_SAFE_RELEASE_NULL(m_touch);
 	TileMap::clearcontrol();
+}
+
+void BattleMap::HandleScriptor( Scriptor* asp )
+{
+	// m_caTarget	<被选中的目标单位
+	// ts_last		<被选中的所有点的集合
+	CCArray* t_caS = asp->m_caScript;
+	
+	((EChessComp*) m_controller->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(0));
+	for(int i = 0; i< m_caTarget->count(); ++i){
+		((EChessComp*) ((EChesses*) m_caTarget->objectAtIndex(i))->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(1));
+	}
 }
 

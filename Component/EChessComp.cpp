@@ -8,6 +8,8 @@ EChessComp::EChessComp()
 {
 	m_strName = "controller";
 	miStateFlag = 0;
+	miScriptSum = 0;
+	mSp			= NULL;
 }
 
 EChessComp::~EChessComp()
@@ -22,6 +24,8 @@ void EChessComp::move_by_path(std::vector<CCPoint> &vpath )
 		CCLOG("WTF:%f,%f",it->x,it->y);
 	}
 	miStateFlag = 1;
+	miScriptSum = 1;
+
 	((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->MlLock();
 	CCLog(">Path is ready for component:%d",mPath.size());
 }
@@ -40,7 +44,7 @@ void EChessComp::update(float delta){
 				}else{
 					CCLOG(">Moving over...");
 					miStateFlag = 0;
-					((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->MlUnLock();
+					GoAHead();
 				}
 			}
 			break;
@@ -49,4 +53,25 @@ void EChessComp::update(float delta){
 	default:
 		break;
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// <¹¥»÷
+
+void EChessComp::GoAHead()
+{
+	--miScriptSum;
+	if(miScriptSum<=0)
+	{
+		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->MlUnLock();
+		if(mSp) delete mSp;
+	}
+}
+
+void EChessComp::RunScript( Script* asp )
+{
+	mSp = asp;
+	miScriptSum = mSp->m_snum;
+
+	CCLog(">[ECC]Script Ready:%d",miScriptSum);
 }

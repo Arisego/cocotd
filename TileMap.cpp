@@ -826,3 +826,8 @@ void TileMap::test_disable_all_entiles()
 	CC_SAFE_RELEASE_NULL(renderLayer);  
 
 }
+
+void TileMap::HandleScriptor( Scriptor* asp )
+{
+	CCLOG(">[TileMap]Super Class doesnot hanl");
+}
