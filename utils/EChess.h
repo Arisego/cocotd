@@ -63,6 +63,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void load_chara_dbsp(Script* sp);
 	void RefreshMovingState(CCPoint c);				//Refresh all the state needed before moving.
+	virtual void ChangeFace( const CCPoint ac );
 };
 
 #endif

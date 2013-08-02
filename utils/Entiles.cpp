@@ -1,9 +1,10 @@
 #include "Entiles.h"
+#include "GameManager.h"
 
 Entiles::~Entiles()
 {
-	m_sprite->removeFromParent();
-	m_sprite->release();
+	//m_sprite->removeFromParent();
+	//m_sprite->release();
 }
 
 Entiles::Entiles()
@@ -34,6 +35,8 @@ void Entiles::initFiles(const char *pszFileName)
 {
 	CC_SAFE_RELEASE_NULL(m_sprite);
 	m_sprite = CCSprite::createWithSpriteFrameName("blank.png");
+	m_sprite->setAnchorPoint(ccp(0.5,0.5));
+	m_sprite->setPosition(CCPointZero);
 
 	m_sprite->setOpacity(0);
 
@@ -60,7 +63,7 @@ void Entiles::initFiles(const char *pszFileName)
 
 	m_sprite->addChild(sheet);
 
-	m_sprite->retain();
+	addChild(m_sprite);
 	m_sprite->setTag(9);
 	psz = pszFileName;
 }
@@ -120,3 +123,16 @@ string Entiles::GetFullName(){			//存储Fullname，如果影响效率的话
 	return CCString::createWithFormat("%s_%s",group.c_str(),name.c_str())->getCString();
 }
 
+void Entiles::setState( int ai )
+{
+	state = ai;
+}
+
+void Entiles::playAnimate( string name,int times )
+{
+	m_animator->PlayAnim(CCString::createWithFormat("%s_%s",name.c_str(),sDirect[direc])->getCString(),times);
+}
+
+void Entiles::ChangeFace( const CCPoint ac ){
+	;
+}

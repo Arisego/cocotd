@@ -21,9 +21,17 @@ public:
 
 	/* <运行指定的脚本 */
 	void RunScript(Script* asp);		// <不要对同一个个体添加两种脚本效果，结果是不可预知的。如果要那么做，可以在这个函数里创建新的自销毁Component。
+	void setScriptNum(int ai);
+	void DerScript(Script* asp);
+
+	/* <内部锁 */
+	int miELock;
+	void ELock();
+	void EUnLock();
 
 private:
 	int miScriptSum;
+	int miScriptCount;
 	void GoAHead();
 	Script* mSp;
 

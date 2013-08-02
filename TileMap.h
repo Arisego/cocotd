@@ -222,6 +222,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// <地图特效类
 	virtual void HandleScriptor(Scriptor* asp);			//	<处理获得的脚本控制器。
+	CCPoint cp_last;
 };
 
 #endif	// __TILEMAP_H__

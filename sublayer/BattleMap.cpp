@@ -157,7 +157,7 @@ void BattleMap::f_decide(int i, int j){		//通过新的选中tile对map进行重构。 use t
 	center_j = j;
 	ts_last.clear();
 
-	imply_set(cs_block,c_y);
+	imply_set(cs_hit_block,c_y);
 
 	CCTMXTiledMap* map = (CCTMXTiledMap*) getChildByTag(kTagMap);
 	CCTMXLayer* layer = map->layerNamed("Battle");
@@ -365,9 +365,9 @@ do
 		t_ec->initFiles(t_ec->psz.c_str());
 		CCPoint d = m_getViewc(t_ec->pos);
 
-		t_ec->m_sprite->setAnchorPoint(ccp(0,0));
+		t_ec->setAnchorPoint(ccp(0,0));
 		t_ec->b_Re = true;
-		addChild(t_ec->m_sprite);
+		addChild(t_ec);
 
 		ballBodyDef.position.Set((dtx+d.x)/PTM_RATIO, (d.y+dty)/PTM_RATIO);  
 		_body = _world->CreateBody(&ballBodyDef);  
@@ -470,12 +470,13 @@ void BattleMap::draw_moving_tile()
 
 	CCLOG(">Prepare Drawing Layer 1:%d,%d.",i,j);
 
+	cs_hit_block.clear();
 	cs_y.clear();				//cs_y存储第一层
 	draw_moving_block();
 	dps_range(m_con_cur, cs_y, t_iMove);
 	imply_set(cs_y,c_y);			//Imply.
 	imply_set(cs_dis,c_b);
-	//imply_set(cs_block,c_y);
+	imply_set(cs_hit_block,c_y);
 	CCLog(">[BM]cs_dis:%d|cs_block:%d",cs_dis.size(),cs_block.size());
 
 }
@@ -555,7 +556,10 @@ void BattleMap::dps_range( CCPoint a_cp , set<pair<int,int>> &a_dt, int a_max )
 
 	//CCLOG(">Dps_range_begin:%d,%d",t_x,t_y);
 	
-	if(cs_block.count(make_pair(t_x,t_y))>0) return;
+	if(cs_block.count(make_pair(t_x,t_y))>0){
+		cs_hit_block.insert(make_pair(t_x,t_y));
+		return;
+	}
 	if(a_dt.count(make_pair(t_x,t_y))>0) return;
 	a_dt.insert(make_pair(t_x,t_y));
 	if((abs(t_x - m_con_cur.x) + abs(t_y - m_con_cur.y)) == a_max) return;
@@ -877,6 +881,7 @@ void BattleMap::set_mouse_range( int a_type, vector<int> a_ran )
 
 void BattleMap::draw_mouse_range(CCPoint a_cp)
 {
+	cp_last = a_cp;
 	switch(m_mouse_type)
 	{
 	case(0):
@@ -939,9 +944,9 @@ void BattleMap::show_text(EChesses* a_ec,string s)
 
 	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),FNT_CHN);
 	c_ttlbmf->setAnchorPoint(CCPointZero);
-	c_ttlbmf->setVertexZ(a_ec->m_sprite->getVertexZ());
-	c_ttlbmf->setPosition(a_ec->m_sprite->getPosition());
-	c_ttlbmf->setZOrder(a_ec->m_sprite->getZOrder());
+	c_ttlbmf->setVertexZ(a_ec->getVertexZ());
+	c_ttlbmf->setPosition(a_ec->getPosition());
+	c_ttlbmf->setZOrder(a_ec->getZOrder());
 	//	c_ttlbmf->setTag(0x299);
 	addChild(c_ttlbmf,11);
 	//	mt_EffectList->addObject(c_ttlbmf);
@@ -964,6 +969,8 @@ void BattleMap::control_switch()
 	clean_cs();
 	cs_b.clear();
 	cs_dis.clear();
+	cs_block.clear();
+	cs_hit_block.clear();
 
 }
 
@@ -978,10 +985,14 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	// m_caTarget	<被选中的目标单位
 	// ts_last		<被选中的所有点的集合
 	CCArray* t_caS = asp->m_caScript;
-	
+	m_controller->ChangeFace(cp_last);
+	CCLog(">[BM]Tying to pass sp to owner unit....");
 	((EChessComp*) m_controller->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(0));
+	CCLog(">[BM]Passing owner is over...");
 	for(int i = 0; i< m_caTarget->count(); ++i){
+		CCLog(">[BM]Tying to pass sp to getter unit-%d....",i);
 		((EChessComp*) ((EChesses*) m_caTarget->objectAtIndex(i))->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(1));
+		((EChesses*) m_caTarget->objectAtIndex(i))->ChangeFace(m_con_cur);
 	}
 }
 

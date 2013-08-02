@@ -50,23 +50,31 @@ void EChesses::lin(){
 				case MS_DOWN: desiredVel = b2Vec2(0,-4); break;
 #endif
 				}
-
+				//////////////////////////////////////////////////////////////////////////
+				if(direc != MS_STOP){
+					stand = direc;
+					m_animator->PlayAnim(CCString::createWithFormat("paodong_%s",sDirect[direc])->getCString());
+				}else{
+					m_animator->PlayAnim(CCString::createWithFormat("stand_%s",sDirect[stand])->getCString());
+				}
 				break;
 			}
 		case 1:
 			{
 				CCPoint cur = GameManager::sharedLogicCenter()->ml->tm->m_checkPoint(ccp(m_body->GetPosition().x,m_body->GetPosition().y));
 				DecideDirect(cur,desiredVel);
+				//////////////////////////////////////////////////////////////////////////
+				if(direc != MS_STOP){
+					stand = direc;
+					m_animator->PlayAnim(CCString::createWithFormat("paodong_%s",sDirect[direc])->getCString());
+				}else{
+					m_animator->PlayAnim(CCString::createWithFormat("stand_%s",sDirect[stand])->getCString());
+				}
 				break;
 			}
 		}
 
-		if(direc != MS_STOP){
-			stand = direc;
-			m_animator->PlayAnim(CCString::createWithFormat("paodong_%s",sDirect[direc])->getCString());
-		}else{
-			m_animator->PlayAnim(CCString::createWithFormat("stand_%s",sDirect[stand])->getCString());
-		}
+
 
 		float velChangeX = desiredVel.x - vel.x;
 		float velChangeY = desiredVel.y - vel.y;
@@ -354,4 +362,18 @@ EChesses::~EChesses()
 	CCLOG(">");
 }
 
+void EChesses::ChangeFace( const CCPoint ac )
+{
+	CCPoint cur = GameManager::sharedLogicCenter()->ml->tm->m_checkPoint(ccp(m_body->GetPosition().x,m_body->GetPosition().y));
+
+	if(cur.y == ac.y){
+		if(cur.x > ac.x) direc = MS_LEFT;
+		else if(cur.x < ac.x) direc = MS_RIGHT;
+	}else{
+		if(cur.y > ac.y) direc = MS_UP;
+		else if(cur.y < ac.y) direc = MS_DOWN;
+	}
+
+
+}
 

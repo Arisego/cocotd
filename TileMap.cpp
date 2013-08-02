@@ -359,7 +359,7 @@ m_debugDraw->SetFlags(flags);
 			//mte->retain();
 			mte->name = mtca->getstring("name");
 			mte->group = mtca->getstring("group");
-			mte->m_sprite->setAnchorPoint(ccp(0,0));
+			mte->setAnchorPoint(ccp(0,0));
 			mte->m_sTarget = mtca->getstring("target");
 			mte->b_Re = true;
 
@@ -397,7 +397,7 @@ m_debugDraw->SetFlags(flags);
 			m_ea->addObject(mte);
 			//mte->m_sprite->retain();
 			//sheet->
-				addChild(mte->m_sprite,i);
+				addChild(mte,i);
 
 		}	//end of for_i_lsp_num;
 
@@ -423,7 +423,7 @@ m_debugDraw->SetFlags(flags);
 				//mte->retain();
 				mte->name = mtca->getstring("name");
 				mte->group = tmp->getstring("name");
-				mte->m_sprite->setAnchorPoint(ccp(0,0));
+				mte->setAnchorPoint(ccp(0,0));
 				mte->b_Re = true;
 				mte->b_Dirty = true;
 
@@ -463,7 +463,7 @@ m_debugDraw->SetFlags(flags);
 				//mte->m_sprite->retain();
 				m_ea->addObject(mte);
 				//sheet->
-					addChild(mte->m_sprite,j);
+					addChild(mte,j);
 			}
 			//m_itemlist->setObject(dtmp,tmp->getstring("name"));
 		}
@@ -679,7 +679,7 @@ void TileMap::f_setcontroller(Entiles* e){
 void TileMap::f_setcamara(Entiles* e){
 	if(!e) return;
 	m_sNaCam = e->GetFullName();
-	this->runAction(CCFollow::create(e->m_sprite, CCRectMake(-dx, -dy, rw, rh)));
+	this->runAction(CCFollow::create(e, CCRectMake(-dx, -dy, rw, rh)));
 }
 
 Entiles* TileMap::m_getEntile(const char* group,const char* name){
@@ -702,16 +702,16 @@ void TileMap::update_b2world(float dt){
 
 			if(ballData->b_Dirty){
 				ballData->update(dt);
-				ballData->m_sprite->setPosition(ccp(b->GetPosition().x * PTM_RATIO- dtx,  
+				ballData->setPosition(ccp(b->GetPosition().x * PTM_RATIO- dtx,  
 					b->GetPosition().y * PTM_RATIO- dty));  
 
-				CCPoint p = ballData->m_sprite->getPosition();
+				CCPoint p = ballData->getPosition();
 				p = CC_POINT_POINTS_TO_PIXELS(p);
 				float newZ = -(p.y+ 32+ dy) /16;
-				ballData->m_sprite->setVertexZ( newZ );			//IN:使用set或者更大的碰撞矩形来避免同z同vertex的bug
+				ballData->setVertexZ( newZ );			//IN:使用set或者更大的碰撞矩形来避免同z同vertex的bug
 
 				if(ballData->b_Re) //sheet->
-					reorderChild(ballData->m_sprite,ceil(-p.y));	//IM:重排子次序
+					reorderChild(ballData,ceil(-p.y));	//IM:重排子次序
 				//CCLOG("newz:%f",newZ);
 
 				ballData->lin();
@@ -794,7 +794,7 @@ void TileMap::update(float dt)
 
 	if (m_controller)
 	{
-		CCPoint p = m_controller->m_sprite->getPosition();
+		CCPoint p = m_controller->getPosition();
 
 		p = this->convertToWorldSpace(p);
 		//p = CCDirector::sharedDirector()->convertToUI(worldPoint);
@@ -817,7 +817,7 @@ void TileMap::test_disable_all_entiles()
 	CCDictElement* pCde = NULL;
 	CCDICT_FOREACH(m_itemlist,pCde){
 		Entiles* t_e = (Entiles*) pCde->getObject();
-		t_e->m_sprite->setVisible(false);
+		t_e->setVisible(false);
 	}
 	m_controller = NULL;
 

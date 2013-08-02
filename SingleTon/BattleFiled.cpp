@@ -1,5 +1,5 @@
 #include "SingleTon/BattleFiled.h"
-
+#include "packui/CharaS.h"
 
 
 BattleField *BattleField::mSharedBattleField = NULL;
@@ -57,4 +57,10 @@ bool BattleField::CheckOver()
 		return false;
 	} while (false);
 	return true;
+}
+
+void BattleField::SetUp()
+{
+	Clean();
+
 }

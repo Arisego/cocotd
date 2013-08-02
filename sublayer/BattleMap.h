@@ -26,7 +26,7 @@ public:
 	CCTouch* m_touch;
 	int b_battle;			//battlemap用state标记 || 1 - 等待弹出菜单 2 - 菜单弹出，拒绝事件 3 - 等待地图对象选择并返回给draw_func();
 	int m_mi,m_mj;
-	set<pair<int,int>> cs_y,cs_b,cs_r,cs_block,cs_dis;			//记录二维数组的集合 
+	set<pair<int,int>> cs_y,cs_b,cs_r,cs_block,cs_dis,cs_hit_block;			//记录二维数组的集合 cs_block - ZOC区域 cs_dis - 无法站立的区域 cs_hit_block - 在移动范围内的zoc
 	vector<CCPoint> vc_path;
 	unsigned int c_r,c_b,c_y;
 	int max_x,max_y;

@@ -12,6 +12,8 @@ public:
 	void Clean();
 	bool CheckOver();
 
+	void SetUp();
+
 protected:
 	virtual bool init();
 

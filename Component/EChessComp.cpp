@@ -4,6 +4,9 @@
 #include "utils/Entiles.h"
 #include "GameManager.h"
 
+#define FRETAIN CCCallFunc::create(this,callfunc_selector(EChessComp::ELock))
+#define FRELEASE CCCallFunc::create(this,callfunc_selector(EChessComp::EUnLock))
+
 EChessComp::EChessComp()
 {
 	m_strName = "controller";
@@ -14,6 +17,7 @@ EChessComp::EChessComp()
 
 EChessComp::~EChessComp()
 {
+	CC_SAFE_DELETE(mSp);
 }
 
 void EChessComp::move_by_path(std::vector<CCPoint> &vpath )
@@ -24,9 +28,11 @@ void EChessComp::move_by_path(std::vector<CCPoint> &vpath )
 		CCLOG("WTF:%f,%f",it->x,it->y);
 	}
 	miStateFlag = 1;
-	miScriptSum = 1;
+	setScriptNum(0);
+	miELock = 1;
+	((Entiles*) m_pOwner)->setState(1);
 
-	((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->MlLock();
+	((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRetain();
 	CCLog(">Path is ready for component:%d",mPath.size());
 }
 
@@ -44,7 +50,7 @@ void EChessComp::update(float delta){
 				}else{
 					CCLOG(">Moving over...");
 					miStateFlag = 0;
-					GoAHead();
+					EUnLock();
 				}
 			}
 			break;
@@ -60,18 +66,94 @@ void EChessComp::update(float delta){
 
 void EChessComp::GoAHead()
 {
-	--miScriptSum;
-	if(miScriptSum<=0)
+	CCLog(">[ECC]Go aHead...");
+	if(miELock>0) return;
+	if(miScriptSum <= miScriptCount)
 	{
-		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->MlUnLock();
-		if(mSp) delete mSp;
+		CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);
+		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRelease();
+		CC_SAFE_DELETE(mSp);
+	}else{
+		CCLog(">[ECC]step:%d,%d",miScriptSum,miScriptCount);
+		DerScript((Script*) mSp->scriptnodes->objectAtIndex(miScriptCount));
 	}
+	
 }
 
 void EChessComp::RunScript( Script* asp )
 {
 	mSp = asp;
-	miScriptSum = mSp->m_snum;
-
+	setScriptNum(mSp->m_snum);
+	miELock = 0;
 	CCLog(">[ECC]Script Ready:%d",miScriptSum);
+	((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRetain();
+	GoAHead();
+}
+
+void EChessComp::setScriptNum( int ai )
+{
+	miScriptSum		= ai;
+	miScriptCount	= 0;
+}
+
+void EChessComp::DerScript( Script* asp )
+{
+	int tiSum = asp->getint("total");
+	CCArray* acts = asp->scriptnodes;
+	miELock = 0;
+	//CCLOG("script handle.");
+	for (int i = 0;i<tiSum;i++)		//multi here?
+	{
+		//CCLOG("handle scripte:%d",i);
+		Script* tmp = (Script*) acts->objectAtIndex(i);//use tag to define node's having state
+		switch(tmp->type)
+		{
+		case sShowText:
+			{
+				CCLog("string:%s",tmp->getstring("content"));
+				break;
+			}
+		case sChange:
+			{
+				int tiType = tmp->getint("type");
+				CCLog("int:%i",tiType);
+				switch (tiType)
+				{
+				case 0:			// type = 0 | Delay float
+					{
+						ELock();
+						m_pOwner->runAction(CCSequence::create(CCDelayTime::create(tmp->getfloat("delay")),FRELEASE,NULL));
+						CCLog("delay:%f",tmp->getfloat("delay"));
+						break;
+					}
+				case 1:			// type = 1 | Play animation Following should work together with delay.
+					{
+						((Entiles*) m_pOwner)->setState(3);
+						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("anime"),tmp->getint("repeat"));
+						break;
+					}
+				default:
+					break;
+				}
+				break;
+			}
+		}
+	}
+	++miScriptCount;
+	GoAHead();
+}
+
+void EChessComp::ELock()
+{	
+	++miELock;
+	CCLog("Lock:%d",miELock);
+}
+
+void EChessComp::EUnLock()
+{
+	--miELock;
+	CCLog("UnLock:%d",miELock);
+	if(miELock<=0){
+		GoAHead();
+	}
 }

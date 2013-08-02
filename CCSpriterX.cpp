@@ -515,7 +515,7 @@ namespace SCMLHelper
 		if (mTimer >= mLength)
 		{
 			mDone = true;
-			//[SPX]CCLOG(">[spx]miPlayTimes:%d",animato->miPlayTimes);
+			//CCLog(">[spx]miPlayTimes:%d",animato->miPlayTimes);
 			if(animato->miPlayTimes < 0){
 				Restart();
 			}else if(animato->miPlayTimes == 0){
@@ -930,6 +930,7 @@ bool CCSpriterX::initWithFile(const char *filename)
 
 void CCSpriterX::PlayLast()
 {
+	CCLog(">[SPX]Play Last.");
 	msCur.clear();
 	if(msLast.length()>0){
 		PlayAnim(msLast.c_str());

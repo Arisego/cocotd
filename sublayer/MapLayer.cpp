@@ -402,6 +402,7 @@ void MapLayer::menu_back( CCObject* pSender )
 	Container* t_c = (Container*) pSender;
 	m_iFuncType = t_c->getTag();
 	EChesses* t_ec = (EChesses*) bm->m_controller;				// <控制器角色在地图上始终只有一个
+
 	switch(m_iFuncType){
 	case(1):
 		{
@@ -457,7 +458,7 @@ void MapLayer::menu_back( CCObject* pSender )
 	case(16):		// <攻击
 		{
 			Chara* mpChara = t_ec->m_pChara;
-			int t_iType = mpChara->getvalue("attack");		// <从单位中获得攻击属性，注意默认取得的是0
+			int t_iType = mpChara->getvalue("attack");		// <[TODO]从单位中获得攻击属性,具体的来源需要根据设计进行变更，注意默认取得的是0
 
 			bm->b_battle = 3;
 
@@ -527,7 +528,7 @@ void MapLayer::click_act()
 				sp->parse_string(t_ssm.at("action_sp"));
 
 				bm->HandleScriptor(sp);
-
+				bm->clean_cs();
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
 

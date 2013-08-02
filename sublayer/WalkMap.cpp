@@ -36,9 +36,9 @@ void WalkMap::show_text(string s)
 
 	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(s.c_str(),FNT_CHN);
 	c_ttlbmf->setAnchorPoint(CCPointZero);
-	c_ttlbmf->setVertexZ(m_controller->m_sprite->getVertexZ());
-	c_ttlbmf->setPosition(m_controller->m_sprite->getPosition());
-	c_ttlbmf->setZOrder(m_controller->m_sprite->getZOrder());
+	c_ttlbmf->setVertexZ(m_controller->getVertexZ());
+	c_ttlbmf->setPosition(m_controller->getPosition());
+	c_ttlbmf->setZOrder(m_controller->getZOrder());
 //	c_ttlbmf->setTag(0x299);
 	addChild(c_ttlbmf,11);
 //	mt_EffectList->addObject(c_ttlbmf);
@@ -81,7 +81,7 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 	mte->direc = m_controller->stand;
 	mte->stand = m_controller->stand;
 	//mte->b_CanMove = (mte->group_id == 1); 
-	CCPoint d = m_controller->m_sprite->getPosition();
+	CCPoint d = m_controller->getPosition();
 	float ds = circle.m_radius + 16;
 	switch(mte->direc){
 	case(MS_LEFT):
@@ -115,12 +115,12 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 		}
 	}
 
-	//mte->m_sprite->setPosition(d);
+	//mte->setPosition(d);
 	//mte->retain();
 	mte->name = mtca->getstring("name");				//Bullet name?
 	mte->group = mtca->getstring("group");				//Bullet group?
 
-	mte->m_sprite->setAnchorPoint(ccp(0,0));
+	mte->setAnchorPoint(ccp(0,0));
 	mte->m_sTarget = mtca->getstring("target");			//maybe needed?
 	mte->b_Re = true;
 
@@ -137,7 +137,7 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 
 	//m_itemlist->setObject(mte,CCString::createWithFormat("%s_%s",mtca->getstring("group"),mtca->getstring("name"))->getCString());
 	//m_ea->addObject(mte);
-	//mte->m_sprite->retain();
+	//mte->retain();
 	//sheet->
-		addChild(mte->m_sprite);
+		addChild(mte);
 }

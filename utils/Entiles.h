@@ -27,18 +27,23 @@ typedef enum{
 //保证实体类的单纯性，实体类不负责进行HUD显示，所有HUD相关事宜由ML和TM处理。
 class Entiles : public CCNode, public SimControl
 {
+protected:
+	CCSprite *m_sprite;
+	
+	CCSpriterX *m_animator;
+
 public:
 	b2Body *m_body;
 	string name,group,psz;
-	CCSprite *m_sprite;
-	CCSpriterX *m_animator;
+	int state;		// 1 - normal 2 - following 3 - play anmiation no disturb
+	
 
 	bool b_CanMove;
 	MoveDirect direc;
 	MoveDirect stand;
 	bool b_Dirty,b_IsControler,b_Re;
 	string m_sTarget;
-	int state;
+	
 	/*
 	| b_dirty 位置发生了变更，需要重绘
 	| b_iscontroler 当前entiles获得了控制
@@ -68,7 +73,11 @@ public:
 	virtual void ELoad();
 	string GetFullName();
 	//////////////////////////////////////////////////////////////////////////
+	// <攻击
+	void setState(int ai);
+	void playAnimate(string name,int times);
 
+	virtual void ChangeFace( const CCPoint ac );
 
 
 };
