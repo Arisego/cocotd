@@ -33,11 +33,11 @@ void EChessComp::move_by_path(std::vector<CCPoint> &vpath )
 	((Entiles*) m_pOwner)->setState(1);
 
 	((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRetain();
-	CCLog(">Path is ready for component:%d",mPath.size());
+	//[0803]CCLog(">Path is ready for component:%d",mPath.size());
 }
 
 void EChessComp::update(float delta){
-	//CCLog(">?Who update this.?");
+	////[0803]CCLog(">?Who update this.?");
 	switch (miStateFlag)
 	{
 	case 1:			// <A* 移动被独立出来，因为没有办法被当做Action来处理
@@ -66,15 +66,15 @@ void EChessComp::update(float delta){
 
 void EChessComp::GoAHead()
 {
-	CCLog(">[ECC]Go aHead...");
+	//[0803]CCLog(">[ECC]Go aHead...");
 	if(miELock>0) return;
 	if(miScriptSum <= miScriptCount)
 	{
-		CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);
+		//[0803]CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);
 		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRelease();
 		CC_SAFE_DELETE(mSp);
 	}else{
-		CCLog(">[ECC]step:%d,%d",miScriptSum,miScriptCount);
+		CCLog(">[ECC]step:%d/%d",miScriptSum,miScriptCount);
 		DerScript((Script*) mSp->scriptnodes->objectAtIndex(miScriptCount));
 	}
 	
@@ -85,7 +85,7 @@ void EChessComp::RunScript( Script* asp )
 	mSp = asp;
 	setScriptNum(mSp->m_snum);
 	miELock = 0;
-	CCLog(">[ECC]Script Ready:%d",miScriptSum);
+	//[0803]CCLog(">[ECC]Script Ready:%d",miScriptSum);
 	((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRetain();
 	GoAHead();
 }
@@ -98,13 +98,13 @@ void EChessComp::setScriptNum( int ai )
 
 void EChessComp::DerScript( Script* asp )
 {
-	int tiSum = asp->getint("total");
+	int tiSum = asp->m_snum;
 	CCArray* acts = asp->scriptnodes;
 	miELock = 0;
-	//CCLOG("script handle.");
+	CCLOG("-----------------script handle----------------------");
 	for (int i = 0;i<tiSum;i++)		//multi here?
 	{
-		//CCLOG("handle scripte:%d",i);
+		CCLog("handle scripte:%d/%d",i,tiSum);
 		Script* tmp = (Script*) acts->objectAtIndex(i);//use tag to define node's having state
 		switch(tmp->type)
 		{
@@ -116,7 +116,7 @@ void EChessComp::DerScript( Script* asp )
 		case sChange:
 			{
 				int tiType = tmp->getint("type");
-				CCLog("int:%i",tiType);
+				CCLog("Change Type int:%i",tiType);
 				switch (tiType)
 				{
 				case 0:			// type = 0 | Delay float
@@ -154,6 +154,7 @@ void EChessComp::EUnLock()
 	--miELock;
 	CCLog("UnLock:%d",miELock);
 	if(miELock<=0){
+		CCLOG("-----------Script GoAhead--------------------");
 		GoAHead();
 	}
 }

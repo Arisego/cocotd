@@ -1,5 +1,6 @@
 #include "BattleMap.h"
 
+#include "SingleTon/BattleFiled.h"
 #include "GameManager.h"
 
 #define ASTAR_DEPTH 2500
@@ -181,6 +182,8 @@ void BattleMap::update(float dt)
 		{
 			CC_BREAK_IF(!cancontrol);
 			m_bAnimateOver = true;
+			BattleField::sharedBattleField()->AMOver();
+			
 			break;
 		}
 	case(1):						// state == 1 : <点击选择单位.
@@ -441,6 +444,7 @@ void BattleMap::checkpoint(CCTouch* a_touch)
 void BattleMap::draw_skill_range(int a_type, vector<int> a_ran)
 {
 	cs_y.clear();
+	m_con_cur = ((EChesses*) m_controller)->pos;
 
 	EChesses* t_ce = (EChesses*) m_controller;
 	switch(a_type)
@@ -477,7 +481,7 @@ void BattleMap::draw_moving_tile()
 	imply_set(cs_y,c_y);			//Imply.
 	imply_set(cs_dis,c_b);
 	imply_set(cs_hit_block,c_y);
-	CCLog(">[BM]cs_dis:%d|cs_block:%d",cs_dis.size(),cs_block.size());
+	//[0803]CCLog(">[BM]cs_dis:%d|cs_block:%d",cs_dis.size(),cs_block.size());
 
 }
 
@@ -607,7 +611,7 @@ bool BattleMap::move_control()
 		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
 		CC_BREAK_IF(cs_dis.count(t_pii) > 0);
 
-		CCLog(">Try to move all the element.");
+		//[0803]CCLog(">Try to move all the element.");
 		a_star();
 		b_battle = 4;
 		vc_path.pop_back();		// <最后一个点是起点，所以将其弹出。
@@ -630,7 +634,7 @@ void BattleMap::a_star()		// <结果被存储在vc_path中。
 	StepNode t_sn = lsn.back();
 	int dx = m_mou_cur.x - t_sn.x;
 	int dy = m_mou_cur.y - t_sn.y;
-	CCLog(">BEGIN POINT:%f,%f.",m_mou_cur.x,m_mou_cur.y);
+	//[0803]CCLog(">BEGIN POINT:%f,%f.",m_mou_cur.x,m_mou_cur.y);
 
 	if(dx > 0) t_idirect = 3;
 	else if(dx < 0) t_idirect = 2;
@@ -650,7 +654,7 @@ void BattleMap::a_star()		// <结果被存储在vc_path中。
 		if(t_ps.count(make_pair(dx,dy)) > 0) continue;
 		t_ps.insert(make_pair(dx,dy));
 		t_sn = *it;
-		CCLog(">NextParentGot:%d,%d G:%d H:%d F:%d",dx,dy,t_sn.G,t_sn.H,t_sn.getF());
+		//[0803]CCLog(">NextParentGot:%d,%d G:%d H:%d F:%d",dx,dy,t_sn.G,t_sn.H,t_sn.getF());
 
 
 		if(t_sn.status != t_idirect){
@@ -658,9 +662,9 @@ void BattleMap::a_star()		// <结果被存储在vc_path中。
 			
 			t_idirect = t_sn.status;
 			turn_lock = true;
-			CCLog(">Turned:%d,%d.",dx,dy);
+			//[0803]CCLog(">Turned:%d,%d.",dx,dy);
 		}else{
-			CCLog(">UnTurned:%d,%d.",dx,dy);
+			//[0803]CCLog(">UnTurned:%d,%d.",dx,dy);
 			turn_lock = false;
 		}	
 		
@@ -687,9 +691,9 @@ void BattleMap::a_star()		// <结果被存储在vc_path中。
 		vc_path.push_back(m_con_cur);
 	}
 
-	CCLog(">A_STAR is over. Try to check the path.");
+	//[0803]CCLog(">A_STAR is over. Try to check the path.");
 	for(vector<CCPoint>::iterator it = vc_path.begin(); it != vc_path.end(); ++it){
-		CCLog(">Point:%f,%f.",it->x,it->y);
+		//[0803]CCLog(">Point:%f,%f.",it->x,it->y);
 	}
 }
 
@@ -794,7 +798,7 @@ list<StepNode> BattleMap::getSearchPath(CCPoint startPos, CCPoint to)
 	startNode.G = 0;
 	startNode.H = getNodeH(to, startNode);;
 	startNode.status = 1;
-	CCLog(">[BM]StartNode Began>Start End---[%d,%d]-[%f,%f]",startNode.x,startNode.y,to.x,to.y);
+	//[0803]CCLog(">[BM]StartNode Began>Start End---[%d,%d]-[%f,%f]",startNode.x,startNode.y,to.x,to.y);
 
 	//记录点
 	openNodeVec.push_back(startNode);
@@ -820,7 +824,7 @@ list<StepNode> BattleMap::getSearchPath(CCPoint startPos, CCPoint to)
 		
 			mStatuDmaps[curNode.x][curNode.y] = 1;
 			pathList.push_back(curNode);
-			CCLog(">[BM]Layer count:%d||The Next Node is Added:%d,%d G:%d H:%f F:%f",ASTAR_DEPTH-steps,curNode.x,curNode.y,curNode.G,curNode.H,curNode.getF());
+			//[0803]CCLog(">[BM]Layer count:%d||The Next Node is Added:%d,%d G:%d H:%f F:%f",ASTAR_DEPTH-steps,curNode.x,curNode.y,curNode.G,curNode.H,curNode.getF());
 			//////////////////////////////////////////////////////////////////////////
 			nNod = getNodeChild(curNode,curNode.status);
 			nNod.status = curNode.status;
@@ -855,7 +859,7 @@ list<StepNode> BattleMap::getSearchPath(CCPoint startPos, CCPoint to)
 		}
 		steps--;
 	}
-	CCLog(">[BM]A star is over, depth:%d",ASTAR_DEPTH-steps);
+	//[0803]CCLog(">[BM]A star is over, depth:%d",ASTAR_DEPTH-steps);
 	return pathList;
 }
 
@@ -881,18 +885,20 @@ void BattleMap::set_mouse_range( int a_type, vector<int> a_ran )
 
 void BattleMap::draw_mouse_range(CCPoint a_cp)
 {
-	cp_last = a_cp;
+	
 	switch(m_mouse_type)
 	{
 	case(0):
 		{
 			ts_last.insert(make_pair(a_cp.x,a_cp.y));
+			cp_last = a_cp;
 			break;
 		}
 	case(1):				// 1 is default a circle.
 		{
 			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0)
 			{
+				cp_last = a_cp;
 				int radiu = m_mouse_arrs[0];
 				dps_rect(a_cp, ts_last, radiu);
 			}
@@ -987,12 +993,14 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	CCArray* t_caS = asp->m_caScript;
 	m_controller->ChangeFace(cp_last);
 	CCLog(">[BM]Tying to pass sp to owner unit....");
+	BattleField::sharedBattleField()->SetUp(m_controller,m_caTarget,(Script*) t_caS->objectAtIndex(2));
 	((EChessComp*) m_controller->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(0));
 	CCLog(">[BM]Passing owner is over...");
 	for(int i = 0; i< m_caTarget->count(); ++i){
 		CCLog(">[BM]Tying to pass sp to getter unit-%d....",i);
-		((EChessComp*) ((EChesses*) m_caTarget->objectAtIndex(i))->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(1));
+		((EChesses*) m_caTarget->objectAtIndex(i))->setState(3);
 		((EChesses*) m_caTarget->objectAtIndex(i))->ChangeFace(m_con_cur);
+		((EChessComp*) ((EChesses*) m_caTarget->objectAtIndex(i))->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(1));		
 	}
 }
 

@@ -130,6 +130,7 @@ void Entiles::setState( int ai )
 
 void Entiles::playAnimate( string name,int times )
 {
+	//[0803]CCLog(">[ET]The given direct:%d",direc);
 	m_animator->PlayAnim(CCString::createWithFormat("%s_%s",name.c_str(),sDirect[direc])->getCString(),times);
 }
 

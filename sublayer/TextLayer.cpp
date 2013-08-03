@@ -260,25 +260,25 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 			CCSprite* tcs =(CCSprite*) getChildByTag(tag);
 			if(tcs) {
 				tcs->runAction(CCTintBy::create(0,-130,-130,-130));
-				CCLog(">[GS]:gray the tj:%d",tag);
+				//[0803]CCLog(">[GS]:gray the tj:%d",tag);
 			}
 				
 			break;
 		}
 	case 1:  // 0:change the color;
 		{
-			CCLog(">[GS]change color:fade-%d,light-%d",last,tag);
+			//[0803]CCLog(">[GS]change color:fade-%d,light-%d",last,tag);
 			CCSprite* tcs =(CCSprite*) getChildByTag(last);
 			if(last != 0&&tcs) {
 				tcs->runAction(CCTintBy::create(0,-130,-130,-130));
-				CCLog(">[GS]:fade succes");
+				//[0803]CCLog(">[GS]:fade succes");
 			}
 				
 			tcs =(CCSprite*) getChildByTag(tag);
 			CCFiniteTimeAction* dr = CCTintBy::create(0,-130,-130,-130);
 			if(tcs) {
 				tcs->runAction(dr->reverse());
-				CCLog(">[GS]:Light succes");
+				//[0803]CCLog(">[GS]:Light succes");
 			}
 				
 
@@ -315,7 +315,7 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 
 			if(scalex != 0) {
 				m_animator->setScale(scalex);
-				CCLog(">Scale.");
+				//[0803]CCLog(">Scale.");
 			}
 			int zorder = ts->getint("zorder");
 
@@ -346,16 +346,16 @@ bool TextLayer::DerLoadImg(Script* ts){	//meta
 			if(alpha == 0) alpha = 255;
 			tmp->setOpacity(alpha);									// Change default to No. If more is need, change the x flag.
 
-			CCLog(">[GS]:Loading...");
+			//[0803]CCLog(">[GS]:Loading...");
 			int zorder = ts->getint("zorder");
 			addChild(tmp,ts->getint("zorder"));
 			if(zorder == 0 && ts->getint("link") == 0){
 				tmp->runAction(CCTintBy::create(0,-130,-130,-130));
-				CCLog(">[GS]:Load and grey:%d",tag);
+				//[0803]CCLog(">[GS]:Load and grey:%d",tag);
 			}
 			if(ts->getint("link") == 1) {		
 				last = tag;
-				CCLog(">[GS]:Load and remain:%d",tag);
+				//[0803]CCLog(">[GS]:Load and remain:%d",tag);
 			}
 			TagMap[name] = tag;
 			PathMap[name] = filename;
@@ -615,7 +615,7 @@ void TextLayer::FormText(){
 		m_iTextcount++;
 	}
 	//lines = fulline;
-	CCLog("forming text:\n%s",lines.c_str());
+	//[0803]CCLog("forming text:\n%s",lines.c_str());
 }
 
 void TextLayer::ShowText(const char* line, const char* name){

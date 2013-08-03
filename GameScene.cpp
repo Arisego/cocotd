@@ -681,7 +681,7 @@ void GameScene::DerChange(Script* s){
 		}
 	case 6://test 
 		{
-			CCLog(">[GS]:show info.");
+			//[0803]CCLog(">[GS]:show info.");
 			InfoTab* it = InfoTab::sharedInfoTab();
 			it->showinfo(s->getstring("content"));
 			
@@ -790,7 +790,7 @@ void GameScene::DerChange(Script* s){
 				}
 			case 4:  //unblock all
 				{
-					CCLog(">[GS]Unlock all");
+					//[0803]CCLog(">[GS]Unlock all");
 					te->GS_unLock();
 					miFlag = 1;
 					break;

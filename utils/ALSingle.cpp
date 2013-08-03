@@ -187,7 +187,7 @@ void ALSingle::playEffect(const char* pszFilePath, ALfloat x, ALfloat y, ALfloat
 
 	bool iner = false;
 	int c = 0;
-	CCLog(">[ALMIXBUG]:Begin Play...|%s_pos:%f,%f,%f.",pszFilePath,EfSourcePos[0],EfSourcePos[1],EfSourcePos[2]);
+	//[0803]CCLog(">[ALMIXBUG]:Begin Play...|%s_pos:%f,%f,%f.",pszFilePath,EfSourcePos[0],EfSourcePos[1],EfSourcePos[2]);
 	t = EffectList[pszFilePath];
 	CCLOG(">[ALMIXBUG]:Tring to get buffered source...|%d",t);
 	if(!t)
@@ -289,7 +289,7 @@ bool ALSingle::QueryEffect( const char* pszFilePath )
 		alGetSourcei(t,AL_SOURCE_STATE,&i);
 		return i == AL_STOPPED;
 	}else{
-		CCLog(">[ALSingle]QueryEffect get an incorect string from soundmanager:%s",pszFilePath);
+		//[0803]CCLog(">[ALSingle]QueryEffect get an incorect string from soundmanager:%s",pszFilePath);
 		return false;
 	}
 }

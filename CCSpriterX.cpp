@@ -515,7 +515,7 @@ namespace SCMLHelper
 		if (mTimer >= mLength)
 		{
 			mDone = true;
-			//CCLog(">[spx]miPlayTimes:%d",animato->miPlayTimes);
+			////[0803]CCLog(">[spx]miPlayTimes:%d",animato->miPlayTimes);
 			if(animato->miPlayTimes < 0){
 				Restart();
 			}else if(animato->miPlayTimes == 0){
@@ -807,12 +807,12 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
 		////[SPX]CCLOG(">[SPX]Duplicate name.");
 		return;
 	}
-	miPlayTimes = aiTimes;
+	miPlayTimes = aiTimes - 1;
 	Entity *entity = mEntities[mCurrEntity];		//当前4a版只有单entity
 	msCur = name;
 	entity->PlayTarget(name);
 	msLast = alast;
-	CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
+	//[0803]CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
 }
 
@@ -930,7 +930,7 @@ bool CCSpriterX::initWithFile(const char *filename)
 
 void CCSpriterX::PlayLast()
 {
-	CCLog(">[SPX]Play Last.");
+	//[0803]CCLog(">[SPX]Play Last.");
 	msCur.clear();
 	if(msLast.length()>0){
 		PlayAnim(msLast.c_str());

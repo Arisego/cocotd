@@ -365,15 +365,17 @@ EChesses::~EChesses()
 void EChesses::ChangeFace( const CCPoint ac )
 {
 	CCPoint cur = GameManager::sharedLogicCenter()->ml->tm->m_checkPoint(ccp(m_body->GetPosition().x,m_body->GetPosition().y));
+	//[0803]CCLog("ChageFace:%f,%f||%f,%f",cur.x,cur.y,ac.x,ac.y);
+	float k = abs(cur.y - ac.y) - abs(cur.x - ac.x);
 
-	if(cur.y == ac.y){
-		if(cur.x > ac.x) direc = MS_LEFT;
-		else if(cur.x < ac.x) direc = MS_RIGHT;
-	}else{
+	if(k>0){
 		if(cur.y > ac.y) direc = MS_UP;
 		else if(cur.y < ac.y) direc = MS_DOWN;
+	}else{
+		if(cur.x > ac.x) direc = MS_LEFT;
+		else if(cur.x < ac.x) direc = MS_RIGHT;
 	}
-
+	//[0803]CCLog("Direct Change To:%d",direc);
 
 }
 

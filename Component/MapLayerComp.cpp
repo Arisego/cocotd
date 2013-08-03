@@ -16,25 +16,25 @@ void MapLayerComp::ActRetain()
 		MlLock();
 	}
 	++miActCount;
-	CCLog(">[MLC]Retain one lock:%d",miActCount);
+	//[0803]CCLog(">[MLC]Retain one lock:%d",miActCount);
 }
 
 void MapLayerComp::ActRelease()
 {
 	--miActCount;
-	CCLog(">[MLC]Release one lock:%d",miActCount);
+	//[0803]CCLog(">[MLC]Release one lock:%d",miActCount);
 	if(miActCount <= 0){
 		MlUnLock();
 	}
 }
 
 void MapLayerComp::MlLock(){
-	CCLog(">[MLC]MlLock:%d",miActCount);
+	//[0803]CCLog(">[MLC]MlLock:%d",miActCount);
 	((MapLayer*) m_pOwner)->f_stopcontrol();
 }
 
 void MapLayerComp::MlUnLock()
 {
-	CCLog(">[MLC]MlUnLock:%d",miActCount);
+	//[0803]CCLog(">[MLC]MlUnLock:%d",miActCount);
 	((MapLayer*) m_pOwner)->f_resumecon();
 }

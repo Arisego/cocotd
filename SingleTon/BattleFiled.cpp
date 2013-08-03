@@ -32,8 +32,9 @@ bool BattleField::init()
 {
 	do 
 	{
-
-
+		mspVals = NULL;
+		meSrc = NULL;
+		meTar = NULL;
 		Clean();
 		return true;
 	} while (false);
@@ -43,24 +44,44 @@ bool BattleField::init()
 void BattleField::Clean()
 {
 	mbIsOver = false;
-	miEnemy = 0;
+
+	mspVals = NULL;
+	meSrc = NULL;
+	meTar = NULL;
+	//miEnemy = 0;
 }
 
-bool BattleField::CheckOver()
+void BattleField::CheckOver()
 {
+	if(!meTar) return;
 	do 
 	{
-		CC_BREAK_IF(mbIsOver);
-		//CC_BREAK_IF(miEnemy == 0);
+		CC_BREAK_IF(meTar->count() == 0);
 
 
-		return false;
+		mbIsOver = false;
+		return;
 	} while (false);
-	return true;
+	mbIsOver = true;
 }
 
-void BattleField::SetUp()
+void BattleField::SetUp(Entiles* aSrc, CCArray* aTar, Script* sp)
 {
 	Clean();
+	meSrc = aSrc;
+	meTar = aTar;
+	mspVals = sp;
+	CCLog(">[BF]Battle Field Receive the battle:%d",aTar->count());
+	if(sp=NULL) 
+		CCLog(">[BF]Battle with an empty values....");
+}
 
+bool BattleField::IsOver()
+{
+	return mbIsOver;
+}
+
+void BattleField::AMOver()
+{
+	CheckOver();
 }

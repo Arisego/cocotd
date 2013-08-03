@@ -37,6 +37,7 @@ public:
 
 	Chara(){
 		m_bIsDead = false;
+		miLevel	  = 0;
 	}
 
 	~Chara(){
@@ -126,6 +127,133 @@ public:
 			CCLOG(">Deffer cal:%s,%d",it->first.c_str(),it->second);
 		}
 		return;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// <Skill
+
+	/* <意志，请注意Refresh函数读取的是第几个值 */
+	int miLevel;
+	/* <用于刷新修正指数，在BF判定前调用这个接口 */
+	void RefreshFix(){
+		miLevel = getvalue("tama_3");		// 0 - 5 || E - S
+	}
+
+	/* <读取概率加成 */
+	int getFixRate(){
+		float fix_rate = gethp()/getvalue("hp");
+		switch (miLevel)
+		{
+		case 4:	//A
+			{
+				if(fix_rate<0.2){
+					return 4;
+				}else if(fix_rate<0.4){
+					return 2;
+				}else{
+					return 0;
+				}
+				break;
+			}
+		case 5:	//S
+			{
+				if(fix_rate<0.2){
+					return 8;
+				}else if(fix_rate<0.35){
+					return 4;
+				}else if(fix_rate<0.5){
+					return 2;;
+				}else{
+					return 0;
+				}
+				break;
+			}
+		default:
+			return 0;
+			break;
+		}
+	}
+
+	/* <如果不是需要修正的参数请不要调用这个接口！ */
+	int getFixValue(string name){
+		float fix_rate = gethp()/getvalue("hp");
+		switch (miLevel)
+		{
+		case 0:	//E
+			{
+				
+				if(fix_rate<0.5){
+					return (getvalue(name) - 5);
+				}else if(fix_rate<0.8){
+					return (getvalue(name) - 3);
+				}else{
+					return getvalue(name);
+				}
+				break;
+			}
+		case 1:	//D
+			{
+				if(fix_rate<0.4){
+					return (getvalue(name) - 3);
+				}else if(fix_rate<0.7){
+					return (getvalue(name) - 1);
+				}else{
+					return getvalue(name);
+				}
+				break;
+			}
+		case 2:	//C
+			{
+				if(fix_rate<0.5){
+					return (getvalue(name) - 1);
+				}else{
+					return getvalue(name);
+				}
+				break;
+			}
+		case 3:	//B
+			{
+				if(fix_rate<0.3){
+					return (getvalue(name) + 2);
+				}else if(fix_rate<0.5){
+					return (getvalue(name) + 1);
+				}else{
+					return getvalue(name);
+				}
+				break;
+			}
+		case 4:	//A
+			{
+				if(fix_rate<0.2){
+					return (getvalue(name) + 4);
+				}else if(fix_rate<0.4){
+					return (getvalue(name) + 3);
+				}else if(fix_rate<0.6){
+					return (getvalue(name) + 2);
+				}else{
+					return getvalue(name);
+				}
+				break;
+			}
+		case 5:	//S
+			{
+				if(fix_rate<0.2){
+					return (getvalue(name) + 6);
+				}else if(fix_rate<0.35){
+					return (getvalue(name) + 4);
+				}else if(fix_rate<0.5){
+					return (getvalue(name) + 3);;
+				}else if(fix_rate<0.7){
+					return (getvalue(name) + 2);;
+				}else{
+					return getvalue(name);
+				}
+				break;
+			}
+		default:
+			return getvalue(name);
+			break;
+		}
 	}
 };
 

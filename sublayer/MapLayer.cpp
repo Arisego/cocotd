@@ -532,7 +532,7 @@ void MapLayer::click_act()
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
 
-				CCLog(">Reach here if every thing is right.....");
+				//[0803]CCLog(">Reach here if every thing is right.....");
 			}
 			
 			break;
@@ -716,7 +716,7 @@ void MapLayer::script_over()
 	//m_lpJudgement->removePin(t_ec->name);
 	//bm->m_itemlist->removeObjectForKey(t_ec->name);
 	//[TODO] <注意这个函数的调用来源，它可能会被移除
-	if(BattleField::sharedBattleField()->CheckOver()) {
+	if(BattleField::sharedBattleField()->IsOver()) {
 		switch_to_walk();	// Change it~
 		return;
 	}
