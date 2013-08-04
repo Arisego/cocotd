@@ -1,6 +1,7 @@
 #include "SingleTon/BattleFiled.h"
 #include "packui/CharaS.h"
 
+static const int iBossHuiXin[] = {0,3,6,10,15};		// None C - S | 0 -4
 
 BattleField *BattleField::mSharedBattleField = NULL;
 
@@ -89,6 +90,7 @@ void BattleField::AMOver()
 }
 
 //////////////////////////////////////////////////////////////////////////
+// <战场设置
 void BattleField::SetChess( EChesses* ae,int ax, int ay )
 {
 	mMapC.insert(make_pair(make_pair(ax,ay),ae));
@@ -99,15 +101,17 @@ void BattleField::InitChessRefreh()
 {
 	EChesses* te;
 	int tiLead;
+	// <扩散统帅属性
 	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
 		te = it->second;
 		tiLead = te->m_pChara->getLead();
-		CCLog(">[BF]Initing the map lead values...");
+		CCLog(">[BF]Initing the chess lead values...");
 		DerLead(tiLead,it->first.first,it->first.second);
-
 	}
-}
 
+}
+//////////////////////////////////////////////////////////////////////////
+// <统帅
 void BattleField::DepLead( int centx, int centy, int range, int val )
 {
 	EChesses* tec;
@@ -250,4 +254,71 @@ void BattleField::UnDerLead( int val,int cx, int cy )
 	default:
 		break;
 	}
+}
+//////////////////////////////////////////////////////////////////////////
+// <战斗
+//meSrc = aSrc;
+//meTar = aTar;
+//mspVals = sp;
+
+void BattleField::Judge(){
+	//////////////////////////////////////////////////////////////////////////
+	// <会心
+
+	int tiHitFlag = 0;
+	Chara* src = meSrc->m_pChara;
+	CCObject* tar_o = NULL;
+	Chara* tar = NULL;
+	int hurt;
+	bool tbSingle;
+	int hit_rate_base = src->getFixValue("hit")*5 + src->getFixValue("luk");
+	CCARRAY_FOREACH(meTar,tar_o){
+		tar = ((EChesses*) tar_o)->m_pChara;
+		
+
+		/* <计算命中率 */
+		float hit_rate = (( hit_rate_base - tar->getFixValue("avg") * 5 - tar->getFixValue("luk"))/100) + 0.7 + src->getFixRate();
+		CCLog(">[BF]MingZhong-%f",hit_rate);
+		tbSingle = (CCRANDOM_0_1()<hit_rate);
+		if(!tbSingle) {
+			((EChesses*) tar_o)->miAvgFlag = 1;
+			CCLog(">[BF]Miss....");
+			break;
+		}
+
+		((EChesses*) tar_o)->miAvgFlag = 0;
+		CCLog(">[BF]Hit");
+
+		/* <计算会心率 */
+		hit_rate = (src->getFixValue("base_hit") + src->getFixValue("luk")/5 - iBossHuiXin[tar->getvalue("boss_class")])/100 + src->getFixRate();
+		CCLog(">[BF]HuiXing-%f",hit_rate);
+		tbSingle = (CCRANDOM_0_1()<hit_rate);
+
+		/* <进行第一轮伤害计算 */	
+		if(tbSingle){
+			tiHitFlag |= 1;
+			CCLog(">[BF]Extra Hurt.");
+			 src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
+			 meSrc->miHitFlag = 1;
+		}else{
+			meSrc->miHitFlag = 0;
+			hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
+		}
+		
+			
+		/* <根据是否玩家控制势力将会弹出格挡判定 */
+		// ....
+		hurt -= tar->getFixValue("def");
+
+		/* <计算完成导入Entile并计算经验值 */
+		// ...
+		((EChesses*) tar_o)->miDamage = hurt;
+	}
+	
+	if(tiHitFlag != 0){
+		meSrc->miHitFlag = 1;
+	}else{
+		meSrc->miHitFlag = 0;
+	}
+	
 }

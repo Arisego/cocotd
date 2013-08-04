@@ -29,10 +29,15 @@ class Entiles : public CCNode, public SimControl
 {
 protected:
 	CCSprite *m_sprite;
-	
 	CCSpriterX *m_animator;
 
+
+
 public:
+	int miHitFlag;			// <¹¥»÷·½×´Ì¬
+	int miAvgFlag;			// <±»¹¥»÷×´Ì¬ 1 - ÉÁ±Ü
+	int miDamage;			// <±»¹¥»÷ÊýÖµÉËº¦
+
 	b2Body *m_body;
 	string name,group,psz;
 	int state;		// 1 - normal 2 - following 3 - play anmiation no disturb
@@ -78,7 +83,7 @@ public:
 	void playAnimate(string name,int times);
 
 	virtual void ChangeFace( const CCPoint ac );
-
+	void ShowDamage();
 
 };
 

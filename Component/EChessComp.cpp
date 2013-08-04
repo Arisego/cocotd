@@ -3,6 +3,7 @@
 
 #include "utils/Entiles.h"
 #include "GameManager.h"
+#include "SingleTon/BattleFiled.h"
 
 #define FRETAIN CCCallFunc::create(this,callfunc_selector(EChessComp::ELock))
 #define FRELEASE CCCallFunc::create(this,callfunc_selector(EChessComp::EUnLock))
@@ -126,10 +127,29 @@ void EChessComp::DerScript( Script* asp )
 						CCLog("delay:%f",tmp->getfloat("delay"));
 						break;
 					}
-				case 1:			// type = 1 | Play animation Following should work together with delay.
+				case 1:			// type = 1 | <进行攻击判定.
+					{
+						BattleField::sharedBattleField()->Judge();
+
+						((Entiles*) m_pOwner)->setState(3);
+						if(((Entiles*) m_pOwner)->miHitFlag){
+							((Entiles*) m_pOwner)->playAnimate("huixin",tmp->getint("repeat"));
+						}else
+						{
+							((Entiles*) m_pOwner)->playAnimate("gongji",tmp->getint("repeat"));
+						}
+						break;
+					}
+				case 2:			// type = 2.. <被攻击
 					{
 						((Entiles*) m_pOwner)->setState(3);
-						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("anime"),tmp->getint("repeat"));
+						/* <目前无格挡 */
+
+						break;
+					}
+				case 4:		// <显示文本  <被攻击
+					{
+						((Entiles*) m_pOwner)->ShowDamage();
 						break;
 					}
 				default:

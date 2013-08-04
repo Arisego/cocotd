@@ -24,7 +24,7 @@ public:
 	void SetChess(EChesses* ae,int ax, int ay);			// <设置人物 | 初始化用
 	void InitChessRefreh();				// <刷新人物 | 初始化用
 	void ChessMoved(EChesses* ae, CCPoint astart, CCPoint aend); // <人物移动，调整统帅数值
-
+	void Judge();						// <判定
 
 	//////////////////////////////////////////////////////////////////////////
 	// <战斗控制
@@ -40,7 +40,7 @@ protected:
 	void DepLead(int centx, int centy, int range, int val);
 	void DepRemoveLead( int centx, int centy, int range, int val );
 private:
-	Entiles* meSrc;		// <攻击的发起者	| 被攻击对象在Chara内结算
+	EChesses* meSrc;		// <攻击的发起者	| 被攻击对象在Chara内结算
 	CCArray* meTar;		// <接收
 	Script*	 mspVals;
 
