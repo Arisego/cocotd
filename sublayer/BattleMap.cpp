@@ -130,6 +130,9 @@ bool BattleMap::init()
 	if(m_itemlist->count() < 1) CC_SAFE_RELEASE_NULL(m_itemlist);
 	m_controller = NULL;
 
+	
+	//////////////////////////////////////////////////////////////////////////
+
 	f_setcontroller(m_getEntile("chara_1"));	//ITEMMANAGER设置控制器和镜头
 	f_setcamara(m_getEntile("chara_1"));
 
@@ -309,6 +312,8 @@ void BattleMap::f_generateEnemy( int i )
 			t_fij_ecd->m_pChara->m_sName		 =	 t_ssm.at("name");			//TODO:IN:PB: all the generated enemy may use the same chara(), if so put down this to next stage.
 			t_fij_ecd->m_pChara->m_sPsz		 =	 t_ssm.at("psz");
 			t_fij_ecd->m_pChara->m_iElement	 =	 stoi(t_ssm.at("element"));
+
+			BattleField::sharedBattleField()->SetChess(t_fij_ecd,t_fij_ecd->pos.x,t_fij_ecd->pos.y);
 		}
 
 		CC_SAFE_DELETE(t_scp);
@@ -331,6 +336,8 @@ void BattleMap::f_load_chara()
 	t_ec->psz  = "sprite/gongbin";//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
 
 	m_itemlist->setObject(t_ec,t_ec->name);									//Test: get one and only one.
+
+	BattleField::sharedBattleField()->SetChess(t_ec,t_ec->pos.x,t_ec->pos.y);
 }
 
 bool BattleMap::f_load_entile()
@@ -627,6 +634,7 @@ void BattleMap::a_star()		// <结果被存储在vc_path中。
 {
 	vc_path.clear();
 	list<StepNode> lsn = getSearchPath(m_con_cur,m_mou_cur);
+	BattleField::sharedBattleField()->ChessMoved((EChesses*)m_controller, m_con_cur, m_mou_cur);
 	vc_path.push_back(m_mou_cur);
 	lsn.pop_back();
 
@@ -993,7 +1001,7 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	CCArray* t_caS = asp->m_caScript;
 	m_controller->ChangeFace(cp_last);
 	CCLog(">[BM]Tying to pass sp to owner unit....");
-	BattleField::sharedBattleField()->SetUp(m_controller,m_caTarget,(Script*) t_caS->objectAtIndex(2));
+	BattleField::sharedBattleField()->SetUp((EChesses*) m_controller,m_caTarget,(Script*) t_caS->objectAtIndex(2));
 	((EChessComp*) m_controller->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(0));
 	CCLog(">[BM]Passing owner is over...");
 	for(int i = 0; i< m_caTarget->count(); ++i){

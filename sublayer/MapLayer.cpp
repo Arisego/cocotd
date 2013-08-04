@@ -63,6 +63,7 @@ void MapLayer::openBattleMap(const char* pszN, int i_egr){
 	bm = new BattleMap(pszN);
 	bm->f_generateEnemy(i_egr);
 	bm->f_load_chara();
+	BattleField::sharedBattleField()->InitChessRefreh();
 	bm->init();
 	addChild(bm,BM_Z);
 	tm = bm;

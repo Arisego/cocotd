@@ -38,6 +38,7 @@ public:
 	Chara(){
 		m_bIsDead = false;
 		miLevel	  = 0;
+		miLeadAdd = 0;
 	}
 
 	~Chara(){
@@ -139,6 +140,11 @@ public:
 		miLevel = getvalue("tama_3");		// 0 - 5 || E - S
 	}
 
+	/* <获得统帅的值 */
+	int getLead(){
+		return getvalue("tama_5");
+	}
+
 	/* <读取概率加成 */
 	int getFixRate(){
 		float fix_rate = gethp()/getvalue("hp");
@@ -177,82 +183,113 @@ public:
 	/* <如果不是需要修正的参数请不要调用这个接口！ */
 	int getFixValue(string name){
 		float fix_rate = gethp()/getvalue("hp");
+		int ret;
 		switch (miLevel)
 		{
 		case 0:	//E
 			{
 				
 				if(fix_rate<0.5){
-					return (getvalue(name) - 5);
+					ret = (getvalue(name) - 5);
 				}else if(fix_rate<0.8){
-					return (getvalue(name) - 3);
+					ret = (getvalue(name) - 3);
 				}else{
-					return getvalue(name);
+					ret = getvalue(name);
 				}
 				break;
 			}
 		case 1:	//D
 			{
 				if(fix_rate<0.4){
-					return (getvalue(name) - 3);
+					ret = (getvalue(name) - 3);
 				}else if(fix_rate<0.7){
-					return (getvalue(name) - 1);
+					ret = (getvalue(name) - 1);
 				}else{
-					return getvalue(name);
+					ret = getvalue(name);
 				}
 				break;
 			}
 		case 2:	//C
 			{
 				if(fix_rate<0.5){
-					return (getvalue(name) - 1);
+					ret = (getvalue(name) - 1);
 				}else{
-					return getvalue(name);
+					ret = getvalue(name);
 				}
 				break;
 			}
 		case 3:	//B
 			{
 				if(fix_rate<0.3){
-					return (getvalue(name) + 2);
+					ret = (getvalue(name) + 2);
 				}else if(fix_rate<0.5){
-					return (getvalue(name) + 1);
+					ret = (getvalue(name) + 1);
 				}else{
-					return getvalue(name);
+					ret = getvalue(name);
 				}
 				break;
 			}
 		case 4:	//A
 			{
 				if(fix_rate<0.2){
-					return (getvalue(name) + 4);
+					ret = (getvalue(name) + 4);
 				}else if(fix_rate<0.4){
-					return (getvalue(name) + 3);
+					ret = (getvalue(name) + 3);
 				}else if(fix_rate<0.6){
-					return (getvalue(name) + 2);
+					ret = (getvalue(name) + 2);
 				}else{
-					return getvalue(name);
+					ret = getvalue(name);
 				}
 				break;
 			}
 		case 5:	//S
 			{
 				if(fix_rate<0.2){
-					return (getvalue(name) + 6);
+					ret = (getvalue(name) + 6);
 				}else if(fix_rate<0.35){
-					return (getvalue(name) + 4);
+					ret = (getvalue(name) + 4);
 				}else if(fix_rate<0.5){
-					return (getvalue(name) + 3);;
+					ret = (getvalue(name) + 3);;
 				}else if(fix_rate<0.7){
-					return (getvalue(name) + 2);;
+					ret = (getvalue(name) + 2);;
 				}else{
-					return getvalue(name);
+					ret = getvalue(name);
 				}
 				break;
 			}
 		default:
-			return getvalue(name);
+			ret = getvalue(name);
 			break;
+		}
+		return ret+miLeadAdd;
+	}
+
+	/* <统帅加成 */
+	map<int,int> mLRecord;
+	int miLeadAdd;
+
+	/* <清理，在BF开始时执行 */
+	void ClearLead(){
+		mLRecord.clear();
+	}
+
+	/* <单纯的添加不需要RefreshLead */
+	void AddLead(int val){
+		mLRecord[val] = mLRecord[val] + 1;
+		if(val>miLeadAdd) miLeadAdd = val;
+	}
+
+	void RemoveLead(int val){
+		mLRecord[val] = mLRecord[val] - 1;
+	}
+
+	/* <记得刷新 */
+	void RefreshLead(){
+		for(int i = 3; i>0; --i){
+			miLeadAdd = mLRecord[i];
+			if(miLeadAdd > 0){
+				break;
+			}
 		}
 	}
 };
