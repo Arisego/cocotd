@@ -147,6 +147,11 @@ void EChessComp::DerScript( Script* asp )
 
 						break;
 					}
+				case 3:
+					{
+						BattleField::sharedBattleField()->PlayEffectSp("Images/bullet.png",((Entiles*) m_pOwner)->getPosition());
+						break;
+					}
 				case 4:		// <显示文本  <被攻击
 					{
 						((Entiles*) m_pOwner)->ShowDamage();

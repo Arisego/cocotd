@@ -140,15 +140,19 @@ void Entiles::ChangeFace( const CCPoint ac ){
 
 void Entiles::ShowDamage()
 {
-	CCLabelBMFont* c_ttlbmf = CCLabelBMFont::create(CCString::createWithFormat("-%d",miDamage)->getCString(),FNT_CHN);
+	CCLabelBMFont* c_ttlbmf;
+	if(miAvgFlag == 0){
+		c_ttlbmf = CCLabelBMFont::create(CCString::createWithFormat("-%d",miDamage)->getCString(),FNT_CHN);
+		runAction(CCBlink::create(0.5,2));
+	}else{
+		c_ttlbmf = CCLabelBMFont::create(CCString::createWithFormat("MISS")->getCString(),FNT_CHN);
+	}
+	c_ttlbmf->setColor(ccRED);
 	c_ttlbmf->setAnchorPoint(CCPointZero);
 	c_ttlbmf->setVertexZ(getVertexZ());
 	c_ttlbmf->setPosition(CCPointZero);
-	//c_ttlbmf->setPosition(getPosition());
-	//c_ttlbmf->setZOrder(getZOrder());
-	//	c_ttlbmf->setTag(0x299);
+
 	addChild(c_ttlbmf,11);
-	//	mt_EffectList->addObject(c_ttlbmf);
 
 	CCActionInterval* t_cai = CCSpawn::createWithTwoActions(CCMoveTo::create(0.7,ccpAdd(c_ttlbmf->getPosition(),ccp(0,100))),CCFadeOut::create(0.7));
 	c_ttlbmf->runAction(t_cai);

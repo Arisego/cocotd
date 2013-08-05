@@ -322,3 +322,15 @@ void BattleField::Judge(){
 	}
 	
 }
+
+void BattleField::PlayEffectSp( const char* asname, CCPoint end )
+{
+	CCPoint start = meSrc->getPosition();				// <位置和角度有待修正
+
+	CCSprite* tcs = CCSprite::create(asname);			// <改进时，可在sp中根据asname为基准进行查询
+	tcs->setAnchorPoint(CCPointZero);
+	tcs->setPosition(start);
+
+	meSrc->getParent()->addChild(tcs);
+	tcs->runAction(CCSequence::create(CCMoveTo::create(0.7,end),CCRemoveSelf::create(),NULL));
+}
