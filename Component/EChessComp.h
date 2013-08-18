@@ -29,11 +29,18 @@ public:
 	void ELock();
 	void EUnLock();
 
+	/* <Ñ°ÕÒºÏÊÊµÄRE¹¥»÷ */
+	bool FindFitRe(CCObject* tar,int atime);
+
 private:
 	int miScriptSum;
 	int miScriptCount;
 	void GoAHead();
 	Script* mSp;
+
+	/* <·¶Î§²â¶¨ */
+	bool TestRange(CCPoint target);
+	map<string,string> t_ssm;
 
 	int miStateFlag;
 	std::vector<std::pair<float,float>> mPath;

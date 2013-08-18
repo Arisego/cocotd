@@ -12,6 +12,7 @@
 #include "MenuScene.h"
 
 #include "sublayer/InfoTab.h"
+#include "SingleTon/BattleFiled.h"
 
 
 #include "CCSpriterX.h"
@@ -124,6 +125,7 @@ GameManager::~GameManager()
 	CharaS::purgeSharedCharaS();
 	StateCenter::purgeSharedStateCenter();
 
+	BattleField::purgeSharedBattleField();
 	EventCenter::purgeSharedEventCenter();
 }
 

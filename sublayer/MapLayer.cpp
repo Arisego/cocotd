@@ -16,8 +16,12 @@ USING_NS_CC;
 
 MapLayer::~MapLayer(){
 	CCLOG(">MapLayer Destruct.");
+	
 
+	BFsp->re_init();
+	delete BFsp;
 	removeAllChildren();
+	
 
 	CC_SAFE_RELEASE_NULL(bm);
 	CC_SAFE_RELEASE_NULL(wm);
@@ -26,6 +30,8 @@ MapLayer::~MapLayer(){
 	CC_SAFE_RELEASE_NULL(m_ldb);
 	CC_SAFE_RELEASE_NULL(m_lpJudgement);
 	CC_SAFE_RELEASE_NULL(m_etClock);
+
+	//
 }
 
 void MapLayer::LoadMap(const char* pszN, const char* pscR, Script* tp){
@@ -99,9 +105,14 @@ void MapLayer::f_init(){
 	t_bm  =	 NULL;
 	m_ldb =	 NULL;
 
+	m_lsb = NULL;
+	m_rsb = NULL;
+
 	m_lpJudgement	=	NULL;
 	m_etClock		=	NULL;
 	m_sCon			=	NULL;
+
+	BFsp = new Scriptor();
 
 	m_iMLState = -1;
 	//scheduleUpdate();
@@ -212,6 +223,9 @@ void MapLayer::close_hud(){
 	if(m_ltb){					//It seems duplicate. Remove it if it's really safe.
 		m_ltb->onDismiss();
 	}
+	if(m_lsb){
+		;
+	}
 }
 
 void MapLayer::item_use( CCObject* pSender )
@@ -256,6 +270,7 @@ void MapLayer::effect_over()
 	refresh_view();
 }
 
+// <技能生效点
 void MapLayer::get_target()
 {
 	switch(m_iMLState){
@@ -265,7 +280,7 @@ void MapLayer::get_target()
 			int t_iTarget = EffectControler::sharedEffectControler()->m_iTarget;		//TODO: check if it is 0
 			if(t_iTarget == -1){					//Target == -1 . there is no need for target. use it here is just for notifaction to view.
 				//m_sIcd->sum -= 1;				//[ATT]:The design has changed.
-				EffectControler::sharedEffectControler()->md_act_item(NULL);
+				EffectControler::sharedEffectControler()->md_act_item(NULL);			//????????
 			}else{
 				if(m_caTList) CC_SAFE_RELEASE_NULL(m_caTList);
 				m_caTList	=	new CCArray();
@@ -276,7 +291,10 @@ void MapLayer::get_target()
 		}
 	case(2):
 		{
-			EffectControler::sharedEffectControler()->md_act_skill(this,bm->m_caTarCharas);
+			//EffectControler::sharedEffectControler()->md_act_skill(this,bm->m_caTarCharas);
+			BFsp->re_init();
+			BFsp->parse_string(EffectControler::sharedEffectControler()->getESp());
+			bm->HandleScriptor(BFsp);
 			break;
 		}
 	}
@@ -323,6 +341,7 @@ void MapLayer::show_menu()
 	t_bm->setPosition(200,200);
 	t_bm->bitLock = 0xff;
 	t_bm->setactivator(this,menu_selector(MapLayer::menu_back));
+	if(m_lsb) m_lsb->setVisible(true);
 	t_bm->show();
 	t_bm->setVisible(true);
 	bm->b_battle = 2;
@@ -376,8 +395,10 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 // <虽然是叫ItemBack却不知为什么现在是被用来做技能调用的
 void MapLayer::ItemBack( CCObject* pSender )
 {
-	CCLOG(">ItemBack....We use the skill directly.");		// <[TODO]:为EffectCenter添加可行性检查
+	CCLOG(">ItemBack....We use the skill directly.");
 	
+	if(!EffectControler::sharedEffectControler()->DerLock()) return;			// <如果技能使用条件不符则不起作用，注意播放声音的接口放在这里
+
 	// <获得对象所携带的ID
 	m_iItem = ((ItemCell*) pSender)->getTag();
 	// <隐藏技能选择框
@@ -386,7 +407,8 @@ void MapLayer::ItemBack( CCObject* pSender )
 	bm->b_battle = 3;
 	// <获得usecase参数
 	m_iSUseCase = stoi(m_ldb->getval("usecase",m_iItem));		//No use; Test Only. Read out range and effect_dis from database "additional". They should be stored in pair of int value.
-	
+	bm->miRangeType = m_iSUseCase;
+
 	vector<int> ars;
 	ars.push_back(7);
 	bm->draw_skill_range(1,ars);							//TODO:TEST ONLY: Type & ars are from db. simply use stringstream to read pair
@@ -403,6 +425,9 @@ void MapLayer::menu_back( CCObject* pSender )
 	Container* t_c = (Container*) pSender;
 	m_iFuncType = t_c->getTag();
 	EChesses* t_ec = (EChesses*) bm->m_controller;				// <控制器角色在地图上始终只有一个
+	BattleField::sharedBattleField()->SetSrc(t_ec);				// <尝试移动到控制交接的函数里
+	bm->miRangeType = 0;
+	BattleField::sharedBattleField()->setBattle(false);
 
 	switch(m_iFuncType){
 	case(1):
@@ -454,6 +479,7 @@ void MapLayer::menu_back( CCObject* pSender )
 					CC_SAFE_RELEASE_NULL(m_ldb);
 				}
 			}
+			BattleField::sharedBattleField()->setBattle(true);
 			break;
 		}
 	case(16):		// <攻击
@@ -484,6 +510,8 @@ void MapLayer::menu_back( CCObject* pSender )
 			ars.push_back(3);
 			bm->set_mouse_range(stoi(t_ssm.at("range_type_id")),ars);								//	<定义鼠标选择图形
 
+			BattleField::sharedBattleField()->setBattle(true);
+
 			break;
 		}
 	case(32):		// <移动
@@ -507,8 +535,9 @@ void MapLayer::click_act()
 		{
 			//[IN]ts_last;
 			//[IN]m_iSUseCase;
-			if(bm->arange_target(m_iSUseCase)){
+			if(bm->arange_targetwithtest(m_iSUseCase)){
 				CCLOG(">Prepare for EC-SkillUsing.");
+				bm->clean_cs();
 				EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
@@ -520,15 +549,14 @@ void MapLayer::click_act()
 		}
 	case 16:
 		{
-			if(bm->arange_target(0)){
+			if(bm->arange_targetwithtest(0)){
 				
 				map<string,string> t_ssm = (map<string,string>) vdata.at(0);
 
-				Scriptor* sp = new Scriptor();
-				sp->re_init();
-				sp->parse_string(t_ssm.at("action_sp"));
+				BFsp->re_init();
+				BFsp->parse_string(t_ssm.at("action_sp"));
 
-				bm->HandleScriptor(sp);
+				bm->HandleScriptor(BFsp);
 				bm->clean_cs();
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
@@ -631,6 +659,8 @@ void MapLayer::update( float fDelta )
 void MapLayer::switch_control()
 {
 	if(m_sCon) m_sCon->replace_pin();
+	m_lsb->setVisible(false);
+	m_rsb->setVisible(false);
 	if(m_iCCur < m_iCSum){
 		m_sCon = (LinePin*) m_lpJudgement->m_caPinSteped->objectAtIndex(m_iCCur);
 
@@ -651,7 +681,7 @@ void MapLayer::give_control()
 	EChesses* t_ec = (EChesses*) bm->m_controller;
 
 	switch(t_ec->group_id){
-	case(0x01):					//Player
+	case(0x01):					// <玩家控制获得
 		{
 			show_menu();
 			break;
@@ -683,10 +713,12 @@ void MapLayer::right_click()
 						t_bm->miFlag = -1;
 						t_bm->Refresh_Button();
 						bm->b_battle = 1;
+
+						if(m_lsb) m_lsb->setVisible(false);
 					}else{
 						t_bm->setVisible(true);
 						m_ldb->setVisible(false);
-						CC_SAFE_RELEASE_NULL(m_ldb);			//牺牲效率换取简便性
+						CC_SAFE_RELEASE_NULL(m_ldb);			// <牺牲效率换取简便性
 					}
 
 					break;
@@ -698,6 +730,7 @@ void MapLayer::right_click()
 					}else{
 						t_bm->setVisible(true);
 					}
+					if(m_rsb) m_rsb->setVisible(false);
 					bm->clean_cs();
 					bm->b_battle = 2;
 					break;
@@ -740,7 +773,7 @@ void MapLayer::switch_to_battle( string s )
 	openBattleMap(s.c_str(),0);
 	
 	bm->cancontrol = true;
-
+	init_Stat();
 
 	//bm->b_battle = 3;
 }
@@ -794,4 +827,51 @@ void MapLayer::snap()
 	wm->visit();
 	if(m_IP) m_IP->visit();
 	if(m_ltb) m_ltb->visit();
+}
+
+void MapLayer::RePack()
+{
+	CCLog(">[BF_ML]Trying to act the third attack...");
+	map<string,string> t_ssm = (map<string,string>) vdata.at(0);
+	BFsp->re_init();
+	BFsp->parse_string(t_ssm.at("action_sp"));
+
+	bm->HandleScriptor(BFsp);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// <角色状态显示
+void MapLayer::init_Stat()
+{
+	if(!m_lsb){
+		m_lsb = new LStatBar();
+		m_lsb->autorelease();
+
+		m_lsb->init();
+		m_lsb->setPosition(ccp(0,399));
+
+		addChild(m_lsb,98);
+	}
+	m_lsb->setVisible(false);
+
+	if(!m_rsb){
+		m_rsb = new RStatBar();
+		m_rsb->autorelease();
+
+		m_rsb->init();
+		m_rsb->setPosition(ccp(475,399));
+
+		addChild(m_rsb,98);
+	}
+	m_rsb->setVisible(false);
+}
+
+void MapLayer::DismissBHUD()
+{
+	if(m_lsb){
+		CC_SAFE_RELEASE_NULL(m_lsb);
+	}
+	if(m_rsb){
+		CC_SAFE_RELEASE_NULL(m_rsb);
+	}
 }

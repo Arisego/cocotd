@@ -18,7 +18,7 @@ EChessComp::EChessComp()
 
 EChessComp::~EChessComp()
 {
-	CC_SAFE_DELETE(mSp);
+	CC_SAFE_RELEASE_NULL(mSp);
 }
 
 void EChessComp::move_by_path(std::vector<CCPoint> &vpath )
@@ -71,9 +71,10 @@ void EChessComp::GoAHead()
 	if(miELock>0) return;
 	if(miScriptSum <= miScriptCount)
 	{
-		//[0803]CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);
-		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRelease();
+		CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);
 		CC_SAFE_DELETE(mSp);
+		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRelease();
+		
 	}else{
 		CCLog(">[ECC]step:%d/%d",miScriptSum,miScriptCount);
 		DerScript((Script*) mSp->scriptnodes->objectAtIndex(miScriptCount));
@@ -83,7 +84,9 @@ void EChessComp::GoAHead()
 
 void EChessComp::RunScript( Script* asp )
 {
+	CC_SAFE_RELEASE_NULL(mSp);
 	mSp = asp;
+	mSp->retain();
 	setScriptNum(mSp->m_snum);
 	miELock = 0;
 	//[0803]CCLog(">[ECC]Script Ready:%d",miScriptSum);
@@ -183,3 +186,48 @@ void EChessComp::EUnLock()
 		GoAHead();
 	}
 }
+
+bool EChessComp::TestRange( CCPoint target )
+{
+	CCLog("[ECC]TestRange with pos:%d,%f",target.x,target.y);
+	vector<int> ars;
+	ars.push_back(9);
+	GameManager::sharedLogicCenter()->ml->bm->m_controller = (EChesses*) m_pOwner;
+	GameManager::sharedLogicCenter()->ml->bm->set_mouse_range(1,ars);	// <Get&Set Range Paras	
+	GameManager::sharedLogicCenter()->ml->bm->draw_mouse_range(((EChesses*) m_pOwner)->pos);
+	return GameManager::sharedLogicCenter()->ml->bm->ArrangePoint(target);
+
+}
+
+bool EChessComp::FindFitRe( CCObject* tar,int atime )
+{
+	/* <普通攻击 - atime 次数 */
+	int t_iType = (((EChesses*) m_pOwner)->m_pChara)->getvalue("attack");		// <[TODO]从单位中获得攻击属性,具体的来源需要根据设计进行变更，注意默认取得的是0
+	t_iType = 1;																// <[TestOnly] 使用上面获取的值
+
+	vector<map<string,string>> vdata;
+	vdata.clear();
+	DBUtil::initDB("save.db");
+	CCString* t_csSql = CCString::createWithFormat("select * from attr_attact where id = %d",t_iType);
+	vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
+	int m_number = vdata.size();
+	DBUtil::closeDB(); 
+
+	 t_ssm = (map<string,string>) vdata.at(0);	
+			
+	 if(TestRange(((EChesses*) tar)->pos)){
+		 Scriptor* scp = new Scriptor();
+		 scp->parse_string(t_ssm.at("action_sp"));
+		 GameManager::sharedLogicCenter()->ml->bm->m_caTarget->removeAllObjects();
+		 GameManager::sharedLogicCenter()->ml->bm->m_caTarget->addObject(tar);
+		 GameManager::sharedLogicCenter()->ml->bm->HandleScriptor(scp);
+
+		 scp->re_init();
+		 delete scp;
+		 return true;
+	 }
+	 return false;
+
+	
+}
+

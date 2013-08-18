@@ -155,7 +155,7 @@ bool BattleMap::init()
 }
 
 
-void BattleMap::f_decide(int i, int j){		//通过新的选中tile对map进行重构。 use the set to decide.
+void BattleMap::f_decide(int i, int j){		// <通过新的选中tile对map进行重构。 use the set to decide.
 	imply_set(ts_last,0);
 	center_i = i;
 	center_j = j;
@@ -208,6 +208,9 @@ void BattleMap::update(float dt)
 			int j = round(ti.y);		
 			if(j >= max_y) j = max_y - 1;
 			f_decide(i,j);				
+
+			arange_target(miRangeType);
+
 			break;
 		}
 	case(4):		// state == 4 : Map is bussy moving charaentile.
@@ -260,65 +263,60 @@ void BattleMap::f_generateEnemy( int i )
 	vdata = DBUtil::getDataInfo(m_sSql,NULL);
 	DBUtil::closeDB();
 
-	//Prepare to analysis enemy group data get from db.
 	m_miEnemis.clear();
+	// <生成可以使用的敌方单位属性索引表
+	for(int i = 0;i<vdata.size();++i){
+		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
+		int t_fi_id	=	stoi(t_ssm.at("id"));
+		m_miEnemis[t_fi_id] = i;
+	}
+
+	// <生成敌方单位
+	Scriptor* t_scp = new Scriptor();
 	stringstream teststream;
 	teststream<<t_is;
-	int t_id,t_num;
+	int t_id,t_x,t_y;
+	string t_name;
 	do{
 		t_id = 0;
-		teststream>>t_id;
+		teststream>>t_id;		// <类型ID
 		if(t_id < 1) break;
-		teststream>>t_num;
-		m_miEnemis[t_id] = t_num;
-		CCLOG("Read out :%d.%d.:",t_id,t_num);
+		teststream>>t_x;		// <横坐标
+		teststream>>t_y;		// <纵坐标
+		teststream>>t_name;		// <敌人的唯一标示
+		/* [id x y s_name] */
+
+		map<string,string> t_ssm = (map<string,string>) vdata.at(m_miEnemis[t_id]);
+
+		t_scp->re_init();
+		t_scp->parse_string(t_ssm.at("attr"));		// <读取属性
+
+		//////////////////////////////////////////////////////////////////////////
+		EChesses* t_fij_ecd = new EChesses();
+
+		t_fij_ecd->load_chara_dbsp((Script*) t_scp->m_caScript->objectAtIndex(0));
+
+
+		t_fij_ecd->psz	=	t_ssm.at("spx");			//Test Only. SPX 入口
+		t_fij_ecd->pos	=	ccp(t_x,t_y);
+		t_fij_ecd->group_id = 0x02;
+		t_fij_ecd->group_mask = 0x01;
+
+		t_fij_ecd->name	=	t_name;
+		m_itemlist->setObject(t_fij_ecd,t_fij_ecd->name);
+		//t_fij_ecd->autorelease();
+
+		t_fij_ecd->m_pChara->m_sName		 =	 t_ssm.at("name");			//TODO:IN:PB: all the generated enemy may use the same chara(), if so put down this to next stage.
+		t_fij_ecd->m_pChara->m_sPsz		 =	 t_ssm.at("psz");
+		t_fij_ecd->m_pChara->m_iElement	 =	 stoi(t_ssm.at("element"));
+
+		BattleField::sharedBattleField()->SetChess(t_fij_ecd,t_fij_ecd->pos.x,t_fij_ecd->pos.y);
+
 	} while(1);
 	CCLOG(">Enemy Generationg Over.");
 
-	//Where to place the EChesses should be decided here, f_load_entile() only init the map.
-	for(int i = 0; i<vdata.size(); ++i){
-		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
-		int t_fi_id	=	stoi(t_ssm.at("id"));
-		int t_fi_sum	=	m_miEnemis[t_fi_id];
+	CC_SAFE_DELETE(t_scp);
 
-		//if(t_fi_sum == 0) exit(0x5008);	//If here ends a zero sum. There might be some problem with db_sp.
-
-		Scriptor* t_scp = new Scriptor();
-		t_scp->parse_string(t_ssm.at("attr"));					//Sp stored in attr. This is to make the enemy always the same to Chara.
-
-		//EChesses* t_fij_ec = new EChesses();
-
-
-
-
-		//t_fij_ec->m_pChara->retain();
-
-		for(int j = 0; j<t_fi_sum; ++j){			//Generate the number that is needed.			
-
-			EChesses* t_fij_ecd = new EChesses();
-
-			t_fij_ecd->load_chara_dbsp((Script*) t_scp->m_caScript->objectAtIndex(0));
-
-
-			t_fij_ecd->psz	=	"sprite/gongbin";			//Test Only. SPX 入口
-			t_fij_ecd->pos	=	ccp(10,10);
-			t_fij_ecd->group_id = 0x02;
-			t_fij_ecd->group_mask = 0x01;
-
-			t_fij_ecd->name	=	CCString::createWithFormat("enemy_%d",j)->getCString();
-			m_itemlist->setObject(t_fij_ecd,t_fij_ecd->name);
-			//t_fij_ecd->autorelease();
-
-			t_fij_ecd->m_pChara->m_sName		 =	 t_ssm.at("name");			//TODO:IN:PB: all the generated enemy may use the same chara(), if so put down this to next stage.
-			t_fij_ecd->m_pChara->m_sPsz		 =	 t_ssm.at("psz");
-			t_fij_ecd->m_pChara->m_iElement	 =	 stoi(t_ssm.at("element"));
-
-			BattleField::sharedBattleField()->SetChess(t_fij_ecd,t_fij_ecd->pos.x,t_fij_ecd->pos.y);
-		}
-
-		CC_SAFE_DELETE(t_scp);
-		CCLOG("Lock out.");
-	}	
 
 }
 
@@ -485,6 +483,7 @@ void BattleMap::draw_moving_tile()
 	cs_y.clear();				//cs_y存储第一层
 	draw_moving_block();
 	dps_range(m_con_cur, cs_y, t_iMove);
+	cs_y.erase(make_pair(m_con_cur.x,m_con_cur.y));
 	imply_set(cs_y,c_y);			//Imply.
 	imply_set(cs_dis,c_b);
 	imply_set(cs_hit_block,c_y);
@@ -494,8 +493,7 @@ void BattleMap::draw_moving_tile()
 
 void BattleMap::draw_moving_block()
 {
-	cs_block.clear();
-	cs_dis.clear();
+	clean_cs();
 
 	CCLOG(">Drawing block by g&m:%d,%d.",m_controller->group_id,m_controller->group_mask);
 	CCDictElement* pce = NULL;
@@ -504,7 +502,7 @@ void BattleMap::draw_moving_block()
 		int t_x = t_ec->pos.x;				
 		int t_y = t_ec->pos.y;
 		
-		cs_dis.insert(make_pair(t_x,t_y));
+		//cs_dis.insert(make_pair(t_x,t_y));
 		
 
 		CCLOG(">m_itemlist:%s",t_ec->name.c_str());
@@ -513,6 +511,7 @@ void BattleMap::draw_moving_block()
 			dps_ring(t_ec->pos, cs_block, t_range);
 		}else{
 			cs_block.insert(make_pair(t_x,t_y));		// <友军所站的位置不能停泊。
+			//cs_dis.insert(make_pair(t_x,t_y));
 		}
 	}
 
@@ -615,7 +614,7 @@ bool BattleMap::move_control()
 	do 
 	{
 		pair<int,int> t_pii = make_pair(m_mou_cur.x,m_mou_cur.y);
-		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
+		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_hit_block.count(t_pii) == 0);
 		CC_BREAK_IF(cs_dis.count(t_pii) > 0);
 
 		//[0803]CCLog(">Try to move all the element.");
@@ -711,6 +710,11 @@ void BattleMap::clean_cs()
 	imply_set(cs_dis,0,true);
 	imply_set(ts_last,0,true);
 	imply_set(cs_block,0,true);
+
+	cs_b.clear();
+	cs_dis.clear();
+	cs_block.clear();
+	cs_hit_block.clear();
 }
 
 ///A*寻路算法
@@ -915,6 +919,18 @@ void BattleMap::draw_mouse_range(CCPoint a_cp)
 	}
 }
 
+bool BattleMap::arange_targetwithtest( int a_type )
+{
+	do 
+	{
+		pair<int,int> t_pii = make_pair(m_mou_cur.x,m_mou_cur.y);
+		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
+		CC_BREAK_IF(cs_dis.count(t_pii) > 0);
+
+		return arange_target(a_type);
+	} while (0);
+	return false;
+}
 // <检查范围内是否有指定的单位类型
 bool BattleMap::arange_target( int a_type )
 {
@@ -950,7 +966,15 @@ bool BattleMap::arange_target( int a_type )
 		}
 	}		//TODO: a_type < 0 ;
 
-	return m_caTarget->count() > 0;
+	if(m_caTarget->count()>0){
+
+		BattleField::sharedBattleField()->SetTars(m_caTarget);
+		return true;
+	}else{
+		BattleField::sharedBattleField()->SetTars(NULL);
+		return false;
+	}
+
 }
 
 void BattleMap::show_text(EChesses* a_ec,string s)
@@ -981,10 +1005,7 @@ void BattleMap::control_switch()
 {
 	m_bAnimateOver = true;
 	clean_cs();
-	cs_b.clear();
-	cs_dis.clear();
-	cs_block.clear();
-	cs_hit_block.clear();
+
 
 }
 
@@ -1001,7 +1022,14 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	CCArray* t_caS = asp->m_caScript;
 	m_controller->ChangeFace(cp_last);
 	CCLog(">[BM]Tying to pass sp to owner unit....");
-	BattleField::sharedBattleField()->SetUp((EChesses*) m_controller,m_caTarget,(Script*) t_caS->objectAtIndex(2));
+	Script* tsc;
+	if(t_caS->count()<3){
+		tsc = NULL;
+	}else{
+		tsc = (Script*) t_caS->objectAtIndex(2);
+	}
+	
+	BattleField::sharedBattleField()->SetUp((EChesses*) m_controller,m_caTarget,tsc);
 	((EChessComp*) m_controller->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(0));
 	CCLog(">[BM]Passing owner is over...");
 	for(int i = 0; i< m_caTarget->count(); ++i){
@@ -1010,5 +1038,11 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 		((EChesses*) m_caTarget->objectAtIndex(i))->ChangeFace(m_con_cur);
 		((EChessComp*) ((EChesses*) m_caTarget->objectAtIndex(i))->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(1));		
 	}
+	asp->re_init();
+}
+
+bool BattleMap::ArrangePoint( CCPoint a )
+{
+	return ts_last.count(make_pair(a.x,a.y)) > 0;
 }
 

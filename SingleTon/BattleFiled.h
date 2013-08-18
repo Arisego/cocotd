@@ -31,7 +31,30 @@ public:
 	void SetUp(EChesses* aSrc, CCArray* aTar,Script* sp = NULL);		// <战斗设置接口
 	void AMOver();									// <一次攻击结束后发起战场检查
 
+	void SetSrc(EChesses* aSrc);
+	void SetTars(CCArray* aTar);
+
 	void PlayEffectSp(const char* asname, CCPoint end);	// <生成一个Sprite，并移动到指定的点。
+
+	//////////////////////////////////////////////////////////////////////////
+	// <再次攻击
+	EChesses* BackChess1;
+	EChesses* BackChess2;
+	EChesses* BackChess3;
+
+	void CheckBackCh();		// <从EChessTar中读取可以反击的三个单位
+	bool TestBackCh(EChesses* atar);		// <检测是否可以反击并进行反击
+
+	bool LogicContinue();
+	bool NormalAttackC();	// <普通攻击的检测
+	int	 miState;			// <战斗阶段标志位 0 - 等待生成反击组 || 1 - 对反击组进行遍历询问 || 2 - 反击组二次反击 
+
+	//////////////////////////////////////////////////////////////////////////
+	// <动态伤害预判
+	void setBattle(bool ab);
+	bool mbIsInBattle;		// <是否需要进行战斗预判
+
+	void PreJudge(EChesses* atar);
 
 protected:
 	virtual bool init();
@@ -42,8 +65,9 @@ protected:
 	void DepLead(int centx, int centy, int range, int val);
 	void DepRemoveLead( int centx, int centy, int range, int val );
 private:
+	EChesses* meOrig;		// <保存必要的指针
 	EChesses* meSrc;		// <攻击的发起者	| 被攻击对象在Chara内结算
-	CCArray* meTar;		// <接收
+	CCArray* meTar;			// <接收
 	Script*	 mspVals;
 
 	static BattleField *mSharedBattleField;

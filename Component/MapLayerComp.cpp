@@ -1,6 +1,7 @@
 #include "MapLayerComp.h"
 
 #include "sublayer/MapLayer.h"
+#include "SingleTon/BattleFiled.h"
 
 MapLayerComp::MapLayerComp()
 {
@@ -24,6 +25,7 @@ void MapLayerComp::ActRelease()
 	--miActCount;
 	//[0803]CCLog(">[MLC]Release one lock:%d",miActCount);
 	if(miActCount <= 0){
+		if(BattleField::sharedBattleField()->LogicContinue()) return;
 		MlUnLock();
 	}
 }
@@ -38,3 +40,5 @@ void MapLayerComp::MlUnLock()
 	//[0803]CCLog(">[MLC]MlUnLock:%d",miActCount);
 	((MapLayer*) m_pOwner)->f_resumecon();
 }
+
+

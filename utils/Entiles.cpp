@@ -11,7 +11,7 @@ Entiles::Entiles()
 {
 	autorelease();
 	name.clear();
-	m_sprite = new CCSprite();
+	m_sprite = NULL;
 
 	group_id = 0;
 	group_mask = 0;
@@ -157,3 +157,4 @@ void Entiles::ShowDamage()
 	CCActionInterval* t_cai = CCSpawn::createWithTwoActions(CCMoveTo::create(0.7,ccpAdd(c_ttlbmf->getPosition(),ccp(0,100))),CCFadeOut::create(0.7));
 	c_ttlbmf->runAction(t_cai);
 }
+

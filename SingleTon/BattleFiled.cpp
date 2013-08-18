@@ -1,5 +1,6 @@
 #include "SingleTon/BattleFiled.h"
 #include "packui/CharaS.h"
+#include "GameManager.h"
 
 static const int iBossHuiXin[] = {0,3,6,10,15};		// None C - S | 0 -4
 
@@ -51,6 +52,13 @@ void BattleField::Clean()
 	meTar = NULL;
 
 	mMapC.clear();
+
+	BackChess1 = NULL;
+	BackChess2 = NULL;
+	BackChess3 = NULL;
+
+	mbIsInBattle = false;
+	//miState = 0;
 	//miEnemy = 0;
 }
 
@@ -59,7 +67,7 @@ void BattleField::CheckOver()
 	if(!meTar) return;
 	do 
 	{
-		CC_BREAK_IF(meTar->count() == 0);
+		//CC_BREAK_IF(meTar->count() == 0);
 
 
 		mbIsOver = false;
@@ -68,6 +76,7 @@ void BattleField::CheckOver()
 	mbIsOver = true;
 }
 
+/* <战斗设置 */
 void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 {
 	Clean();
@@ -75,9 +84,38 @@ void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 	meTar = aTar;
 	mspVals = sp;
 	CCLog(">[BF]Battle Field Receive the battle:%d",aTar->count());
+
 	if(sp=NULL) 
 		CCLog(">[BF]Battle with an empty values....");
 }
+
+void BattleField::SetSrc( EChesses* aSrc )
+{
+	Clean();
+	meSrc = aSrc;
+	meOrig = aSrc;
+	miState = 0;
+
+	GameManager::sharedLogicCenter()->ml->m_lsb->SetContent(meSrc);
+}
+
+
+void BattleField::SetTars( CCArray* aTar )
+{
+	if(!aTar) {
+		GameManager::sharedLogicCenter()->ml->m_rsb->setVisible(false);
+		GameManager::sharedLogicCenter()->ml->m_lsb->SetNullAct();
+		return;
+	}
+	meTar = aTar;
+	if(!mbIsInBattle) {
+		return;
+	}
+	CheckBackCh();
+	PreJudge((EChesses*) aTar->objectAtIndex(0));
+	GameManager::sharedLogicCenter()->ml->m_rsb->setVisible(true);
+}
+
 
 bool BattleField::IsOver()
 {
@@ -101,7 +139,7 @@ void BattleField::InitChessRefreh()
 {
 	EChesses* te;
 	int tiLead;
-	// <扩散统帅属性
+	// <扩散统帅属性 --< 需要修改
 	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
 		te = it->second;
 		tiLead = te->m_pChara->getLead();
@@ -334,3 +372,182 @@ void BattleField::PlayEffectSp( const char* asname, CCPoint end )
 	meSrc->getParent()->addChild(tcs);
 	tcs->runAction(CCSequence::create(CCMoveTo::create(0.7,end),CCRemoveSelf::create(),NULL));
 }
+
+bool BattleField::LogicContinue()
+{
+	bool ret = false;
+	switch (miState)
+	{
+	case 0:		// <第一次攻守交换
+	case 1:		// <完成数据读取
+		{
+			if(!mspVals){		// <没有参数脚本时作为普通攻击对待
+				ret = NormalAttackC();				
+			}
+			break;
+		}
+	case 3:		// <攻击发起方可反击的情况
+		{
+			if(!mspVals){		
+				// <第三次攻击只有可能是普通攻击
+				GameManager::sharedLogicCenter()->ml->bm->m_caTarget->removeAllObjects();
+				GameManager::sharedLogicCenter()->ml->bm->m_caTarget->addObject(meSrc);
+				GameManager::sharedLogicCenter()->ml->bm->m_controller = meOrig;
+				GameManager::sharedLogicCenter()->ml->RePack();
+				
+				miState = 1;			// <回到初始反击查询状态
+				ret = true;
+			}
+			break;
+		}
+	default:
+		break;
+	}
+	return ret;
+
+}
+
+bool BattleField::NormalAttackC()
+{
+	do 
+	{
+		//meTar->
+		// <首先挑选出
+		if(!meTar) return false;
+		
+
+		// <弹出选择将交由EChessComp负责
+		if(BackChess1){
+			if(TestBackCh(BackChess1)){
+				if(miState != 2) BackChess1 = NULL;
+				else miState = 1;
+				break;
+			}
+		}
+
+		if(BackChess2){
+			if(TestBackCh(BackChess2)) {
+				if(miState != 2) BackChess2 = NULL;
+				else miState = 1;
+				break;
+			}
+		}
+
+		if(BackChess3){
+			if(TestBackCh(BackChess3)) {
+				if(miState != 2) BackChess3 = NULL;
+				else miState = 1;
+				break;
+			}
+		}
+		miState = 5;
+		return false;
+	} while (0);
+	return true;
+}
+
+void BattleField::CheckBackCh()
+{
+	if(miState >= 1) return;
+	BackChess1 = NULL;
+	BackChess2 = NULL;
+	BackChess3 = NULL;
+
+	int m1 = 0;
+	int m2 = 0;
+	int m3 = 0;
+	int t = 0;
+
+	CCObject* tco;
+	CCARRAY_FOREACH(meTar,tco){
+		t = ((EChesses*) tco)->m_pChara->GetRePrioer();
+		if(t<=m3){
+			continue;
+		}else if(t<=m2){
+			BackChess3 = (EChesses*) tco;
+			m3 = t;
+		}else if(t<= m1){
+			BackChess3 = BackChess2;
+			BackChess2 = (EChesses*) tco;
+			m2 = t;
+		}else{
+			BackChess3 = BackChess2;
+			BackChess2 = BackChess1;
+			BackChess1 = (EChesses*) tco;
+			m1 = t;
+		}
+	}
+	miState = 1;
+	CCLog(">[BF]Get ReBack Chess Over with prior:%d,%d,%d",m3,m2,m1);
+}
+
+bool BattleField::TestBackCh(EChesses* atar)
+{
+	do 
+	{
+		int delta_spd = (atar->m_pChara->getvalue("spd") - meOrig->m_pChara->getvalue("spd"));
+		if( delta_spd >= 5){			// <被攻击对象速度较快
+			miState = 2;
+			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,2));		// <FindFitRe会根据自己的状态对miState进行修改
+		}else if(delta_spd <= -5){		// <攻击发起对象速度较快
+			miState = 3;
+			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1));
+		}else{							// <速度在平衡范围内，不发起第三次攻击
+			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1));
+		}
+		
+
+		// <RunScript()  --> Judge()
+		return false;
+	} while (0);
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// <预先判定
+void BattleField::PreJudge(EChesses* atar)
+{
+	if(!atar) return;
+	Chara* src = meOrig->m_pChara;
+	Chara* tar = atar->m_pChara;
+
+	int hit_rate = src->getFixValue("hit")*5 + src->getFixValue("luk") - tar->getFixValue("avg") * 5 - tar->getFixValue("luk") + 70 + src->getFixRate()*100;
+	int hx_rate = (src->getFixValue("base_hit") + src->getFixValue("luk")/5 - iBossHuiXin[tar->getvalue("boss_class")])/100 + src->getFixRate();
+	int damage =src->getFixValue("atk") + src->getFixValue("a_atk");	
+
+	GameManager::sharedLogicCenter()->ml->m_lsb->RefreshAct(hit_rate, hx_rate, damage);
+
+	do 
+	{
+		
+		if(atar == BackChess1){
+			break;
+		}
+		if(atar == BackChess2){
+			break;
+		}
+		if(atar == BackChess3){
+			break;
+		}
+		return;
+	} while (0);
+	//////////////////////////////////////////////////////////////////////////
+	// <该单位是反击单位的情况
+	int delta_spd = (atar->m_pChara->getvalue("spd") - meOrig->m_pChara->getvalue("spd"));
+	if( delta_spd >= 5){			// <被攻击对象速度较快
+		miState = 2;
+		//((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,2);		// <FindFitRe会根据自己的状态对miState进行修改
+	}else if(delta_spd <= -5){		// <攻击发起对象速度较快
+		miState = 3;
+		//((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1);
+	}else{							// <速度在平衡范围内，不发起第三次攻击
+		//((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1);
+	}
+	
+}
+
+void BattleField::setBattle( bool ab )
+{
+	mbIsInBattle = ab;
+}
+

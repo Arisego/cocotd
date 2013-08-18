@@ -281,3 +281,9 @@ EffectControler::~EffectControler()
 	f_clear();
 	CC_SAFE_DELETE(sp);
 }
+
+string EffectControler::getESp()
+{
+	map<string,string> t_ssm = (map<string,string>) vdata.at(0);
+	return t_ssm.at("script");
+}

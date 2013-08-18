@@ -64,9 +64,12 @@ protected:
 	void DerSP(Script* asp);
 
 	void DerChange(Script* asp);
-	bool DerLock();
+	
 
 public:
+	string getESp();
+	bool DerLock();		// <对技能锁进行检查
+
 	void f_sp_gonext();
 	void f_effect_over();
 };

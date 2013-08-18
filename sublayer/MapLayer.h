@@ -17,7 +17,10 @@
 #include "hud/ElementTicker.h"
 #include "packui/ListDBView.h"
 
+#include "hud/LStatBar.h"
+
 #include "Component/MapLayerComp.h"
+#include "../hud/RStatBar.h"
 
 USING_NS_CC;
 using namespace std;
@@ -84,10 +87,14 @@ public:
 	virtual void handlesp(Script* sp);
 	//
 	//////////////////////////////////////////////////////////////////////////
+	void RePack();						//  <第三次攻击
 protected:
 	//////////////////////////////////////////////////////////////////////////
 	//
 	vector<map<string,string>> vdata;	//	<数据库中介 -- 攻击类型多是固定的，将不会被保存在数据库中。
+	Scriptor* BFsp;
+
+	
 	//	<攻击
 	//////////////////////////////////////////////////////////////////////////
 	LinePrior* m_lpJudgement;
@@ -113,6 +120,14 @@ protected:
 
 	LTLifeBlock* m_ltb;
 	ItemPicker* m_IP;
+public:
+	//////////////////////////////////////////////////////////////////////////
+	// <BattleMap HUD
+	LStatBar* m_lsb;
+	RStatBar* m_rsb;
+	void init_Stat();
+	void DismissBHUD();
+
 public:
 	void show_hud();
 	void close_hud();

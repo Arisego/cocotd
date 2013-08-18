@@ -71,6 +71,7 @@ public:
 	void clean_cs();			// clean states;
 	void a_star();				//A*
 
+	int	 miRangeType;
 	bool arange_target(int a_type);			//Test if target is in ts_last and produce the target this.
 
 	CCArray* m_caTarget;					//Array for target;
@@ -84,10 +85,13 @@ public:
 	void control_switch();					//called when control is switched.
 
 	virtual void clearcontrol();
+	bool arange_targetwithtest( int a_type );
 	//////////////////////////////////////////////////////////////////////////
 	//	<¹¥»÷
 	virtual void HandleScriptor(Scriptor* asp);
 	int center_i,center_j;
+
+	bool ArrangePoint(CCPoint a);
 protected:
 	CCPoint m_con_cur;			//Current controller point; inner use only.
 
@@ -104,7 +108,7 @@ protected:
 	list<StepNode> getSearchPath(CCPoint startPos, CCPoint to);
 	bool as_checkpoint( int x, int y );
 	bool as_checkNpcMove( int x, int y, int m, int n );
-
+	
 };
 
 #endif

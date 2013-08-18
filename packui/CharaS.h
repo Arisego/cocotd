@@ -292,6 +292,13 @@ public:
 			}
 		}
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	
+	/* <获得反击的优先权 */
+	int GetRePrioer(){
+		return getvalue("boss_class")*100 + getvalue("lv")+1;
+	}
 };
 
 class CharaS : CCObject
