@@ -158,6 +158,7 @@ void CharaS::inform(){
 			
 	}
 	DBUtil::closeDB(); 
+	CC_SAFE_DELETE(tsp);
 
 	if(m_bNotifate){
 		InfoTab::sharedInfoTab()->showbmfl("pre_people",this,menu_selector(CharaS::bback),out_put);

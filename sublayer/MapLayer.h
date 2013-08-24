@@ -97,13 +97,17 @@ protected:
 	
 	//	<攻击
 	//////////////////////////////////////////////////////////////////////////
-	LinePrior* m_lpJudgement;
-	ElementTicker* m_etClock;
-	void TickBack(CCObject* pSender);
+
+	// <删除 08.24
+	//LinePrior* m_lpJudgement;
+	//ElementTicker* m_etClock;
+	//LinePin* m_sCon;
+
+	//void TickBack(CCObject* pSender);
 	virtual void update(float fDelta);
 
 	int m_iCSum, m_iCCur;		// sum of control arrive;
-	LinePin* m_sCon;
+	
 	void switch_control();
 
 	//void registerWithTouchDispatcher();
@@ -139,6 +143,10 @@ public:
 	int m_iItem;				// Store which skill or item is being waiting. It's not only for item.
 
 	virtual void right_click();			//EventCenter::sharedEventCenter()->setBmCake(NULL);should be called .
+
+	int m_iMaxGroup;			// <最大的组别编号
+	int m_iCurGroup;			// <当前拥有控制权的组别
+	int m_iTurn;
 
 };
 

@@ -39,6 +39,7 @@ bool BattleField::init()
 		meTar = NULL;
 		Clean();
 		mSpLinker = new Scriptor();
+
 		return true;
 	} while (false);
 	return false;
@@ -92,6 +93,7 @@ void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 
 void BattleField::SetSrc( EChesses* aSrc )
 {
+	if(!aSrc) return;
 	Clean();
 	meSrc = aSrc;
 	meOrig = aSrc;
@@ -621,7 +623,8 @@ void BattleField::setBattle( bool ab )
 {
 	mbIsInBattle = ab;
 }
-
+//////////////////////////////////////////////////////////////////////////
+// <Õ½³¡ÉèÖÃ
 void BattleField::InitBfSp( const char* pSz )
 {
 	mSpLinker->re_init();
@@ -633,5 +636,20 @@ void BattleField::InitBfSp( const char* pSz )
 void BattleField::ClearBF()
 {
 	mSpLinker->re_init();
+}
+
+BattleField::~BattleField()
+{
+	mSpLinker->re_init();
+	CC_SAFE_DELETE(mSpLinker);
+}
+
+void BattleField::ShowChess( EChesses* atar )
+{
+	if(!atar){
+		GameManager::sharedLogicCenter()->ml->m_lsb->setVisible(false);
+		return;
+	}
+	GameManager::sharedLogicCenter()->ml->m_lsb->SetContent(atar);
 }
 

@@ -158,6 +158,9 @@ bool BattleMap::init()
 	mFolCamara = CCNode::create();
 	mFolCamara->setAnchorPoint(CCPointZero);
 	addChild(mFolCamara);
+	//////////////////////////////////////////////////////////////////////////
+	//mv_iiGroup.clear();
+
 	return true;
 }
 
@@ -201,6 +204,7 @@ void BattleMap::update(float dt)
 			CC_BREAK_IF(!m_touch);
 			fAutoCamara();
 			checkpoint(m_touch);
+			BattleField::sharedBattleField()->ShowChess(m_eCurMouse);
 			break;
 		}
 	case(3):						// state == 3 : <移动鼠标并选择目标.
@@ -1111,7 +1115,7 @@ void BattleMap::fAutoCamara()
 	//ny = 300;
 
 	if(a==2) return;
-	CCTouch* touch = new CCTouch();
+	static CCTouch* touch = new CCTouch();
 
 	touch->setTouchInfo(m_touch->getID(),nx,ny);
 	t_mouse = this->convertTouchToNodeSpace(touch);

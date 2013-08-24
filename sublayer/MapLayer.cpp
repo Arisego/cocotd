@@ -28,8 +28,8 @@ MapLayer::~MapLayer(){
 
 	CC_SAFE_RELEASE_NULL(t_bm);
 	CC_SAFE_RELEASE_NULL(m_ldb);
-	CC_SAFE_RELEASE_NULL(m_lpJudgement);
-	CC_SAFE_RELEASE_NULL(m_etClock);
+	//CC_SAFE_RELEASE_NULL(m_lpJudgement);
+	//CC_SAFE_RELEASE_NULL(m_etClock);
 
 	//
 }
@@ -108,9 +108,9 @@ void MapLayer::f_init(){
 	m_lsb = NULL;
 	m_rsb = NULL;
 
-	m_lpJudgement	=	NULL;
-	m_etClock		=	NULL;
-	m_sCon			=	NULL;
+	//m_lpJudgement	=	NULL;
+	//m_etClock		=	NULL;
+	//m_sCon			=	NULL;
 
 	BFsp = new Scriptor();
 
@@ -337,6 +337,8 @@ void MapLayer::show_menu()
 		addChild(t_bm);
 	}
 
+	BattleField::sharedBattleField()->SetSrc((EChesses*) bm->m_controller);				// <尝试移动到控制交接的函数里
+
 	t_bm->setAnchorPoint(CCPointZero);
 	t_bm->setPosition(200,200);
 	t_bm->bitLock = 0xff;
@@ -356,8 +358,8 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 			case(1):
 				{
 					bm->checkpoint(pTouch);
-					if(bm->m_eCurMouse == bm->m_controller){
-
+					if(!bm->m_eCurMouse) break;
+					if(bm->m_eCurMouse->group_id == m_iCurGroup){
 						show_menu();
 
 					}else if(bm->m_eCurMouse){
@@ -425,7 +427,7 @@ void MapLayer::menu_back( CCObject* pSender )
 	Container* t_c = (Container*) pSender;
 	m_iFuncType = t_c->getTag();
 	EChesses* t_ec = (EChesses*) bm->m_controller;				// <控制器角色在地图上始终只有一个
-	BattleField::sharedBattleField()->SetSrc(t_ec);				// <尝试移动到控制交接的函数里
+	
 	bm->miRangeType = 0;
 	BattleField::sharedBattleField()->setBattle(false);
 
@@ -590,47 +592,61 @@ void MapLayer::f_init_battle()
 	
 	bm->m_controller = NULL;
 
-	CC_SAFE_RELEASE_NULL(m_lpJudgement);
-	CC_SAFE_RELEASE_NULL(m_etClock);
+	//CC_SAFE_RELEASE_NULL(m_lpJudgement);
+	//CC_SAFE_RELEASE_NULL(m_etClock);
 
-	m_lpJudgement	=	new LinePrior();				//while bm is release, the two component should also be released null.
-	m_etClock		=	new ElementTicker();
+	//m_lpJudgement	=	new LinePrior();				//while bm is release, the two component should also be released null.
+	//m_etClock		=	new ElementTicker();
 
-	m_lpJudgement->setAnchorPoint(ccp(0,0));
-	m_lpJudgement->setPosition(ccp(570,549));
-	addChild(m_lpJudgement,11);
+	//m_lpJudgement->setAnchorPoint(ccp(0,0));
+	//m_lpJudgement->setPosition(ccp(570,549));
+	//addChild(m_lpJudgement,11);
 
-	m_etClock->setAnchorPoint(ccp(0,0));
-	m_etClock->setPosition(ccp(745,55));
-	addChild(m_etClock,11);
+	//m_etClock->setAnchorPoint(ccp(0,0));
+	//m_etClock->setPosition(ccp(745,55));
+	//addChild(m_etClock,11);
 	
-	m_lpJudgement->f_init();
-	m_etClock->f_init();
-	m_lpJudgement->setactivator(this,menu_selector(MapLayer::TickBack));
+	//m_lpJudgement->f_init();
+	//m_etClock->f_init();
+	//m_lpJudgement->setactivator(this,menu_selector(MapLayer::TickBack));
+
+	//CCDictElement* t_cde = NULL;
+	//CCDictionary* t_cd = bm->m_itemlist;
+	//CCDICT_FOREACH(t_cd,t_cde){
+	//	EChesses* t_ec = (EChesses*) t_cde->getObject();
+	//	m_lpJudgement->addPin(t_ec->m_pChara, t_ec->name);
+	//}
+	//m_lpJudgement->refresh_pin();
+
+	//////////////////////////////////////////////////////////////////////////
+	// <组别控制 - 扩展从这里读入配置
+	m_iMaxGroup = 2;
+	m_iCurGroup = 0;		// <没零
 
 	CCDictElement* t_cde = NULL;
 	CCDictionary* t_cd = bm->m_itemlist;
+	EChesses* t_ec;
 	CCDICT_FOREACH(t_cd,t_cde){
-		EChesses* t_ec = (EChesses*) t_cde->getObject();
-		m_lpJudgement->addPin(t_ec->m_pChara, t_ec->name);
+		t_ec = (EChesses*) t_cde->getObject();
+		t_ec->m_pChara->initValues();
 	}
-	m_lpJudgement->refresh_pin();
 
-	m_iMLState = 3;					//state change to 3, wait for token.
-}
-
-void MapLayer::TickBack( CCObject* pSender )
-{
-	CCLOG("Tick is back.");
-	m_iMLState = 2;
-
-	m_iCSum = m_lpJudgement->m_caPinSteped->count();
-	m_iCCur = 0;
+	m_iTurn = 0;
 
 	EventCenter::sharedEventCenter()->setBmCake(this);
-
-	switch_control();
+	//m_iMLState = 3;					//state change to 3, wait for token.
 }
+
+//void MapLayer::TickBack( CCObject* pSender )
+//{
+//	CCLOG("Tick is back.");
+//	m_iMLState = 2;
+//
+//	//m_iCSum = m_lpJudgement->m_caPinSteped->count();
+//	m_iCCur = 0;
+//
+//	switch_control();
+//}
 
 void MapLayer::update( float fDelta )
 {
@@ -647,10 +663,29 @@ void MapLayer::update( float fDelta )
 			} while (0);
 			break;
 		}
-	case(3):
+	case(3):	// <时钟-TO不可用  --->>> 变更 [交换控制权]
 		{
-			m_lpJudgement->tick();
-			m_etClock->tick();
+			//m_lpJudgement->tick();
+			//m_etClock->tick();
+
+			//////////////////////////////////////////////////////////////////////////
+			m_iCurGroup = m_iCurGroup%m_iMaxGroup;
+
+			++m_iCurGroup;
+			m_iMLState = 2;
+			switch_control();
+			if(m_iTurn>0){
+				CCDictElement* tc;
+				CCDictionary* te = bm->m_itemlist;
+				CCDICT_FOREACH(te,tc){
+					EChesses* ce = (EChesses*) tc->getObject();
+					if(ce->group_id == m_iCurGroup){
+						ce->m_pChara->roundUp();
+					}
+				}
+			}
+			++m_iTurn;
+
 			break;
 		}
 	}
@@ -658,22 +693,49 @@ void MapLayer::update( float fDelta )
 
 void MapLayer::switch_control()
 {
-	if(m_sCon) m_sCon->replace_pin();
-	m_lsb->setVisible(false);
-	m_rsb->setVisible(false);
-	if(m_iCCur < m_iCSum){
-		m_sCon = (LinePin*) m_lpJudgement->m_caPinSteped->objectAtIndex(m_iCCur);
+	////if(m_sCon) m_sCon->replace_pin();
+	//m_lsb->setVisible(false);
+	//m_rsb->setVisible(false);
+	//if(m_iCCur < m_iCSum){
+	//	//m_sCon = (LinePin*) m_lpJudgement->m_caPinSteped->objectAtIndex(m_iCCur);
 
-		bm->f_setcontroller(bm->m_getEntile(m_sCon->name.c_str()));
-		bm->f_setcamara(bm->m_getEntile(m_sCon->name.c_str()));
+	//	//bm->f_setcontroller(bm->m_getEntile(m_sCon->name.c_str()));
+	//	//bm->f_setcamara(bm->m_getEntile(m_sCon->name.c_str()));
 
-		m_iCCur++;
-		give_control();
-	}else{
-		EventCenter::sharedEventCenter()->setBmCake(NULL);
-		m_sCon = NULL;
-		m_iMLState = 3;
+	//	m_iCCur++;
+	//	give_control();
+	//}else{
+	//	EventCenter::sharedEventCenter()->setBmCake(NULL);
+	//	//m_sCon = NULL;
+	//	m_iMLState = 3;
+	//}
+	//////////////////////////////////////////////////////////////////////////
+	// <回合转换
+
+	
+	CCDictElement* tc;
+	CCDictionary* te = bm->m_itemlist;
+	CCDICT_FOREACH(te,tc){
+		EChesses* ce = (EChesses*) tc->getObject();
+		if(ce->group_id == m_iCurGroup){
+			int xd = ce->m_pChara->getvalue("b_xudong");
+			if(xd>0){
+				bm->f_setcontroller(ce);
+				bm->f_setcamara(ce);
+				bm->b_battle = 1;
+				//ce->m_pChara->setvalue("b_xudong",xd-1);
+				
+				return;
+			}else{
+				continue;
+			}
+
+
+		}
 	}
+
+
+	m_iMLState = 3;
 }
 
 void MapLayer::give_control()
@@ -750,6 +812,9 @@ void MapLayer::script_over()
 	//m_lpJudgement->removePin(t_ec->name);
 	//bm->m_itemlist->removeObjectForKey(t_ec->name);
 	//[TODO] <注意这个函数的调用来源，它可能会被移除
+	m_lsb->setVisible(false);
+	m_rsb->setVisible(false);
+
 	if(BattleField::sharedBattleField()->IsOver()) {
 		switch_to_walk();	// Change it~
 		return;
@@ -783,13 +848,13 @@ void MapLayer::switch_to_walk()
 	if(wm){
 		EventCenter::sharedEventCenter()->setBmCake(NULL);
 
-		m_lpJudgement->removeFromParent();
-		m_etClock->removeFromParent();
+		//m_lpJudgement->removeFromParent();
+		//m_etClock->removeFromParent();
 		bm->removeFromParent();
 		CC_SAFE_RELEASE_NULL(bm);
 
-		CC_SAFE_RELEASE_NULL(m_lpJudgement);
-		CC_SAFE_RELEASE_NULL(m_etClock);
+		//CC_SAFE_RELEASE_NULL(m_lpJudgement);
+		//CC_SAFE_RELEASE_NULL(m_etClock);
 
 		tm = wm;
 		f_resumeall();

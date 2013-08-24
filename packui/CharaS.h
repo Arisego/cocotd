@@ -4,6 +4,12 @@
 #include "utils/Scriptor.h"
 #include "packui/ItemCell.h"
 
+//static const char* tlevel[] = {"E","D","C","B","A","S"};
+static const int siHunPo[] = {2,4,5,6,8,10};
+static const int siHuiHun[] = {0,1,2,3,4,6};
+static const int siXuDong[] = {1,2,3,4,5,6};
+static const int siXuDongP[] = {0,0,1,1,2,2};	// <续动额外加成
+
 struct Equip : CCObject
 {
 	int id;
@@ -30,7 +36,6 @@ public:
 	map<string,int> m_iiAttrs;		//for attributes
 	//vector<int> m_viSkills;			//for skills,change this to map if group is needed.
 	map<int,int> m_viSkills;
-
 
 	bool m_bIsDead;
 
@@ -342,6 +347,28 @@ public:
 
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// <战斗轮换
+	void initValues(){ // <初始化
+		setvalue("b_hunpo",siHunPo[m_iiAttrs["tama_0"]]);	// <魂魄
+		setvalue("b_maxxudong",siXuDong[m_iiAttrs["tama_2"]]);
+		miRu = 0;
+	}
+
+	int miRu;
+	void roundUp(){ // <回合切换时
+		++miRu;
+		// <回魂
+		int hh = siHuiHun[m_iiAttrs["tama_1"]];
+		if(hh == 0) hh = miRu%2;
+		m_iiAttrs["b_hunpo"] += hh;
+		// <续动
+		setvalue("b_xudong",m_iiAttrs["b_maxxudong"]);
+	}
+
+	void battleOver(){
+		m_iiAttrs.erase("b_hunpo");
+	}
 
 };
 

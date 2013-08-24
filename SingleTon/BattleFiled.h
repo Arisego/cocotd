@@ -15,6 +15,7 @@ public:
 	static BattleField *sharedBattleField();
 	static void purgeSharedBattleField();
 
+	~BattleField();
 	void Clean();
 
 	bool IsOver();
@@ -62,6 +63,7 @@ public:
 	void InitBfSp(const char* pSz);
 
 	Scriptor* mSpLinker;	// <½âÎöÆ÷
+	void ShowChess(EChesses* atar);
 
 protected:
 	virtual bool init();
