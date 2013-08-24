@@ -8,6 +8,7 @@
 
 #include "GameManager.h"
 #include "EventCenter.h"
+#include "hud/TFollow.h"
 
 
 TileMap::~TileMap(){
@@ -566,7 +567,7 @@ m_debugDraw->SetFlags(flags);
 			f_setcontroller(m_getEntile("pc","control"));	//ITEMMANAGER设置控制器和镜头
 			f_setcamara(m_getEntile("pc","control"));
 		}
-		//spotLight->runAction(CCFollow::create(m_controller->m_sprite, CCRectMake(-dx, -dy, rw, rh)));
+		//spotLight->runAction(TFollow::create(m_controller->m_sprite, CCRectMake(-dx, -dy, rw, rh)));
 
 		//CCSprite* p = CCSprite::createWithSpriteFrameName("grossinis_sister2.png");
 		//p->setPosition(ccp(1200,200));
@@ -679,7 +680,7 @@ void TileMap::f_setcontroller(Entiles* e){
 void TileMap::f_setcamara(Entiles* e){
 	if(!e) return;
 	m_sNaCam = e->GetFullName();
-	this->runAction(CCFollow::create(e, CCRectMake(-dx, -dy, rw, rh)));
+	this->runAction(TFollow::create(e, CCRectMake(-dx, -dy, rw, rh)));
 }
 
 Entiles* TileMap::m_getEntile(const char* group,const char* name){

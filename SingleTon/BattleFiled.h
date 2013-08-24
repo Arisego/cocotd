@@ -56,19 +56,32 @@ public:
 
 	void PreJudge(EChesses* atar);
 
+	//////////////////////////////////////////////////////////////////////////
+	// <地图脚本
+	void ClearBF();				// <结束后打扫战场
+	void InitBfSp(const char* pSz);
+
+	Scriptor* mSpLinker;	// <解析器
+
 protected:
 	virtual bool init();
 	void CheckOver();								// <检查是否满足结束条件
-	void DerLead(int val,int cx, int cy);
-	void UnDerLead(int val,int cx, int cy);
 
-	void DepLead(int centx, int centy, int range, int val);
 	void DepRemoveLead( int centx, int centy, int range, int val );
+	void DepLead( int centx, int centy, int range, int val );
+
+	void SetLead(EChesses* te);
+	int DerLead( int val,int cx, int cy,int dx, int dy );	// <根据val的值来判定得到的统帅加成
+	void DerLead( int val,int cx, int cy );					// <单体扩散
+	void UnDerLead( int val,int cx, int cy );				// <移除自身的影响
+	
 private:
 	EChesses* meOrig;		// <保存必要的指针
 	EChesses* meSrc;		// <攻击的发起者	| 被攻击对象在Chara内结算
 	CCArray* meTar;			// <接收
-	Script*	 mspVals;
+	Script*	 mspVals;		// <单次战斗的额为数据入口
+
+	CCDictionary* mSpEvList;// <事件列表
 
 	static BattleField *mSharedBattleField;
 	bool mbIsOver;

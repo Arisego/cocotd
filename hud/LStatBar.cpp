@@ -101,6 +101,7 @@ void LStatBar::SetContent( EChesses* aec )
 	}
 	m_ec = aec;
 	RefreshAll();
+	SetNullAct();
 	//setVisible(true);
 }
 

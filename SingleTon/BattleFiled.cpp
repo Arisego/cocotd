@@ -38,6 +38,7 @@ bool BattleField::init()
 		meSrc = NULL;
 		meTar = NULL;
 		Clean();
+		mSpLinker = new Scriptor();
 		return true;
 	} while (false);
 	return false;
@@ -95,7 +96,8 @@ void BattleField::SetSrc( EChesses* aSrc )
 	meSrc = aSrc;
 	meOrig = aSrc;
 	miState = 0;
-
+	/* [SS] <目标被选中为操作单位  */
+	meOrig->m_pChara->PlaySS();
 	GameManager::sharedLogicCenter()->ml->m_lsb->SetContent(meSrc);
 }
 
@@ -114,6 +116,7 @@ void BattleField::SetTars( CCArray* aTar )
 	CheckBackCh();
 	PreJudge((EChesses*) aTar->objectAtIndex(0));
 	GameManager::sharedLogicCenter()->ml->m_rsb->setVisible(true);
+	miState = 0;
 }
 
 
@@ -138,44 +141,70 @@ void BattleField::SetChess( EChesses* ae,int ax, int ay )
 void BattleField::InitChessRefreh()
 {
 	EChesses* te;
+	EChesses* ste;
 	int tiLead;
 	// <扩散统帅属性 --< 需要修改
 	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
 		te = it->second;
-		tiLead = te->m_pChara->getLead();
+		
 		CCLog(">[BF]Initing the chess lead values...");
-		DerLead(tiLead,it->first.first,it->first.second);
+
+		for(map<pair<int,int>,EChesses*>::iterator sit = mMapC.begin(); sit != mMapC.end(); ++sit){
+			ste = sit->second;
+			tiLead = ste->m_pChara->getLead();
+			te->m_pChara->AddLead(DerLead(tiLead,it->first.first,it->first.second,sit->first.first,sit->first.second));
+		}
+
 	}
 
 }
 //////////////////////////////////////////////////////////////////////////
 // <统帅
-void BattleField::DepLead( int centx, int centy, int range, int val )
-{
-	EChesses* tec;
-	int ny;
-	CCLog(">[BF]DepLead, need test:range-%d,val-%d...",range,val);
-	for(int i = 0; i <= range; ++i){
-		ny = centy + i;
-		for(int j = centx - range + i; j <= centx + range - i; ++j)
-		{
-			tec = mMapC[make_pair(j,ny)];
-			if(tec){
-				tec->m_pChara->AddLead(val);
-			}
-		}
-	}
 
-	for(int i = 1; i <= range; ++i){
-		ny = centy - i;
-		for(int j = centx - range + i; j <= centx + range - i; ++j)
+int BattleField::DerLead( int val,int cx, int cy,int dx, int dy )
+{
+	int t = abs(cx-dx) + abs(cy-dy);
+	switch (val)
+	{
+	case 0:
 		{
-			tec = mMapC[make_pair(j,ny)];
-			if(tec){
-				tec->m_pChara->AddLead(val);
-			}
+
+			break;
 		}
+	case 1:
+		{
+			if(t<=1) return 1;
+			//DepLead(cx, cy, 1, 1);
+			break;
+		}
+	case 2:
+		{
+			if(t<=2) return 1;
+			//DepLead(cx, cy, 2, 1);
+			break;
+		}
+	case 3:
+		{
+			if(t<=4) return 1;
+			//DepLead(cx, cy, 4, 1);
+			break;
+		}
+	case 4:
+		{
+			if(t<=5) return 2;
+			//DepLead(cx, cy, 5, 2);
+			break;
+		}
+	case 5:
+		{
+			if(t<=6) return 3;
+			//DepLead(cx, cy, 6, 3);
+			break;
+		}
+	default:
+		break;
 	}
+	return 0;
 }
 
 void BattleField::DepRemoveLead( int centx, int centy, int range, int val )
@@ -211,13 +240,54 @@ void BattleField::ChessMoved( EChesses* ae, CCPoint astart, CCPoint aend )
 {
 	CCLog(">[BF]Chess Moved");
 	int tiLead = ae->m_pChara->getLead();
+	mMapC.erase(make_pair(astart.x,astart.y));
+	mMapC.insert(make_pair(make_pair(aend.x,aend.y),ae));
+
 	UnDerLead(tiLead,astart.x,astart.y);
 	DerLead(tiLead,aend.x,aend.y);
+
+	ae->m_pChara->ClearLead();
+
+	EChesses* ste;
+	CCLog(">[BF]Initing the chess lead values...");
+
+	for(map<pair<int,int>,EChesses*>::iterator sit = mMapC.begin(); sit != mMapC.end(); ++sit){
+		ste = sit->second;
+		tiLead = ste->m_pChara->getLead();
+		ae->m_pChara->AddLead(DerLead(tiLead,aend.x,aend.y,sit->first.first,sit->first.second));
+	}
 	
 }
 
-void BattleField::DerLead( int val,int cx, int cy )
+void BattleField::DepLead( int centx, int centy, int range, int val )
 {
+	EChesses* tec;
+	int ny;
+	CCLog(">[BF]DepLead, need test:range-%d,val-%d...",range,val);
+	for(int i = 0; i <= range; ++i){
+		ny = centy + i;
+		for(int j = centx - range + i; j <= centx + range - i; ++j)
+		{
+			tec = mMapC[make_pair(j,ny)];
+			if(tec){
+				tec->m_pChara->AddLead(val);
+			}
+		}
+	}
+
+	for(int i = 1; i <= range; ++i){
+		ny = centy - i;
+		for(int j = centx - range + i; j <= centx + range - i; ++j)
+		{
+			tec = mMapC[make_pair(j,ny)];
+			if(tec){
+				tec->m_pChara->AddLead(val);
+			}
+		}
+	}
+}
+
+void BattleField::DerLead( int val,int cx, int cy ){
 	switch (val)
 	{
 	case 0:
@@ -266,27 +336,27 @@ void BattleField::UnDerLead( int val,int cx, int cy )
 		}
 	case 1:
 		{
-			DepLead(cx, cy, 1, 1);
+			DepRemoveLead(cx, cy, 1, 1);
 			break;
 		}
 	case 2:
 		{
-			DepLead(cx, cy, 2, 1);
+			DepRemoveLead(cx, cy, 2, 1);
 			break;
 		}
 	case 3:
 		{
-			DepLead(cx, cy, 4, 1);
+			DepRemoveLead(cx, cy, 4, 1);
 			break;
 		}
 	case 4:
 		{
-			DepLead(cx, cy, 5, 2);
+			DepRemoveLead(cx, cy, 5, 2);
 			break;
 		}
 	case 5:
 		{
-			DepLead(cx, cy, 6, 3);
+			DepRemoveLead(cx, cy, 6, 3);
 			break;
 		}
 	default:
@@ -411,10 +481,11 @@ bool BattleField::NormalAttackC()
 {
 	do 
 	{
+		
 		//meTar->
 		// <首先挑选出
 		if(!meTar) return false;
-		
+		CheckBackCh();
 
 		// <弹出选择将交由EChessComp负责
 		if(BackChess1){
@@ -549,5 +620,18 @@ void BattleField::PreJudge(EChesses* atar)
 void BattleField::setBattle( bool ab )
 {
 	mbIsInBattle = ab;
+}
+
+void BattleField::InitBfSp( const char* pSz )
+{
+	mSpLinker->re_init();
+	mSpLinker->parse_file(pSz);
+
+	mSpEvList = mSpLinker->mapscps;
+}
+
+void BattleField::ClearBF()
+{
+	mSpLinker->re_init();
 }
 

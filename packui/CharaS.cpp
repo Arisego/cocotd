@@ -133,8 +133,11 @@ void CharaS::inform(){
 	//data = CCArray::createWithCapacity(m_iNumber);
 	string out_put;
 	//////////////////////////////////////////////////////////////////////////
+	Scriptor* tsp = new Scriptor();
 
 	for(int i = 0;i<m_number;i++){
+		tsp->re_init();
+
 		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
 		int item_id = stoi(t_ssm.at("id"));			//PrimaryKey:ID
 		
@@ -145,6 +148,9 @@ void CharaS::inform(){
 		t_ca->m_sName		 =	 t_ssm.at("name");
 		t_ca->m_sPsz		 =	 t_ssm.at("psz");
 		t_ca->m_iElement	 =	 stoi(t_ssm.at("element"));
+		tsp->parse_string(t_ssm.at("sound"));
+		t_ca->m_ssLib		 =	 tsp->mapscps;
+		tsp->mapscps->retain();
 
 		out_put += "[";
 		out_put += t_ssm.at("name").c_str();
@@ -173,6 +179,11 @@ Chara* CharaS::getchara( int i )
 Chara* CharaS::getdispchara()
 {
 	return getchara(0);												//Change default CharaS through CharaS, do not control it separately.
+}
+
+Chara* CharaS::getIDChara( int i ){
+	if(m_viCharas.size()<1) return NULL;							//TODO: TestOnly. You cant give a game without player, but test gives none.
+	return ((Chara*) m_caCharas->objectForKey(i));					//It may return null point. But we do not generate a new one here. Its unexpected.
 }
 
 CharaS::~CharaS(){

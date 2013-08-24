@@ -34,7 +34,7 @@ public:
 
 	//vector<int> m_viEnenmis;
 	map<int,int> m_miEnemis;
-	map<pair<int,int>,string> m_mpiisCoor;					//方便快速查找某个区域内Entile对象。
+	//map<pair<int,int>,string> m_mpiisCoor;					//方便快速查找某个区域内Entile对象。
 
 	void f_generateEnemy(int i);
 
@@ -51,7 +51,7 @@ public:
 	void update(float dt);
 	void f_decide(int i,int j);
 	
-	void f_load_chara();		//load chara from charas.
+	void f_load_chara();		// <自动从BattleField获取列表
 	virtual Script* f_scrfind(string gn, int t);
 
 	void checkpoint(CCTouch* ct);	
@@ -108,6 +108,11 @@ protected:
 	list<StepNode> getSearchPath(CCPoint startPos, CCPoint to);
 	bool as_checkpoint( int x, int y );
 	bool as_checkNpcMove( int x, int y, int m, int n );
+
+	//////////////////////////////////////////////////////////////////////////
+	// <移动和UI
+	CCNode* mFolCamara;
+	void fAutoCamara();
 	
 };
 

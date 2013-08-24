@@ -39,10 +39,12 @@ public:
 		m_bIsDead = false;
 		miLevel	  = 0;
 		miLeadAdd = 0;
+		m_ssLib	  = NULL;
 	}
 
 	~Chara(){
 		m_viSkills.clear();
+		CC_SAFE_RELEASE_NULL(m_ssLib);
 	}
 
 	int getvalue(string name){
@@ -299,6 +301,48 @@ public:
 	int GetRePrioer(){
 		return getvalue("boss_class")*100 + getvalue("lv")+1;
 	}
+
+	/* <´æ´¢ÉùÒô²¥·ÅÅäÖÃ */
+	CCDictionary* m_ssLib;
+	float m_sDelay;
+	/* <²¥·ÅÌØ¶¨µÄÉùÒô½Å±¾ */
+	void PlaySS(){
+		if(!m_ssLib) return;
+
+		int tiLevel = 14;
+		Script* ts =(Script*) m_ssLib->objectForKey("name");
+		if(!ts) return;
+		CCDictionary* mca = ts->mapscpnodes;
+		if(!ts) return;
+		CCDictElement* tco;
+
+		CCDICT_FOREACH(mca,tco){
+			Script* mtca = (Script*) tco->getObject();
+
+			if(tiLevel<mtca->getint("min")) continue;
+			if(tiLevel>mtca->getint("max")) continue;
+
+			int rate = 0;
+			int b_r = CCRANDOM_0_1() * 100;
+			CCArray* tcca = mtca->scriptnodes;
+			
+			for(int i = 0; i<tcca->count(); ++i)
+			{
+				Script* td = (Script*) tcca->objectAtIndex(i);
+				rate += td->getint("rate");
+				if(b_r<rate) {
+					m_sDelay = td->getfloat("time");
+					CCLog(">Ready for sound playing:%s,%f",td->getstring("value"),m_sDelay);
+					break;
+				}
+			}
+
+			break;
+		}
+
+	}
+
+
 };
 
 class CharaS : CCObject
@@ -332,7 +376,8 @@ public:
 	Chara* getdispchara();			//get wm Chara. maybe you want a default one?
 
 	~CharaS();
-	
+	Chara* getIDChara( int i );
+
 };
 
 #endif

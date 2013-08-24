@@ -3,6 +3,8 @@
 #include "SingleTon/BattleFiled.h"
 #include "GameManager.h"
 
+#include "hud/TFollow.h"
+
 #define ASTAR_DEPTH 2500
 
 BattleMap::~BattleMap(){
@@ -151,6 +153,11 @@ bool BattleMap::init()
 	c_b = colordic->valueForKey("blue")->intValue();
 	c_y = colordic->valueForKey("yellow")->intValue();
 	b_battle = 1;
+
+	//////////////////////////////////////////////////////////////////////////
+	mFolCamara = CCNode::create();
+	mFolCamara->setAnchorPoint(CCPointZero);
+	addChild(mFolCamara);
 	return true;
 }
 
@@ -192,12 +199,14 @@ void BattleMap::update(float dt)
 	case(1):						// state == 1 : <点击选择单位.
 		{
 			CC_BREAK_IF(!m_touch);
+			fAutoCamara();
 			checkpoint(m_touch);
 			break;
 		}
 	case(3):						// state == 3 : <移动鼠标并选择目标.
 		{		
 			CC_BREAK_IF(!m_touch);
+			fAutoCamara();
 			m_touchpoint = this->convertTouchToNodeSpace(m_touch);
 
 			m_touchpoint = ccpAdd(m_touchpoint,ccp(-dtx,-dty));
@@ -258,10 +267,13 @@ void BattleMap::f_generateEnemy( int i )
 	map<string,string> t_ssm = (map<string,string>) vdata.at(0);
 	string t_mask	= t_ssm.at("mask");
 	string t_is		= t_ssm.at("member");
+	string t_scps	= t_ssm.at("script");
 	vdata.clear();
 	m_sSql = CCString::createWithFormat("select * from enemy_list where id IN (%s)", t_mask.c_str())->getCString();
 	vdata = DBUtil::getDataInfo(m_sSql,NULL);
 	DBUtil::closeDB();
+
+	BattleField::sharedBattleField()->InitBfSp(t_scps.c_str());
 
 	m_miEnemis.clear();
 	// <生成可以使用的敌方单位属性索引表
@@ -322,20 +334,32 @@ void BattleMap::f_generateEnemy( int i )
 
 void BattleMap::f_load_chara()
 {
-	EChesses* t_ec = new EChesses();
-	Chara* t_cca = CharaS::sharedCharaS()->getdispchara();					//Test: get dispchara() for test.
-	t_cca->retain();
+	CCArray* tca = BattleField::sharedBattleField()->mSpLinker->initcs;
+	Script* stmp = (Script*) tca->objectAtIndex(0);				
+	CCArray* mca = stmp->scriptnodes;
 
-	t_ec->pos = ccp(17,17);
-	t_ec->group_id = 0x01;
-	t_ec->group_mask = 0x02;
-	t_ec->m_pChara = t_cca;
-	t_ec->name = "chara_1";
-	t_ec->psz  = "sprite/gongbin";//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
+	for(int i = 0;i<mca->count();i++){
+		Script* tmp = (Script*) mca->objectAtIndex(i);					//script pack
 
-	m_itemlist->setObject(t_ec,t_ec->name);									//Test: get one and only one.
+		Chara* t_cca = CharaS::sharedCharaS()->getIDChara(tmp->getint("name"));					
+		if(!t_cca) return;
 
-	BattleField::sharedBattleField()->SetChess(t_ec,t_ec->pos.x,t_ec->pos.y);
+		EChesses* t_ec = new EChesses();
+		t_cca->retain();
+
+		t_ec->pos = ccp(tmp->getfloat("x"),tmp->getfloat("y"));
+		t_ec->group_id = 0x01;
+		t_ec->group_mask = 0x02;
+		t_ec->m_pChara = t_cca;
+		t_ec->name = CCString::createWithFormat("chara_%d",tmp->getint("name"))->getCString();
+		t_ec->psz  = tmp->getstring("file");//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
+
+		m_itemlist->setObject(t_ec,t_ec->name);									//Test: get one and only one.
+
+		BattleField::sharedBattleField()->SetChess(t_ec,t_ec->pos.x,t_ec->pos.y);
+
+	}
+
 }
 
 bool BattleMap::f_load_entile()
@@ -1044,5 +1068,57 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 bool BattleMap::ArrangePoint( CCPoint a )
 {
 	return ts_last.count(make_pair(a.x,a.y)) > 0;
+}
+
+void BattleMap::fAutoCamara()
+{
+	if(b_battle == 2 || b_battle == -1) return;
+
+	CCPoint t_mouse;
+	float sw = CCDirector::sharedDirector()->getVisibleSize().width;
+	float sh = CCDirector::sharedDirector()->getVisibleSize().height;
+
+	float nx,ny;
+	nx = m_touch->getLocation().x;
+	ny = m_touch->getLocation().y;
+
+	int a = 0;
+
+	ny = sh-ny;
+	//CCLog("TMOUSE:%f,%f||sw,sh:%f,%f",);
+	//if(abs(m_touch->getLocation().y - sh/2) < sh*0.4 && abs(m_touch->getLocation().x - sw/2) < sw*0.4) return;
+	if(ny < sh/10){
+		ny = ny + 0.4 * sh;
+	}else if(ny<0.9*sh){
+		ny = 0.5 * sh;
+		++a;
+	}else{
+		ny = ny - 0.4 * sh;		
+	}
+	
+
+	if(nx < sw/10){
+		nx = nx + 0.4 * sw;
+	}else if(nx<0.9*sw){
+		nx = 0.5 * sw;
+		++a;
+	}else{
+		nx = nx - 0.4 * sw;
+	}
+
+	
+	//nx = 450;
+	//ny = 300;
+
+	if(a==2) return;
+	CCTouch* touch = new CCTouch();
+
+	touch->setTouchInfo(m_touch->getID(),nx,ny);
+	t_mouse = this->convertTouchToNodeSpace(touch);
+	//t_mouse = ccpAdd(t_mouse,ccp(-dtx,-dty));
+	mFolCamara->setPosition(t_mouse);
+
+	this->runAction(TFollow::create(mFolCamara, CCRectMake(-dx, -dy, rw, rh)));
+
 }
 
