@@ -74,11 +74,19 @@ void BattleMenu::show()
 
 	Refresh_Button();
 
-	CCScale9Sprite* nback = CCScale9Sprite::create("Images/config_back.png"); 
+	CCSprite* sback = CCSprite::create("Images/hud_menu_back.png"); 
+	sback->setContentSize(CCSize(105,m_fHeight+5));
+	sback->setAnchorPoint(ccp(0,0));
+	sback->setPosition(ccp(-26,-25));
+	//sback->setOpacity(199);
+	addChild(sback,-1);
+
+	CCSprite* nback = CCSprite::create("Images/hud_menu_base.png"); 
 	nback->setContentSize(CCSize(105,m_fHeight+5));
 	nback->setAnchorPoint(ccp(0,0));
-	nback->setOpacity(199);
-	addChild(nback,-1);
+	nback->setPosition(ccp(-26,-25));
+	//nback->setOpacity(199);
+	addChild(nback,3);
 
 }
 

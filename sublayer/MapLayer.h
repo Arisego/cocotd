@@ -22,6 +22,9 @@
 #include "Component/MapLayerComp.h"
 #include "../hud/RStatBar.h"
 
+#include "hud/SkillList.h"
+#include "hud/LeftMenu.h"
+
 USING_NS_CC;
 using namespace std;
 
@@ -124,6 +127,19 @@ protected:
 
 	LTLifeBlock* m_ltb;
 	ItemPicker* m_IP;
+	//////////////////////////////////////////////////////////////////////////
+	// <SkillList
+	SkillList* m_SkillList ;
+	void show_skill_list();
+
+	//////////////////////////////////////////////////////////////////////////
+	// <主菜单
+	LeftMenu* m_lfm;
+	void showLeftFm();
+	void dissmissLeftFm();	// <涉及到可能的解锁操作
+	void lfmenu_back(CCObject* pSender);				// <菜单返回
+	bool m_bLfMenu;
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// <BattleMap HUD
@@ -147,6 +163,8 @@ public:
 	int m_iMaxGroup;			// <最大的组别编号
 	int m_iCurGroup;			// <当前拥有控制权的组别
 	int m_iTurn;
+
+
 
 };
 

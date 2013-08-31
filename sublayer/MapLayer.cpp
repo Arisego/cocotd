@@ -28,6 +28,7 @@ MapLayer::~MapLayer(){
 
 	CC_SAFE_RELEASE_NULL(t_bm);
 	CC_SAFE_RELEASE_NULL(m_ldb);
+	CC_SAFE_RELEASE_NULL(m_lfm);
 	//CC_SAFE_RELEASE_NULL(m_lpJudgement);
 	//CC_SAFE_RELEASE_NULL(m_etClock);
 
@@ -104,9 +105,12 @@ void MapLayer::f_init(){
 	m_ltb =	 NULL;
 	t_bm  =	 NULL;
 	m_ldb =	 NULL;
+	m_lfm =	 NULL;
 
 	m_lsb = NULL;
 	m_rsb = NULL;
+
+	m_SkillList = NULL;
 
 	//m_lpJudgement	=	NULL;
 	//m_etClock		=	NULL;
@@ -332,15 +336,25 @@ void MapLayer::handlesp( Script* sp )
 
 void MapLayer::show_menu()
 {
+	CCLog(">Ready for menu check...");
+	if(((EChesses*) bm->m_controller)->m_pChara->getvalue("b_xudong") <= 0){
+		CCLog(">[ML]You can not move it any more.");
+		return;
+	}
+
+
 	if(!t_bm){
 		t_bm = new BattleMenu();			//TODO:Decide what to show by bit lock.
-		addChild(t_bm);
+		CCLog(">LKDJFLKJ----- New Menu.....");
+		addChild(t_bm,99);
 	}
 
 	BattleField::sharedBattleField()->SetSrc((EChesses*) bm->m_controller);				// <尝试移动到控制交接的函数里
 
 	t_bm->setAnchorPoint(CCPointZero);
-	t_bm->setPosition(200,200);
+	float nx = bm->m_touch->getLocation().x+30;
+	if(nx>450) nx -= 170;
+	t_bm->setPosition(nx,200);
 	t_bm->bitLock = 0xff;
 	t_bm->setactivator(this,menu_selector(MapLayer::menu_back));
 	if(m_lsb) m_lsb->setVisible(true);
@@ -358,8 +372,12 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 			case(1):
 				{
 					bm->checkpoint(pTouch);
-					if(!bm->m_eCurMouse) break;
-					if(bm->m_eCurMouse->group_id == m_iCurGroup){
+					if(!bm->m_eCurMouse) {
+
+						showLeftFm();
+						break;
+					}else if(bm->m_eCurMouse->group_id == m_iCurGroup){
+						bm->f_setcontroller(bm->m_eCurMouse);
 						show_menu();
 
 					}else if(bm->m_eCurMouse){
@@ -456,31 +474,31 @@ void MapLayer::menu_back( CCObject* pSender )
 			t_bm->miFlag = -1;
 			t_bm->Refresh_Button();
 			//////////////////////////////////////////////////////////////////////////
+			show_skill_list();
+			//Chara* mpChara = t_ec->m_pChara;
+			//if(mpChara->m_viSkills.size() > 0){			//TODO: Not Showing skill-list/m_ldbEquList if there is no skill, modify it while needed.
+			//	CCDictionary* m_cid = new CCDictionary();
+			//	string t_sMask;
+			//	for(map<int,int>::iterator it = mpChara->m_viSkills.begin(); it != mpChara->m_viSkills.end(); ++it)
+			//	{
+			//		int t_id = it->second;
+			//		t_sMask +=  CCString::createWithFormat("%d,",t_id)->getCString();
+			//		ItemCellData* t_icd	=	new ItemCellData(t_id,0,0);
+			//		m_cid->setObject(t_icd,t_id);
+			//		t_icd->autorelease();
+			//	}
+			//	t_sMask.erase(t_sMask.length()-1);
+			//	CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
 
-			Chara* mpChara = t_ec->m_pChara;
-			if(mpChara->m_viSkills.size() > 0){			//TODO: Not Showing skill-list/m_ldbEquList if there is no skill, modify it while needed.
-				CCDictionary* m_cid = new CCDictionary();
-				string t_sMask;
-				for(map<int,int>::iterator it = mpChara->m_viSkills.begin(); it != mpChara->m_viSkills.end(); ++it)
-				{
-					int t_id = it->second;
-					t_sMask +=  CCString::createWithFormat("%d,",t_id)->getCString();
-					ItemCellData* t_icd	=	new ItemCellData(t_id,0,0);
-					m_cid->setObject(t_icd,t_id);
-					t_icd->autorelease();
-				}
-				t_sMask.erase(t_sMask.length()-1);
-				CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
-
-				m_ldb = new ListDBView<ItemCell>(300,250, t_csSql->getCString(),m_cid, this,menu_selector(MapLayer::ItemBack),1);
-				if(m_ldb->init()){
-					m_ldb->setPosition(ccp(2,0));
-					m_ldb->setContentSize(CCSizeMake(300,250));
-					addChild(m_ldb);
-				}else{
-					CC_SAFE_RELEASE_NULL(m_ldb);
-				}
-			}
+			//	m_ldb = new ListDBView<ItemCell>(300,250, t_csSql->getCString(),m_cid, this,menu_selector(MapLayer::ItemBack),1);
+			//	if(m_ldb->init()){
+			//		m_ldb->setPosition(ccp(2,0));
+			//		m_ldb->setContentSize(CCSizeMake(300,250));
+			//		addChild(m_ldb);
+			//	}else{
+			//		CC_SAFE_RELEASE_NULL(m_ldb);
+			//	}
+			//}
 			BattleField::sharedBattleField()->setBattle(true);
 			break;
 		}
@@ -543,6 +561,8 @@ void MapLayer::click_act()
 				EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
+
+				BattleField::sharedBattleField()->ActionFac();
 			}else{
 				return;
 			}
@@ -562,7 +582,7 @@ void MapLayer::click_act()
 				bm->clean_cs();
 				bm->b_battle = 5;
 				bm->m_bAnimateOver = false;
-
+				BattleField::sharedBattleField()->ActionFac();
 				//[0803]CCLog(">Reach here if every thing is right.....");
 			}
 			
@@ -573,6 +593,7 @@ void MapLayer::click_act()
 			if(bm->move_control()){
 				bm->b_battle = 4;
 				bm->m_bAnimateOver = false;
+				BattleField::sharedBattleField()->ActionFac();
 				t_bm->dismiss();
 				//bm->b_battle = 1;
 				bm->clean_cs();
@@ -631,7 +652,8 @@ void MapLayer::f_init_battle()
 		t_ec->m_pChara->initValues();
 	}
 
-	m_iTurn = 0;
+	m_iTurn = -1;
+	m_bLfMenu = false;
 
 	EventCenter::sharedEventCenter()->setBmCake(this);
 	//m_iMLState = 3;					//state change to 3, wait for token.
@@ -673,7 +695,7 @@ void MapLayer::update( float fDelta )
 
 			++m_iCurGroup;
 			m_iMLState = 2;
-			switch_control();
+			
 			if(m_iTurn>0){
 				CCDictElement* tc;
 				CCDictionary* te = bm->m_itemlist;
@@ -685,6 +707,8 @@ void MapLayer::update( float fDelta )
 				}
 			}
 			++m_iTurn;
+			CCLog(">[ML]Turn face:%d",m_iTurn);
+			switch_control();
 
 			break;
 		}
@@ -712,28 +736,51 @@ void MapLayer::switch_control()
 	//////////////////////////////////////////////////////////////////////////
 	// <回合转换
 
-	
+	CCLog("switch_control:%d",m_iCurGroup);
 	CCDictElement* tc;
 	CCDictionary* te = bm->m_itemlist;
 	CCDICT_FOREACH(te,tc){
 		EChesses* ce = (EChesses*) tc->getObject();
 		if(ce->group_id == m_iCurGroup){
-			int xd = ce->m_pChara->getvalue("b_xudong");
-			if(xd>0){
-				bm->f_setcontroller(ce);
-				bm->f_setcamara(ce);
-				bm->b_battle = 1;
-				//ce->m_pChara->setvalue("b_xudong",xd-1);
-				
-				return;
+			if(m_iCurGroup == 1){
+				int xd = ce->m_pChara->getvalue("b_xudong");
+				if(xd>0){
+					bm->f_setcontroller(ce);
+					bm->f_setcamara(ce);
+					bm->b_battle = 1;
+					
+					//ce->m_pChara->setvalue("b_xudong",xd-1);
+
+					return;
+				}else{
+					continue;
+				}
 			}else{
-				continue;
+				//////////////////////////////////////////////////////////////////////////
+				// <非玩家单位获得控制权
+				CCLog(">[ML]None Player. Check...");
+
+				int xd = ce->m_pChara->getvalue("b_xudong");
+				if(xd>0){
+					CCLog(">[ML]None Plyaer.XD:%d",xd-1);
+					bm->f_setcontroller(ce);
+					bm->f_setcamara(ce);
+					bm->b_battle = -1;					
+					ce->m_pChara->setvalue("b_xudong",xd-1);
+
+					give_control();
+					continue;
+				}else{
+					CCLog(">[ML]None Player.No XD.");
+					continue;
+				}
 			}
+
 
 
 		}
 	}
-
+	CCLog(">[ML]Turn is now over.");
 
 	m_iMLState = 3;
 }
@@ -750,7 +797,8 @@ void MapLayer::give_control()
 		}
 	case(0x02):					//TODO: Enemy now directly give up control, add AI here.
 		{
-			switch_control();		
+			//switch_control();		
+			bm->b_battle = 0;
 			break;
 		}
 	}
@@ -758,7 +806,12 @@ void MapLayer::give_control()
 
 void MapLayer::right_click()
 {
-	if(!tm->cancontrol) return;
+	if(!tm->cancontrol){
+		if(m_bLfMenu){
+			dissmissLeftFm();
+			return;
+		}
+	}
 	switch(m_iMLState){
 	case(2):{			// state 2 popup menu they may need to be canceled;
 
@@ -770,25 +823,31 @@ void MapLayer::right_click()
 				}
 			case(2):
 				{
-					if(!m_ldb){					//second layer also stay in state 2,may be control it by func_type is more clever?
+					if(m_ldb){
+						t_bm->setVisible(true);
+						m_ldb->setVisible(false);
+						CC_SAFE_RELEASE_NULL(m_ldb);			// <牺牲效率换取简便性
+					}else if(m_SkillList){
+						t_bm->setVisible(true);
+						m_SkillList->setVisible(false);
+						CC_SAFE_RELEASE_NULL(m_SkillList);			// <牺牲效率换取简便性
+					}else{
 						t_bm->setVisible(false);
 						t_bm->miFlag = -1;
 						t_bm->Refresh_Button();
 						bm->b_battle = 1;
-
+						CC_SAFE_RELEASE_NULL(t_bm);
 						if(m_lsb) m_lsb->setVisible(false);
-					}else{
-						t_bm->setVisible(true);
-						m_ldb->setVisible(false);
-						CC_SAFE_RELEASE_NULL(m_ldb);			// <牺牲效率换取简便性
 					}
-
 					break;
 				}
 			case(3):							//Menu func is now waiting for bm click.
 				{
+					// [PE]: <注意标记物品还是技能状态，否则可能会出现返回错误
 					if(m_ldb){
 						m_ldb->setVisible(true);
+					}else if(m_SkillList){
+						m_SkillList->setVisible(true);
 					}else{
 						t_bm->setVisible(true);
 					}
@@ -938,5 +997,64 @@ void MapLayer::DismissBHUD()
 	}
 	if(m_rsb){
 		CC_SAFE_RELEASE_NULL(m_rsb);
+	}
+}
+
+void MapLayer::show_skill_list()
+{
+	if(!m_SkillList){
+		m_SkillList = new SkillList();
+		m_SkillList->f_init();
+		m_SkillList->setAnchorPoint(ccp(0,1));
+		m_SkillList->setPosition(0,400);
+		addChild(m_SkillList,2);
+	}
+
+	m_SkillList->setVisible(true);
+}
+
+void MapLayer::showLeftFm()
+{
+	f_stopcontrol();
+
+	if(!m_lfm){
+		m_lfm  = new LeftMenu();			//TODO:Decide what to show by bit lock.
+		addChild(m_lfm,99);
+	}
+
+	m_lfm->bitLock = 0xfff;
+	m_lfm->setactivator(this,menu_selector(MapLayer::lfmenu_back));
+	m_lfm->show();
+
+	m_lfm->setAnchorPoint(CCPointZero);
+	m_lfm->setPosition(46,105);
+	m_lfm->setVisible(true);
+
+	m_bLfMenu = true;
+}
+
+void MapLayer::dissmissLeftFm()
+{
+	f_resumecon();
+	m_lfm->setVisible(false);		// <不要在这里释放m_lfm，否则事件链会被破坏。
+	m_bLfMenu = false;
+}
+
+void MapLayer::lfmenu_back( CCObject* pSender )
+{
+	Container* t_c = (Container*) pSender;
+	int tiType = t_c->getTag();
+	CCLog("[][][][%d",tiType);
+
+	switch (tiType)
+	{
+	case 1:
+		{
+			m_iMLState = 3;
+			dissmissLeftFm();
+			break;
+		}
+	default:
+		break;
 	}
 }

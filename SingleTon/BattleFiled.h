@@ -77,6 +77,13 @@ protected:
 	void DerLead( int val,int cx, int cy );					// <单体扩散
 	void UnDerLead( int val,int cx, int cy );				// <移除自身的影响
 	
+	//////////////////////////////////////////////////////////////////////////
+	// <战斗显示
+
+	void RefreshStats();	// <更新两边显示
+public:
+	void ActionFac();		// <动作被实际执行
+
 private:
 	EChesses* meOrig;		// <保存必要的指针
 	EChesses* meSrc;		// <攻击的发起者	| 被攻击对象在Chara内结算

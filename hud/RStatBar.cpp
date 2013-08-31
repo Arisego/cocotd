@@ -52,6 +52,14 @@ bool RStatBar::init()
 		ml_Level->setColor(ccWHITE);
 		this->addChild(ml_Level,1);
 
+		ml_Hp = CCLabelBMFont::create("--", FNT_ENG_NUM);
+		ml_Hp->setScale(0.85);
+		ml_Hp->setOpacity(100);
+		ml_Hp->setAnchorPoint(CCPointZero);
+		ml_Hp->setPosition(ccp(174,124));
+		ml_Hp->setColor(ccWHITE);
+		this->addChild(ml_Hp,1);
+
 		mb_Exp = new ExpBar("Images/hud_ls_expbase.png","Images/hud_exp_content.png",100);
 		mb_Exp->setAnchorPoint(CCPointZero);
 		mb_Exp->setPosition(ccp(213,88));
@@ -59,25 +67,25 @@ bool RStatBar::init()
 
 		mb_Exp->setval(48);
 
-		ms_BSBase = CCSprite::create("Images/hud_bl_base.png");
-		ms_BSBase->setAnchorPoint(CCPointZero);
-		ms_BSBase->setPosition(ccp(176,133));
-		ms_BSBase->setFlipX(true);
-		this->addChild(ms_BSBase,3);
+		//ms_BSBase = CCSprite::create("Images/hud_bl_base.png");
+		//ms_BSBase->setAnchorPoint(CCPointZero);
+		//ms_BSBase->setPosition(ccp(176,133));
+		//ms_BSBase->setFlipX(true);
+		//this->addChild(ms_BSBase,3);
 
-		mb_BloodSecond = new ExpBar("Images/blank.png","Images/hud_ls_bloodbase.png",100);
-		mb_BloodSecond->setAnchorPoint(CCPointZero);
-		mb_BloodSecond->setPosition(ccp(178,134.5));
-		this->addChild(mb_BloodSecond,3);
+		//mb_BloodSecond = new ExpBar("Images/blank.png","Images/hud_ls_bloodbase.png",100);
+		//mb_BloodSecond->setAnchorPoint(CCPointZero);
+		//mb_BloodSecond->setPosition(ccp(178,134.5));
+		//this->addChild(mb_BloodSecond,3);
 
-		mb_BloodSecond->setval(100);
+		//mb_BloodSecond->setval(100);
 
 		mb_BloodOne = new ExpBar("Images/blank.png","Images/hud_ls_bloodbase.png",100);
 		mb_BloodOne->setAnchorPoint(CCPointZero);
 		mb_BloodOne->setPosition(ccp(178,147));
 		this->addChild(mb_BloodOne,3);
 
-		mb_BloodOne->setval(69);
+		//mb_BloodOne->setval(69);
 
 		msb_SoulBall = SoulBall::create();
 		msb_SoulBall->setAnchorPoint(CCPointZero);

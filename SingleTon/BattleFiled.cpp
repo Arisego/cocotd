@@ -371,6 +371,10 @@ void BattleField::UnDerLead( int val,int cx, int cy )
 //meTar = aTar;
 //mspVals = sp;
 
+
+/*
+	<时间段： 判定阶段，第一次攻击。
+*/
 void BattleField::Judge(){
 	//////////////////////////////////////////////////////////////////////////
 	// <会心
@@ -490,6 +494,9 @@ bool BattleField::NormalAttackC()
 		CheckBackCh();
 
 		// <弹出选择将交由EChessComp负责
+		/*
+			<miState == 2 意味着敌方要反击两次
+		*/
 		if(BackChess1){
 			if(TestBackCh(BackChess1)){
 				if(miState != 2) BackChess1 = NULL;
@@ -519,6 +526,7 @@ bool BattleField::NormalAttackC()
 	return true;
 }
 
+/* <时间段：计算反击单位-只在一开始进行一次 */
 void BattleField::CheckBackCh()
 {
 	if(miState >= 1) return;
@@ -651,5 +659,19 @@ void BattleField::ShowChess( EChesses* atar )
 		return;
 	}
 	GameManager::sharedLogicCenter()->ml->m_lsb->SetContent(atar);
+}
+
+void BattleField::RefreshStats()
+{
+	if(meSrc) GameManager::sharedLogicCenter()->ml->m_lsb->RefreshAll();
+	if(meTar) GameManager::sharedLogicCenter()->ml->m_rsb->RefreshAll();
+}
+
+void BattleField::ActionFac()
+{
+	Chara* t_owner = meSrc->m_pChara;
+
+	t_owner->setvalue("b_xudong",t_owner->getvalue("b_xudong")-1);
+	RefreshStats();
 }
 
