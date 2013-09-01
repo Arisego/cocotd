@@ -114,12 +114,14 @@ protected:
 	void switch_control();
 
 	//void registerWithTouchDispatcher();
-	int m_iSUseCase;
+	
 
 	ListDBView<ItemCell>* m_ldb;
-	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map
+	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map 
+public:
 	int m_iFuncType;
-
+	int m_iSUseCase;
+protected:
 	void click_act();			// <根据具体的功能状态相应鼠标点击事件
 	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
@@ -147,6 +149,11 @@ public:
 	RStatBar* m_rsb;
 	void init_Stat();
 	void DismissBHUD();
+
+	CCSprite* m_upArrow;
+	CCSprite* m_bottomArrow;
+	void Show_Arrows(int aiu, int aib);			// <刷新箭头的显示
+	void Dissmiss_Arrows();
 
 public:
 	void show_hud();

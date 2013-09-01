@@ -959,6 +959,24 @@ bool BattleMap::arange_targetwithtest( int a_type )
 	} while (0);
 	return false;
 }
+
+
+bool BattleMap::f_Arange( int a_type , CCObject* atar)
+{
+	do 
+	{
+		EChesses* t_cfie = (EChesses*) atar;
+
+		pair<int,int> t_pii = make_pair(m_mou_cur.x,m_mou_cur.y);
+		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
+		CC_BREAK_IF(cs_dis.count(t_pii) > 0);
+
+		return ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0;
+	} while (0);
+	return false;
+}
+
+
 // <检查范围内是否有指定的单位类型
 bool BattleMap::arange_target( int a_type )
 {
@@ -1124,5 +1142,32 @@ void BattleMap::fAutoCamara()
 
 	this->runAction(TFollow::create(mFolCamara, CCRectMake(-dx, -dy, rw, rh)));
 
+}
+
+//////////////////////////////////////////////////////////////////////////
+// <独立的范围测定函数
+bool BattleMap::f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint a)
+{	
+	set<pair<int,int>> ts_range;
+
+	switch(a_type)
+	{
+	case(0):
+		{
+			ts_range.insert(make_pair(a_cp.x,a_cp.y));
+			break;
+		}
+	case(1):				// 1 is default a circle.
+		{
+			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0)
+			{
+				int radiu = a_ran[0];
+				dps_rect(a_cp, ts_range, radiu);
+			}
+			break;
+		}
+	}
+
+	return ts_range.count(make_pair(a.x,a.y)) > 0;
 }
 

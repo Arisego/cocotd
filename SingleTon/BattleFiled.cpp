@@ -55,9 +55,9 @@ void BattleField::Clean()
 
 	mMapC.clear();
 
-	BackChess1 = NULL;
-	BackChess2 = NULL;
-	BackChess3 = NULL;
+	//BackChess1 = NULL;
+	//BackChess2 = NULL;
+	//BackChess3 = NULL;
 
 	mbIsInBattle = false;
 	//miState = 0;
@@ -108,6 +108,7 @@ void BattleField::SetTars( CCArray* aTar )
 {
 	if(!aTar) {
 		GameManager::sharedLogicCenter()->ml->m_rsb->setVisible(false);
+		GameManager::sharedLogicCenter()->ml->Dissmiss_Arrows();
 		GameManager::sharedLogicCenter()->ml->m_lsb->SetNullAct();
 		return;
 	}
@@ -115,9 +116,10 @@ void BattleField::SetTars( CCArray* aTar )
 	if(!mbIsInBattle) {
 		return;
 	}
+	meTarget = NULL;
 	CheckBackCh();
 	PreJudge((EChesses*) aTar->objectAtIndex(0));
-	GameManager::sharedLogicCenter()->ml->m_rsb->setVisible(true);
+	
 	miState = 0;
 }
 
@@ -495,12 +497,18 @@ bool BattleField::NormalAttackC()
 
 		// <弹出选择将交由EChessComp负责
 		/*
-			<miState == 2 意味着敌方要反击两次
+			<miState == 2 意味着敌方要反击两次 [BackChess1没有置空会再次执行检查]
+			
+			<miState == 3 我方可反击
+			<miState == 1 直接进行下一轮检查
 		*/
 		if(BackChess1){
 			if(TestBackCh(BackChess1)){
-				if(miState != 2) BackChess1 = NULL;
-				else miState = 1;
+				if(miState != 2){
+					BackChess1 = NULL;
+				}else{
+					miState = 1;
+				}
 				break;
 			}
 		}
@@ -530,6 +538,7 @@ bool BattleField::NormalAttackC()
 void BattleField::CheckBackCh()
 {
 	if(miState >= 1) return;
+	//CCLog("+++++++++++++++++++++++++++++++++++++checkback");
 	BackChess1 = NULL;
 	BackChess2 = NULL;
 	BackChess3 = NULL;
@@ -546,15 +555,17 @@ void BattleField::CheckBackCh()
 			continue;
 		}else if(t<=m2){
 			BackChess3 = (EChesses*) tco;
-			m3 = t;
+			((EChessComp*) BackChess3->getComponent("controller"))->CleanRe();
 		}else if(t<= m1){
 			BackChess3 = BackChess2;
 			BackChess2 = (EChesses*) tco;
+			((EChessComp*) BackChess2->getComponent("controller"))->CleanRe();
 			m2 = t;
 		}else{
 			BackChess3 = BackChess2;
 			BackChess2 = BackChess1;
 			BackChess1 = (EChesses*) tco;
+			((EChessComp*) BackChess1->getComponent("controller"))->CleanRe();
 			m1 = t;
 		}
 	}
@@ -562,6 +573,7 @@ void BattleField::CheckBackCh()
 	CCLog(">[BF]Get ReBack Chess Over with prior:%d,%d,%d",m3,m2,m1);
 }
 
+/* <时间段： 实际反击正在执行 */
 bool BattleField::TestBackCh(EChesses* atar)
 {
 	do 
@@ -570,9 +582,14 @@ bool BattleField::TestBackCh(EChesses* atar)
 		if( delta_spd >= 5){			// <被攻击对象速度较快
 			miState = 2;
 			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,2));		// <FindFitRe会根据自己的状态对miState进行修改
-		}else if(delta_spd <= -5){		// <攻击发起对象速度较快
+		}else if(true){		// <攻击发起对象速度较快
 			miState = 3;
-			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1));
+			if(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1)) break;
+			else{
+				meSrc = atar;
+				((EChessComp*) atar->getComponent("controller"))->DelayUnLock(0.2);
+				return true;
+			}
 		}else{							// <速度在平衡范围内，不发起第三次攻击
 			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1));
 		}
@@ -589,6 +606,7 @@ bool BattleField::TestBackCh(EChesses* atar)
 void BattleField::PreJudge(EChesses* atar)
 {
 	if(!atar) return;
+	meTarget = NULL;
 	Chara* src = meOrig->m_pChara;
 	Chara* tar = atar->m_pChara;
 
@@ -600,7 +618,7 @@ void BattleField::PreJudge(EChesses* atar)
 
 	do 
 	{
-		
+		//CCLog(">[BF]PreJudge before check target...");
 		if(atar == BackChess1){
 			break;
 		}
@@ -610,20 +628,62 @@ void BattleField::PreJudge(EChesses* atar)
 		if(atar == BackChess3){
 			break;
 		}
+		//CCLog(">[BF]Check but no fit...");
+		GameManager::sharedLogicCenter()->ml->m_rsb->setVisible(false);
+		GameManager::sharedLogicCenter()->ml->Dissmiss_Arrows();
 		return;
 	} while (0);
+	//CCLog(">[BF]Check fits...");
 	//////////////////////////////////////////////////////////////////////////
 	// <该单位是反击单位的情况
+	// < 阶段：预判进行显示输出 || 预判时没有进行范围的检测
+	
+	//////////////////////////////////////////////////////////////////////////
+	// < 1.被攻击方预估
+//	atar->;
+
+	//////////////////////////////////////////////////////////////////////////
+	// < 2.执行显示
+
+	////////////////////////////////////////////////////////////////////////
+	// <检测不可达的情况
+	int aiu;
+	switch(GameManager::sharedLogicCenter()->ml->m_iFuncType){
+	case(4):			//type == 4 | using skill
+		{
+			//int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint a)
+			if(!GameManager::sharedLogicCenter()->ml->bm->f_Arange(GameManager::sharedLogicCenter()->ml->m_iSUseCase,atar)){
+				aiu = 0;
+			}else aiu = 1;
+			break;
+		}
+	case 16:
+		{
+			if(!GameManager::sharedLogicCenter()->ml->bm->f_Arange(0,atar)){
+				aiu = 0;
+			}
+			else aiu = 1;
+			break;
+		}
+	}	
+
+
+	//////////////////////////////////////////////////////////////////////////
+	meTarget = atar;
 	int delta_spd = (atar->m_pChara->getvalue("spd") - meOrig->m_pChara->getvalue("spd"));
 	if( delta_spd >= 5){			// <被攻击对象速度较快
 		miState = 2;
+		GameManager::sharedLogicCenter()->ml->Show_Arrows(1*aiu,((EChessComp*) atar->getComponent("controller"))->PreCheckRe(meOrig,2));
 		//((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,2);		// <FindFitRe会根据自己的状态对miState进行修改
 	}else if(delta_spd <= -5){		// <攻击发起对象速度较快
 		miState = 3;
+		GameManager::sharedLogicCenter()->ml->Show_Arrows(2*aiu,((EChessComp*) atar->getComponent("controller"))->PreCheckRe(meOrig,1));
 		//((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1);
 	}else{							// <速度在平衡范围内，不发起第三次攻击
+		GameManager::sharedLogicCenter()->ml->Show_Arrows(1*aiu,((EChessComp*) atar->getComponent("controller"))->PreCheckRe(meOrig,1));
 		//((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1);
 	}
+	GameManager::sharedLogicCenter()->ml->m_rsb->SetContent(meTarget);
 	
 }
 
@@ -665,6 +725,7 @@ void BattleField::RefreshStats()
 {
 	if(meSrc) GameManager::sharedLogicCenter()->ml->m_lsb->RefreshAll();
 	if(meTar) GameManager::sharedLogicCenter()->ml->m_rsb->RefreshAll();
+	
 }
 
 void BattleField::ActionFac()
@@ -673,5 +734,6 @@ void BattleField::ActionFac()
 
 	t_owner->setvalue("b_xudong",t_owner->getvalue("b_xudong")-1);
 	RefreshStats();
+	GameManager::sharedLogicCenter()->ml->Dissmiss_Arrows();
 }
 

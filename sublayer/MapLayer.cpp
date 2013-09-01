@@ -8,6 +8,8 @@ USING_NS_CC;
 #define BM_Z 2
 #define SL_Z 3
 
+static const char* sArrowPath[] = {"Images/arrow_broken_left.png","Images/arrow_normal_left.png","Images/arrow_blood_left.png"};
+
 //void MapLayer::registerWithTouchDispatcher()
 //{
 //	CCDirector* pDirector = CCDirector::sharedDirector();
@@ -365,6 +367,10 @@ void MapLayer::show_menu()
 
 void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 {
+	if(m_bLfMenu) {
+		BYLayerAncestor::ccTouchEnded(pTouch,pEvent);
+		return;
+	}
 	switch(m_iMLState){
 	case(2):
 		{
@@ -407,7 +413,7 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 		}
 	}
 
-
+	
 			
 	return;
 }
@@ -464,6 +470,7 @@ void MapLayer::menu_back( CCObject* pSender )
 			t_bm->setVisible(false);
 			t_bm->miFlag = -1;
 			t_bm->Refresh_Button();
+			BattleField::sharedBattleField()->ActionFac();
 			switch_control();
 			break;
 		}
@@ -655,6 +662,10 @@ void MapLayer::f_init_battle()
 	m_iTurn = -1;
 	m_bLfMenu = false;
 
+
+	m_upArrow = NULL;
+	m_bottomArrow = NULL;
+
 	EventCenter::sharedEventCenter()->setBmCake(this);
 	//m_iMLState = 3;					//state change to 3, wait for token.
 }
@@ -677,7 +688,7 @@ void MapLayer::update( float fDelta )
 		{
 			do 
 			{
-				CC_BREAK_IF(bm->b_battle != -1);
+				CC_BREAK_IF(bm->b_battle != -1);	// < == -1 则前进
 				CC_BREAK_IF(!bm->m_bAnimateOver);
 
 				bm->control_switch();
@@ -780,9 +791,18 @@ void MapLayer::switch_control()
 
 		}
 	}
+	
+	//////////////////////////////////////////////////////////////////////////
+	// <回合操作结束，无可控制单位
 	CCLog(">[ML]Turn is now over.");
-
-	m_iMLState = 3;
+	if(m_iCurGroup != 1){
+		m_iMLState = 3;
+	}else{
+		CCLog(">[ML]Turn is now over.Wait for next.");
+		m_iMLState = 2;
+		bm->b_battle = 1;
+	}
+	
 }
 
 void MapLayer::give_control()
@@ -1057,4 +1077,35 @@ void MapLayer::lfmenu_back( CCObject* pSender )
 	default:
 		break;
 	}
+}
+
+void MapLayer::Show_Arrows(int aiu, int aib)
+{
+
+	CCLog("[%d,%d]",aiu,aib);
+	if(m_upArrow) m_upArrow->removeFromParent();
+	if(m_bottomArrow) m_bottomArrow->removeFromParent();
+
+	//m_upArrow = CCSprite::create("Images/arrow_blood_left.png");
+	//m_bottomArrow = CCSprite::create("Images/arrow_blood_left.png");
+
+	//////////////////////////////////////////////////////////////////////////
+	// <显示
+
+	m_upArrow = CCSprite::create(sArrowPath[aiu]);
+	m_bottomArrow =  CCSprite::create(sArrowPath[aib]);
+
+	m_upArrow->setFlipX(true);
+	m_upArrow->setPosition(ccp(445,565));
+	m_bottomArrow->setPosition(ccp(445,490));
+	addChild(m_upArrow,3);
+	addChild(m_bottomArrow,3);
+}
+
+void MapLayer::Dissmiss_Arrows()
+{
+	if(m_upArrow) m_upArrow->removeFromParent();
+	if(m_bottomArrow) m_bottomArrow->removeFromParent();
+	m_bottomArrow = NULL;
+	m_upArrow = NULL;
 }

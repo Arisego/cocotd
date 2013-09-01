@@ -156,5 +156,6 @@ void Entiles::ShowDamage()
 
 	CCActionInterval* t_cai = CCSpawn::createWithTwoActions(CCMoveTo::create(0.7,ccpAdd(c_ttlbmf->getPosition(),ccp(0,100))),CCFadeOut::create(0.7));
 	c_ttlbmf->runAction(t_cai);
+
 }
 

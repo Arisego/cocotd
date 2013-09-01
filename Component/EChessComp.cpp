@@ -158,6 +158,10 @@ void EChessComp::DerScript( Script* asp )
 				case 4:		// <显示文本  <被攻击
 					{
 						((Entiles*) m_pOwner)->ShowDamage();
+						int dm = ((Entiles*) m_pOwner)->miDamage;
+						Chara* tow = ((EChesses*) m_pOwner)->m_pChara;
+						tow->sethp(tow->gethp()-dm);
+						BattleField::sharedBattleField()->RefreshStats();
 						break;
 					}
 				default:
@@ -191,17 +195,23 @@ bool EChessComp::TestRange( CCPoint target )
 {
 	CCLog("[ECC]TestRange with pos:%d,%f",target.x,target.y);
 	vector<int> ars;
-	ars.push_back(9);
-	GameManager::sharedLogicCenter()->ml->bm->m_controller = (EChesses*) m_pOwner;
-	GameManager::sharedLogicCenter()->ml->bm->set_mouse_range(1,ars);	// <Get&Set Range Paras	
-	GameManager::sharedLogicCenter()->ml->bm->draw_mouse_range(((EChesses*) m_pOwner)->pos);
-	return GameManager::sharedLogicCenter()->ml->bm->ArrangePoint(target);
+	ars.push_back(1);
+
+	//GameManager::sharedLogicCenter()->ml->bm->m_controller = (EChesses*) m_pOwner;
+	//GameManager::sharedLogicCenter()->ml->bm->set_mouse_range(1,ars);	// <Get&Set Range Paras	
+	//GameManager::sharedLogicCenter()->ml->bm->draw_mouse_range(((EChesses*) m_pOwner)->pos);
+
+	return GameManager::sharedLogicCenter()->ml->bm->f_RangeTest(1,ars,((EChesses*) m_pOwner)->pos,target);
 
 }
 
+/* <寻找反击策略 */
 bool EChessComp::FindFitRe( CCObject* tar,int atime )
 {
 	/* <普通攻击 - atime 次数 */
+	if(miReCount == 0) return false;	// <最多进行两次反击查询 || 两次的情况必然是普攻
+	--miReCount;
+
 	int t_iType = (((EChesses*) m_pOwner)->m_pChara)->getvalue("attack");		// <[TODO]从单位中获得攻击属性,具体的来源需要根据设计进行变更，注意默认取得的是0
 	t_iType = 1;																// <[TestOnly] 使用上面获取的值
 
@@ -218,6 +228,7 @@ bool EChessComp::FindFitRe( CCObject* tar,int atime )
 	 if(TestRange(((EChesses*) tar)->pos)){
 		 Scriptor* scp = new Scriptor();
 		 scp->parse_string(t_ssm.at("action_sp"));
+		 GameManager::sharedLogicCenter()->ml->bm->f_setcontroller((EChesses*) m_pOwner);
 		 GameManager::sharedLogicCenter()->ml->bm->m_caTarget->removeAllObjects();
 		 GameManager::sharedLogicCenter()->ml->bm->m_caTarget->addObject(tar);
 		 GameManager::sharedLogicCenter()->ml->bm->HandleScriptor(scp);
@@ -229,5 +240,26 @@ bool EChessComp::FindFitRe( CCObject* tar,int atime )
 	 return false;
 
 	
+}
+
+void EChessComp::CleanRe()
+{
+	miReCount = 2;
+}
+
+int EChessComp::PreCheckRe( CCObject* tar,int atime )
+{
+	if(TestRange(((EChesses*) tar)->pos)){
+		return atime;
+	}else{
+		return 0;
+	}
+}
+
+void EChessComp::DelayUnLock(float dt )
+{
+	ELock();
+	miScriptSum = -1;
+	m_pOwner->runAction(CCSequence::create(CCDelayTime::create(dt),FRELEASE,NULL));
 }
 

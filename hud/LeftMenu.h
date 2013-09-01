@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "packui\Container.h"
+#include "byeven\BYCocos.h"
 
 USING_NS_CC;
 
@@ -14,7 +15,7 @@ public:
 };
 
 //Left Status Bar
-class LeftMenu : public CCLayer
+class LeftMenu : public BYLayerDescendant
 {
 public:
 	int bitLock;
@@ -22,6 +23,14 @@ public:
 	bool f_init();
 	void show();
 	void dismiss();
+
+	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent){
+		return BYLayerDescendant::ccTouchBegan(pTouch,pEvent);
+	}
+
+	virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent){
+		BYLayerDescendant::ccTouchEnded(pTouch,pEvent);
+	}
 
 
 private:

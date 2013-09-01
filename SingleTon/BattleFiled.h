@@ -79,10 +79,12 @@ protected:
 	
 	//////////////////////////////////////////////////////////////////////////
 	// <战斗显示
-
-	void RefreshStats();	// <更新两边显示
 public:
+	void RefreshStats();	// <更新两边显示
+	EChesses* meTarget;		// <当前被用于显示的右边单位
+
 	void ActionFac();		// <动作被实际执行
+	//void CheckBlood();		// <对血量进行检查
 
 private:
 	EChesses* meOrig;		// <保存必要的指针

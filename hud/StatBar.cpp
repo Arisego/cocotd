@@ -2,6 +2,7 @@
 
 void StatBar::SetContent( EChesses* aec )
 {
+	
 	if(m_ec == aec){
 		setVisible(true);
 		return;
@@ -14,11 +15,12 @@ void StatBar::SetContent( EChesses* aec )
 
 	RefreshAll();
 	SetNullAct();
-	//setVisible(true);
+	setVisible(true);
 }
 
 void StatBar::RefreshAll()
 {
+	
 	Chara* t_owner = m_ec->m_pChara;
 	mb_Exp->setval(t_owner->getvalue("exp")%100);
 	CCLog(">< %d",t_owner->getvalue("hit")%100);

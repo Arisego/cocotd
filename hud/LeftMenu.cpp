@@ -140,7 +140,8 @@ void LeftMenu::show()
 	//nback->setPosition(ccp(-26,-25));
 	////nback->setOpacity(199);
 	//addChild(nback,3);
-
+	m_obContentSize.width = 200;
+	m_obContentSize.height =600;
 }
 
 void LeftMenu::Refresh_Button(){

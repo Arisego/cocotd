@@ -72,10 +72,15 @@ public:
 	}
 
 	void sethp(int value){
-		if(value > getvalue("hp"))
+		if(value > getvalue("hp")){
 			value = getvalue("hp");
+			m_bIsDead = false;
+		}			
 		else if(value < 0)
+		{
+			m_bIsDead = true;
 			value = 0;
+		}
 		setvalue("chp",value);
 	}
 	int getmp(){			//getmp is calling to getvalue "cmp"

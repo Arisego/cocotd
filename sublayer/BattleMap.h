@@ -114,6 +114,9 @@ protected:
 	CCNode* mFolCamara;
 	void fAutoCamara();
 
+public:
+	bool f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint a);
+	bool f_Arange(int a_type,CCObject* atar);
 	//////////////////////////////////////////////////////////////////////////
 	// <Õ½³¡¿ØÖÆ
 

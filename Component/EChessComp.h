@@ -31,8 +31,14 @@ public:
 
 	/* <寻找合适的RE攻击 */
 	bool FindFitRe(CCObject* tar,int atime);
+	void CleanRe();
+	int PreCheckRe(CCObject* tar,int atime);
 
+	void DelayUnLock(float dt); // <延迟然后释放持有的锁，缓冲游戏循环。
 private:
+	int miReCount; // <反击次数监视
+
+
 	int miScriptSum;
 	int miScriptCount;
 	void GoAHead();
