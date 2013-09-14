@@ -164,6 +164,16 @@ void EChessComp::DerScript( Script* asp )
 						BattleField::sharedBattleField()->RefreshStats();
 						break;
 					}
+				case 5:			// type = 5 | <播放指定的动画-Skill.
+					{
+						BattleField::sharedBattleField()->Judge();
+
+						((Entiles*) m_pOwner)->setState(3);
+	
+						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("name"),tmp->getint("repeat"));
+					
+						break;
+					}
 				default:
 					break;
 				}

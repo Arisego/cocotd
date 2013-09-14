@@ -26,7 +26,7 @@ class Chara : public CCObject
 {
 public:
 	int m_iCharaID;
-	string m_sName, m_sPsz;
+	string m_sName, m_sPsz,m_sSpx;
 
 	int m_iElement;
 	map<int,int> m_miiEquips;		//for equipments

@@ -19,6 +19,8 @@ public:
 	void RefreshAll();
 	void RefreshAct(int a1, int a2, int a3);
 	void SetNullAct();
+
+	StatBar();
 protected:
 	EChesses* m_ec;
 

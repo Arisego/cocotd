@@ -428,19 +428,61 @@ void MapLayer::ItemBack( CCObject* pSender )
 	// <获得对象所携带的ID
 	m_iItem = ((ItemCell*) pSender)->getTag();
 	// <隐藏技能选择框
-	m_ldb->setVisible(false);
+	m_SkillList->setVisible(false);
 	// <置换标志位
 	bm->b_battle = 3;
 	// <获得usecase参数
-	m_iSUseCase = stoi(m_ldb->getval("usecase",m_iItem));		//No use; Test Only. Read out range and effect_dis from database "additional". They should be stored in pair of int value.
+	m_iSUseCase = stoi(m_SkillList->getval("usecase",m_iItem));		//No use; Test Only. Read out range and effect_dis from database "additional". They should be stored in pair of int value.
 	bm->miRangeType = m_iSUseCase;
+	//////////////////////////////////////////////////////////////////////////
+	// <获取范围参数
 
+	CCLog("[ML]Read Skill Range");
+	stringstream ss;
+	ss<<m_SkillList->getval("additional",m_iItem);
+	int k,j;
 	vector<int> ars;
-	ars.push_back(7);
-	bm->draw_skill_range(1,ars);							//TODO:TEST ONLY: Type & ars are from db. simply use stringstream to read pair
+
+	///////////
+	ss>>k;
+	switch (k)
+	{
+	case 1:
+		{
+			ss>>k;
+			ars.push_back(k);
+			bm->draw_skill_range(1,ars);
+			break;
+		}
+
+	default:
+		break;
+	}
 	ars.clear();
-	ars.push_back(3);
-	bm->set_mouse_range(1,ars);								//TODO:TEST ONLY: Type & ars are from db. simply use stringstream to read pair
+
+	///////////
+	ss>>k;
+	switch (k)
+	{
+	case 1:
+		{
+			ss>>k;
+			ars.push_back(k);
+			bm->set_mouse_range(1,ars);
+			break;
+		}
+	case 2:
+		{
+			ss>>k;
+			ars.push_back(k);
+			ss>>k;
+			ars.push_back(k);
+			bm->set_mouse_range(2,ars);
+			break;
+		}
+	default:
+		break;
+	}
 
 	//EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,mpChara);		
 
@@ -481,7 +523,12 @@ void MapLayer::menu_back( CCObject* pSender )
 			t_bm->miFlag = -1;
 			t_bm->Refresh_Button();
 			//////////////////////////////////////////////////////////////////////////
-			show_skill_list();
+			if(!show_skill_list()){// <技能列表不成立
+				t_bm->setVisible(true);
+			
+			}else{
+				BattleField::sharedBattleField()->setBattle(true);
+			}
 			//Chara* mpChara = t_ec->m_pChara;
 			//if(mpChara->m_viSkills.size() > 0){			//TODO: Not Showing skill-list/m_ldbEquList if there is no skill, modify it while needed.
 			//	CCDictionary* m_cid = new CCDictionary();
@@ -506,7 +553,7 @@ void MapLayer::menu_back( CCObject* pSender )
 			//		CC_SAFE_RELEASE_NULL(m_ldb);
 			//	}
 			//}
-			BattleField::sharedBattleField()->setBattle(true);
+			
 			break;
 		}
 	case(16):		// <攻击
@@ -519,23 +566,52 @@ void MapLayer::menu_back( CCObject* pSender )
 			t_bm->setVisible(false);
 			t_bm->Refresh_Button();
 
-			t_iType = 1;								// <[TestOnly] 使用上面获取的值
-
 			vdata.clear();
 			DBUtil::initDB("save.db");
 			CCString* t_csSql = CCString::createWithFormat("select * from attr_attact where id = %d",t_iType);
+			CCLog("%s",t_csSql->getCString());
 			vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
 			int m_number = vdata.size();
 			DBUtil::closeDB(); 
 
 			map<string,string> t_ssm = (map<string,string>) vdata.at(0);	
 
+			stringstream ss;
+			ss<<t_ssm.at("additional");
+			int k,j;
 			vector<int> ars;
-			ars.push_back(7);
-			bm->draw_skill_range(stoi(t_ssm.at("type_id")),ars);							//	<攻击的范围绘制			arrs -- 根据攻击配置的不同这个值需要从存档中读取
+						CCLog("Ready for dest.");
+
+			///////////
+			ss>>k;
+			switch (k)
+			{
+			case 1:
+				{
+					ss>>k;
+					ars.push_back(k);
+					bm->draw_skill_range(1,ars);
+					break;
+				}
+			default:
+				break;
+			}
 			ars.clear();
-			ars.push_back(3);
-			bm->set_mouse_range(stoi(t_ssm.at("range_type_id")),ars);								//	<定义鼠标选择图形
+
+			///////////
+			ss>>k;
+			switch (k)
+			{
+			case 1:
+				{
+					ss>>k;
+					ars.push_back(k);
+					bm->set_mouse_range(1,ars);
+					break;
+				}
+			default:
+				break;
+			}
 
 			BattleField::sharedBattleField()->setBattle(true);
 
@@ -1020,17 +1096,27 @@ void MapLayer::DismissBHUD()
 	}
 }
 
-void MapLayer::show_skill_list()
+bool MapLayer::show_skill_list()
 {
 	if(!m_SkillList){
 		m_SkillList = new SkillList();
 		m_SkillList->f_init();
 		m_SkillList->setAnchorPoint(ccp(0,1));
 		m_SkillList->setPosition(0,400);
+		m_SkillList->setactivator(this,menu_selector(MapLayer::ItemBack));
+		
 		addChild(m_SkillList,2);
 	}
-
-	m_SkillList->setVisible(true);
+	if(m_SkillList->setChara(((EChesses*) bm->m_controller)->m_pChara)){
+		m_SkillList->setVisible(true);
+		return true;
+	}else
+	{
+		m_SkillList->setVisible(false);
+		CC_SAFE_RELEASE_NULL(m_SkillList);
+		return false;
+	}
+		
 }
 
 void MapLayer::showLeftFm()

@@ -78,7 +78,10 @@ void BattleField::CheckOver()
 	mbIsOver = true;
 }
 
-/* <战斗设置 */
+/* <战斗设置 
+		|< 阶段-BF0000：开始进行战斗设置，传入脚本和对象。 [调用来源 BattleMap::HandleScriptor]
+		|< 并不实际的启动什么，只是做清理和准备工作，方便来自各个Component的调用。
+*/
 void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 {
 	Clean();
@@ -89,6 +92,10 @@ void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 
 	if(sp=NULL) 
 		CCLog(">[BF]Battle with an empty values....");
+	else
+	{
+		CCLog(">[BF]Battle Field Prepare: Skill");
+	}
 }
 
 void BattleField::SetSrc( EChesses* aSrc )
@@ -375,7 +382,7 @@ void BattleField::UnDerLead( int val,int cx, int cy )
 
 
 /*
-	<时间段： 判定阶段，第一次攻击。
+	|< 阶段-BF0001：进行第一次攻击判定。由Component自行调用。
 */
 void BattleField::Judge(){
 	//////////////////////////////////////////////////////////////////////////
@@ -459,9 +466,9 @@ bool BattleField::LogicContinue()
 	case 0:		// <第一次攻守交换
 	case 1:		// <完成数据读取
 		{
-			if(!mspVals){		// <没有参数脚本时作为普通攻击对待
+			//if(!mspVals){		// <没有参数脚本时作为普通攻击对待 <<<< 所有攻击都可以反击
 				ret = NormalAttackC();				
-			}
+			//}
 			break;
 		}
 	case 3:		// <攻击发起方可反击的情况
@@ -573,7 +580,9 @@ void BattleField::CheckBackCh()
 	CCLog(">[BF]Get ReBack Chess Over with prior:%d,%d,%d",m3,m2,m1);
 }
 
-/* <时间段： 实际反击正在执行 */
+/* 
+	|< 阶段-BF0002：实际反击正在执行，对速度的差值进行检测
+*/
 bool BattleField::TestBackCh(EChesses* atar)
 {
 	do 
@@ -582,15 +591,21 @@ bool BattleField::TestBackCh(EChesses* atar)
 		if( delta_spd >= 5){			// <被攻击对象速度较快
 			miState = 2;
 			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,2));		// <FindFitRe会根据自己的状态对miState进行修改
-		}else if(true){		// <攻击发起对象速度较快
-			miState = 3;
-			if(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1)) break;
-			else{
-				meSrc = atar;
-				((EChessComp*) atar->getComponent("controller"))->DelayUnLock(0.2);
-				return true;
+		}else if(delta_spd <= -5){					// <攻击发起对象速度较快
+			if(!mspVals){
+				miState = 3;
+				if(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1)) break;
+				else{				// <对方无法进行反击的情况下延迟0.2秒并再次攻击
+					meSrc = atar;
+					((EChessComp*) atar->getComponent("controller"))->DelayUnLock(0.2);
+					return true;
+				}
+			}else{
+				CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1));
 			}
-		}else{							// <速度在平衡范围内，不发起第三次攻击
+
+
+		}else{						// <速度在平衡范围内，不发起第三次攻击
 			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1));
 		}
 		
@@ -602,7 +617,7 @@ bool BattleField::TestBackCh(EChesses* atar)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// <预先判定
+// <对指定的目标单位进行预先判定
 void BattleField::PreJudge(EChesses* atar)
 {
 	if(!atar) return;
@@ -646,7 +661,7 @@ void BattleField::PreJudge(EChesses* atar)
 	// < 2.执行显示
 
 	////////////////////////////////////////////////////////////////////////
-	// <检测不可达的情况
+	// <检测不可达的情况 || 当前状态为不可达则不予显示，因此下面一段代码没有意义。
 	int aiu;
 	switch(GameManager::sharedLogicCenter()->ml->m_iFuncType){
 	case(4):			//type == 4 | using skill
@@ -669,6 +684,7 @@ void BattleField::PreJudge(EChesses* atar)
 
 
 	//////////////////////////////////////////////////////////////////////////
+	// <决定显示的箭头的颜色，即便在使用技能时同样显示优势箭头。
 	meTarget = atar;
 	int delta_spd = (atar->m_pChara->getvalue("spd") - meOrig->m_pChara->getvalue("spd"));
 	if( delta_spd >= 5){			// <被攻击对象速度较快

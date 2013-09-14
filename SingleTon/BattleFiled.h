@@ -30,12 +30,12 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// <战斗控制
 	void SetUp(EChesses* aSrc, CCArray* aTar,Script* sp = NULL);		// <战斗设置接口
-	void AMOver();									// <一次攻击结束后发起战场检查
+	void AMOver();														// <一次攻击结束后发起战场检查
 
 	void SetSrc(EChesses* aSrc);
 	void SetTars(CCArray* aTar);
 
-	void PlayEffectSp(const char* asname, CCPoint end);	// <生成一个Sprite，并移动到指定的点。
+	void PlayEffectSp(const char* asname, CCPoint end);					// <生成一个Sprite，并移动到指定的点。
 
 	//////////////////////////////////////////////////////////////////////////
 	// <再次攻击

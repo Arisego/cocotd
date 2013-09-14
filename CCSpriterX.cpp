@@ -61,12 +61,13 @@ namespace SCMLHelper
 				height = floatValue;
 			else
 				height = 0;
-
+			CCLog("[Spx_file_init]%s",name.c_str());
 			if (name.size()>0)
 			{
 				int i = name.find_last_of("/");
 				name = name.substr(i+1,name.length());									//TODO:修改scml或者plist中的一个
 				sprite = CCSprite::createWithSpriteFrameName(name.c_str());				//FN:读取sprite
+				if(!sprite) CCLog("[Spx_file_init]%s",name.c_str());
 				sprite->retain();
 			}
 
@@ -812,6 +813,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
 	msCur = name;
 	entity->PlayTarget(name);
 	msLast = alast;
+	CCLOG(">[SPX]Play Animation:%s. %d times",name,aiTimes);
 	//[0803]CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
 }

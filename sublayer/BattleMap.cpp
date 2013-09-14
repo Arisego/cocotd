@@ -34,7 +34,7 @@ bool BattleMap::init()
 	b_battle = -1;
 	m_mi=-1;m_mj=-1;
 	cs_y.clear();cs_r.clear();cs_b.clear();
-	
+	cs_cy.clear();
 	//2. TileMap初始化
 
 	CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
@@ -143,7 +143,7 @@ bool BattleMap::init()
 	//setTouchEnabled(true);
 	this->scheduleUpdate();
 
-	//BattleMap的必要性初始化
+	// <BattleMap的必要性初始化
 	CCTMXTiledMap* m_tilemap = (CCTMXTiledMap*) getChildByTag(kTagMap);
 	CCTMXLayer* layer = m_tilemap->layerNamed("Battle");
 	CCDictionary* colordic;
@@ -259,6 +259,7 @@ void BattleMap::ccTouchMoved(CCTouch *touch, CCEvent * pEvent){
 	m_touch->setTouchInfo(touch->getID(),touch->getLocationInView().x,touch->getLocationInView().y);
 }
 
+/* <生成敌人单位 [EChess-Chara] */
 void BattleMap::f_generateEnemy( int i )
 {
 	CC_SAFE_RELEASE_NULL(m_itemlist);
@@ -336,6 +337,7 @@ void BattleMap::f_generateEnemy( int i )
 
 }
 
+/* <载入角色 [Chara-EChess] */
 void BattleMap::f_load_chara()
 {
 	CCArray* tca = BattleField::sharedBattleField()->mSpLinker->initcs;
@@ -356,7 +358,7 @@ void BattleMap::f_load_chara()
 		t_ec->group_mask = 0x02;
 		t_ec->m_pChara = t_cca;
 		t_ec->name = CCString::createWithFormat("chara_%d",tmp->getint("name"))->getCString();
-		t_ec->psz  = tmp->getstring("file");//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
+		t_ec->psz  = t_cca->m_sSpx;//tmp->getstring("file");//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
 
 		m_itemlist->setObject(t_ec,t_ec->name);									//Test: get one and only one.
 
@@ -477,6 +479,7 @@ void BattleMap::checkpoint(CCTouch* a_touch)
 void BattleMap::draw_skill_range(int a_type, vector<int> a_ran)
 {
 	cs_y.clear();
+	cs_cy.clear();
 	m_con_cur = ((EChesses*) m_controller)->pos;
 
 	EChesses* t_ce = (EChesses*) m_controller;
@@ -491,6 +494,7 @@ void BattleMap::draw_skill_range(int a_type, vector<int> a_ran)
 	}
 
 	imply_set(cs_y,c_y);			//Imply.
+	imply_set(cs_cy,c_y);
 }
 
 void BattleMap::draw_moving_tile()
@@ -509,6 +513,7 @@ void BattleMap::draw_moving_tile()
 
 	cs_hit_block.clear();
 	cs_y.clear();				//cs_y存储第一层
+	cs_cy.clear();
 	draw_moving_block();
 	dps_range(m_con_cur, cs_y, t_iMove);
 	cs_y.erase(make_pair(m_con_cur.x,m_con_cur.y));
@@ -735,6 +740,7 @@ void BattleMap::a_star()		// <结果被存储在vc_path中。
 void BattleMap::clean_cs()
 {
 	imply_set(cs_y,0,true);
+	imply_set(cs_cy,0,true);
 	imply_set(cs_dis,0,true);
 	imply_set(ts_last,0,true);
 	imply_set(cs_block,0,true);
@@ -944,6 +950,45 @@ void BattleMap::draw_mouse_range(CCPoint a_cp)
 			}
 			break;
 		}
+	case(2):
+		{
+			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0)
+			{
+				CCLog(">Skill Type 2:Jump..");
+
+				cp_last = a_cp;
+				int radiu = m_mouse_arrs[0];
+				dps_rect(a_cp, ts_last, radiu);
+				find_target_arrage(miRangeType);
+
+				int dpress = m_mouse_arrs[1];
+
+
+				int x = a_cp.x;
+				int y = a_cp.y;
+
+				CC_BREAK_IF(!m_caTarget);
+				CCObject* tce = NULL;
+				CCARRAY_FOREACH(m_caTarget,tce){
+					CCPoint tcp = ((EChesses*) tce)->pos;
+					int dx = tcp.x - a_cp.x;
+					int dy = tcp.y - a_cp.y;
+					
+					if(dx != 0) dx = dx/abs(dx);
+					if(dy != 0) dy = dy/abs(dy);
+
+
+					for(int i = 0;i<dpress;++i){
+						x += dx;
+						y += dy;
+						ts_last.insert(make_pair(x,y));
+						cs_cy.insert(make_pair(x,y));
+					}
+				}
+				//////////////////////////////////////////////////////////////////////////
+			}
+			break;
+		}
 	}
 }
 
@@ -968,7 +1013,7 @@ bool BattleMap::f_Arange( int a_type , CCObject* atar)
 		EChesses* t_cfie = (EChesses*) atar;
 
 		pair<int,int> t_pii = make_pair(m_mou_cur.x,m_mou_cur.y);
-		CC_BREAK_IF(cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
+		CC_BREAK_IF(cs_cy.count(t_pii) == 0&&cs_y.count(t_pii) == 0 && cs_block.count(t_pii) == 0);
 		CC_BREAK_IF(cs_dis.count(t_pii) > 0);
 
 		return ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0;
@@ -977,8 +1022,7 @@ bool BattleMap::f_Arange( int a_type , CCObject* atar)
 }
 
 
-// <检查范围内是否有指定的单位类型
-bool BattleMap::arange_target( int a_type )
+void BattleMap::find_target_arrage(int a_type) 
 {
 	CCDictElement* t_cde = NULL;
 	CC_SAFE_RELEASE_NULL(m_caTarget);
@@ -990,7 +1034,7 @@ bool BattleMap::arange_target( int a_type )
 		CCDICT_FOREACH(m_itemlist,t_cde){
 			EChesses* t_cfie = (EChesses*) t_cde->getObject();
 			if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
-				
+
 				if(! (t_cfie->group_mask & g_id)){
 					m_caTarget->addObject(t_cfie);
 					m_caTarCharas->addObject(t_cfie->m_pChara);
@@ -1011,6 +1055,12 @@ bool BattleMap::arange_target( int a_type )
 
 		}
 	}		//TODO: a_type < 0 ;
+}
+
+// <检查范围内是否有指定的单位类型
+bool BattleMap::arange_target( int a_type )
+{
+	find_target_arrage(a_type);
 
 	if(m_caTarget->count()>0){
 
@@ -1066,7 +1116,7 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	// m_caTarget	<被选中的目标单位
 	// ts_last		<被选中的所有点的集合
 	CCArray* t_caS = asp->m_caScript;
-	m_controller->ChangeFace(cp_last);
+	m_controller->ChangeFace(((EChesses*) m_caTarget->objectAtIndex(0))->pos);
 	CCLog(">[BM]Tying to pass sp to owner unit....");
 	Script* tsc;
 	if(t_caS->count()<3){
@@ -1159,7 +1209,7 @@ bool BattleMap::f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint 
 		}
 	case(1):				// 1 is default a circle.
 		{
-			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0)
+			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) + cs_cy.count(make_pair(a_cp.x,a_cp.y)) > 0)
 			{
 				int radiu = a_ran[0];
 				dps_rect(a_cp, ts_range, radiu);

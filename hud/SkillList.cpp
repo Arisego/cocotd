@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////////
 // SkillMeta - Basic
 #include "Macros.h"
+#include "DBUtil.h"
 
 static const char* tpath[] = {"skill_w.png","skill_s.png","skill_a.png","skill_d.png","skill_i.png","skill_k.png","skill_j.png","skill_l.png"};
 
@@ -81,11 +82,12 @@ bool SkillList::f_init()
 			tsm->onNormal();
 			tsm->setValue(i);
 			tsm->setTag(i);
-			tsm->setSKLabel(CCString::createWithFormat("SKILLTEST-%d",i)->getCString());
+			//tsm->setSKLabel(CCString::createWithFormat("SKILLTEST-%d",i)->getCString());
 			tsm->setAnchorPoint(CCPointZero);
 			tsm->setPosition(ccp(0,ny));
 			tsm->setactivator(this,menu_selector(SkillList::SKM_Back));
 			addChild(tsm,1);
+			m_viSkmL.push_back(tsm);
 			ny -= 30;
 		}
 
@@ -118,5 +120,74 @@ void SkillList::activate()
 
 void SkillList::SKM_Back( CCObject* to )
 {
-	CCLog(">[SKM_Back]:%d",((CCNode*) to)->getTag());
+	int ti = ((CCNode*) to)->getTag();
+	ti = m_pChara->m_viSkills[ti];
+	this->setTag(ti);
+	CCLog(">[SKM_Back]:%d",ti);
+	activate();
+	
+}
+
+bool SkillList::setChara( Chara* ac )
+{
+	for(int i = 0;i<8;++i){
+		m_viSkmL[i]->setVisible(false);
+	}
+
+	if(!ac) return false;
+	if(m_pChara == ac) return false;
+
+	m_pChara = ac;
+
+	vdata.clear();
+	if(m_pChara->m_viSkills.size() == 0) return false;
+	
+	
+	CCDictionary* m_cid = new CCDictionary();
+	string t_sMask;
+	for(map<int,int>::iterator it = m_pChara->m_viSkills.begin(); it != m_pChara->m_viSkills.end(); ++it)
+	{
+		int t_id = it->second;
+		t_sMask +=  CCString::createWithFormat("%d,",t_id)->getCString();
+		ItemCellData* t_icd	=	new ItemCellData(t_id,0,0);
+		m_cid->setObject(t_icd,t_id);
+		t_icd->autorelease();
+	}
+	t_sMask.erase(t_sMask.length()-1);
+	CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
+
+	DBUtil::initDB("save.db");
+	vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
+	int m_number = vdata.size();
+	DBUtil::closeDB(); 
+
+	for(int i = 0;i<m_number;i++){
+		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
+		int item_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
+		m_miiViDb[item_id] = i;							//·½±ã²éÕÒ
+
+		CCLOG(">Read for item id:%d.", item_id);
+	}
+
+	RefreshSm();
+	return true;
+}
+
+void SkillList::RefreshSm()
+{
+	int ti;
+	for(int i = 0;i<8;++i){
+		ti = m_pChara->m_viSkills[i];
+		if(ti !=0 ){
+			m_viSkmL[i]->setSKLabel(vdata.at(m_miiViDb[ti]).at("name").c_str());
+			m_viSkmL[i]->setVisible(true);
+		}else{
+			m_viSkmL[i]->setVisible(false);
+		}
+	}
+}
+
+const char* SkillList::getval( const char* aname,int ait )
+{
+	return vdata.at(m_miiViDb[ait]).at(aname).c_str();
 }

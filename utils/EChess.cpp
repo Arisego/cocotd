@@ -365,7 +365,7 @@ EChesses::~EChesses()
 void EChesses::ChangeFace( const CCPoint ac )
 {
 	CCPoint cur = GameManager::sharedLogicCenter()->ml->tm->m_checkPoint(ccp(m_body->GetPosition().x,m_body->GetPosition().y));
-	//[0803]CCLog("ChageFace:%f,%f||%f,%f",cur.x,cur.y,ac.x,ac.y);
+	CCLog("ChageFace:%f,%f||%f,%f",cur.x,cur.y,ac.x,ac.y);
 	float k = abs(cur.y - ac.y) - abs(cur.x - ac.x);
 
 	if(k>0){

@@ -27,6 +27,7 @@ public:
 	int b_battle;			//battlemap用state标记 || 1 - 等待弹出菜单 2 - 菜单弹出，拒绝事件 3 - 等待地图对象选择并返回给draw_func();
 	int m_mi,m_mj;
 	set<pair<int,int>> cs_y,cs_b,cs_r,cs_block,cs_dis,cs_hit_block;			//记录二维数组的集合 cs_block - ZOC区域 cs_dis - 无法站立的区域 cs_hit_block - 在移动范围内的zoc
+	set<pair<int,int>> cs_cy;	// <cs_cy - 额外的显示黄色的区域
 	vector<CCPoint> vc_path;
 	unsigned int c_r,c_b,c_y;
 	int max_x,max_y;
@@ -71,7 +72,7 @@ public:
 	void clean_cs();			// clean states;
 	void a_star();				//A*
 
-	int	 miRangeType;
+	int	 miRangeType;			// <传递usecase的变量
 	bool arange_target(int a_type);			//Test if target is in ts_last and produce the target this.
 
 	CCArray* m_caTarget;					//Array for target;
@@ -117,6 +118,7 @@ protected:
 public:
 	bool f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint a);
 	bool f_Arange(int a_type,CCObject* atar);
+	void find_target_arrage(int atype);				// <寻找范围内的单位的实际执行体
 	//////////////////////////////////////////////////////////////////////////
 	// <战场控制
 

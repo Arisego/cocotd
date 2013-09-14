@@ -1,5 +1,13 @@
 #include "hud/StatBar.h"
 
+
+
+StatBar::StatBar()
+{
+	m_ec = NULL;
+}
+
+
 void StatBar::SetContent( EChesses* aec )
 {
 	
@@ -20,7 +28,7 @@ void StatBar::SetContent( EChesses* aec )
 
 void StatBar::RefreshAll()
 {
-	
+	if(!m_ec) return;
 	Chara* t_owner = m_ec->m_pChara;
 	mb_Exp->setval(t_owner->getvalue("exp")%100);
 	CCLog(">< %d",t_owner->getvalue("hit")%100);

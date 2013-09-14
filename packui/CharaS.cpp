@@ -147,6 +147,7 @@ void CharaS::inform(){
 		if(t_ca->m_sName.length() > 0)	continue;				//No permission to rewrite, ti's add not update, do not mud them together. And here we manage the output to new chara only.
 		t_ca->m_sName		 =	 t_ssm.at("name");
 		t_ca->m_sPsz		 =	 t_ssm.at("psz");
+		t_ca->m_sSpx		 =	 t_ssm.at("spx");
 		t_ca->m_iElement	 =	 stoi(t_ssm.at("element"));
 		tsp->parse_string(t_ssm.at("sound"));
 		t_ca->m_ssLib		 =	 tsp->mapscps;
