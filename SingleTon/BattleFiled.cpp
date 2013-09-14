@@ -382,7 +382,12 @@ void BattleField::UnDerLead( int val,int cx, int cy )
 
 
 /*
-	|< 阶段-BF0001：进行第一次攻击判定。由Component自行调用。
+	|< 调用路径  用户点击鼠标/反击自动调用 --> BattleMap::HandleScriptor --> EChessComp::RunScript
+	|< 阶段-BF0001：进行第攻击判定和伤害计算。由Component自行调用。
+		<要区分状态参照LogicContinue
+		<方式选择阶段
+		<-[0b000001]释放技能之前进行先制判定[泽洛斯-先制……] 
+		<-[0b100000]技能生效之前触发[卡娜-煞斩、埃尔维斯-后刃……]
 */
 void BattleField::Judge(){
 	//////////////////////////////////////////////////////////////////////////
@@ -395,10 +400,13 @@ void BattleField::Judge(){
 	int hurt;
 	bool tbSingle;
 	int hit_rate_base = src->getFixValue("hit")*5 + src->getFixValue("luk");
+	//////////////////////////////////////////////////////////////////////////
+	// <对每个单位进行伤害计算 || 技能的情况将相关的计算方法写进第三个参数即可
 	CCARRAY_FOREACH(meTar,tar_o){
 		tar = ((EChesses*) tar_o)->m_pChara;
 		
-
+		//////////////////////////////////////////////////////////////////////////
+		// <对单个单位进行伤害计算，为了便于与预估统一可能将会独立成为传引用的函数 || 注意预估时是没有mspval的，所以不能单纯移动！！
 		/* <计算命中率 */
 		float hit_rate = (( hit_rate_base - tar->getFixValue("avg") * 5 - tar->getFixValue("luk"))/100) + 0.7 + src->getFixRate();
 		CCLog(">[BF]MingZhong-%f",hit_rate);
@@ -417,21 +425,44 @@ void BattleField::Judge(){
 		CCLog(">[BF]HuiXing-%f",hit_rate);
 		tbSingle = (CCRANDOM_0_1()<hit_rate);
 
-		/* <进行第一轮伤害计算 */	
-		if(tbSingle){
-			tiHitFlag |= 1;
-			CCLog(">[BF]Extra Hurt.");
-			 src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
-			 meSrc->miHitFlag = 1;
+		//////////////////////////////////////////////////////////////////////////
+		/* <进行伤害计算||如果有需要将这个片段独立成函数 */
+		if(!mspVals){
+			if(tbSingle){
+				tiHitFlag |= 1;
+				CCLog(">[BF]Extra Hurt.");
+				hurt = src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
+				meSrc->miHitFlag = 1;
+			}else{
+				meSrc->miHitFlag = 0;
+				hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
+			}
+
+
+			/* <根据是否玩家控制势力将会弹出格挡判定 */
+			// ....
+			hurt -= tar->getFixValue("def");
+			CCLog(">[BF]Physical Damage:%d",hurt);
 		}else{
-			meSrc->miHitFlag = 0;
-			hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
+			// in<<<  damage 基础伤害 type 伤害类型
+			hurt = mspVals->getint("damage");
+			switch (mspVals->getint("type"))
+			{
+			case 0:	// type == 0 || 无差别技能伤害
+				{
+					// <魔法种类？
+					break;
+				}
+			default:
+				CCLog(">[BF]Invalid Skill Dmamage Type. Check DB skill_list.");
+				break;
+			}
+
+			hurt -= tar->getFixValue("rst");
+			CCLog(">[BF]Magick Damage:%d",hurt);
 		}
 		
-			
-		/* <根据是否玩家控制势力将会弹出格挡判定 */
-		// ....
-		hurt -= tar->getFixValue("def");
+		//////////////////////////////////////////////////////////////////////////
 
 		/* <计算完成导入Entile并计算经验值 */
 		// ...
@@ -625,6 +656,8 @@ void BattleField::PreJudge(EChesses* atar)
 	Chara* src = meOrig->m_pChara;
 	Chara* tar = atar->m_pChara;
 
+	//////////////////////////////////////////////////////////////////////////
+	// <物理攻击的伤害预判 || 技能的判定方式在第三个参数[mspVal]中
 	int hit_rate = src->getFixValue("hit")*5 + src->getFixValue("luk") - tar->getFixValue("avg") * 5 - tar->getFixValue("luk") + 70 + src->getFixRate()*100;
 	int hx_rate = (src->getFixValue("base_hit") + src->getFixValue("luk")/5 - iBossHuiXin[tar->getvalue("boss_class")])/100 + src->getFixRate();
 	int damage =src->getFixValue("atk") + src->getFixValue("a_atk");	

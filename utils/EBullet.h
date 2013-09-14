@@ -18,7 +18,7 @@ public:
 	bool m_bMoving;		//moving
 
 	~EBullet(){
-		m_sprite->removeFromParent();
+		//m_sprite->removeFromParent();
 		m_body->GetWorld()->DestroyBody(m_body);
 	}
 	

@@ -12,6 +12,13 @@ void EBullet::initFiles(const char *pszFileName, const CCRect& rect)
 
 void EBullet::initFiles(const char *pszFileName)
 {
+	if(!m_sprite) {
+		m_sprite = new CCSprite();
+		addChild(m_sprite);
+		m_sprite->autorelease();
+		m_sprite->setAnchorPoint(CCPointZero);
+		m_sprite->setPosition(CCPointZero);
+	}
 	m_sprite->initWithSpriteFrameName(pszFileName);
 	m_sprite->setOpacity(0);
 

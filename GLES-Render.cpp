@@ -26,26 +26,26 @@
 
 USING_NS_CC;
 
-GLESDebugDraw::GLESDebugDraw()
+MyGLESDebugDraw::MyGLESDebugDraw()
     : mRatio( 1.0f )
 {
     this->initShader();
 }
 
-GLESDebugDraw::GLESDebugDraw( float32 ratio )
+MyGLESDebugDraw::MyGLESDebugDraw( float32 ratio )
     : mRatio( ratio )
 {
     this->initShader();
 }
 
-void GLESDebugDraw::initShader( void )
+void MyGLESDebugDraw::initShader( void )
 {
     mShaderProgram = CCShaderCache::sharedShaderCache()->programForKey(kCCShader_Position_uColor);
 
     mColorLocation = glGetUniformLocation( mShaderProgram->getProgram(), "u_color");
 }
 
-void GLESDebugDraw::DrawPolygon(const b2Vec2* old_vertices, int vertexCount, const b2Color& color)
+void MyGLESDebugDraw::DrawPolygon(const b2Vec2* old_vertices, int vertexCount, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();
@@ -69,7 +69,7 @@ void GLESDebugDraw::DrawPolygon(const b2Vec2* old_vertices, int vertexCount, con
     delete[] vertices;
 }
 
-void GLESDebugDraw::DrawSolidPolygon(const b2Vec2* old_vertices, int vertexCount, const b2Color& color)
+void MyGLESDebugDraw::DrawSolidPolygon(const b2Vec2* old_vertices, int vertexCount, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();
@@ -96,7 +96,7 @@ void GLESDebugDraw::DrawSolidPolygon(const b2Vec2* old_vertices, int vertexCount
     delete[] vertices;
 }
 
-void GLESDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
+void MyGLESDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();
@@ -127,7 +127,7 @@ void GLESDebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Col
     delete[] glVertices;
 }
 
-void GLESDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
+void MyGLESDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();
@@ -164,7 +164,7 @@ void GLESDebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const 
     delete[] glVertices;
 }
 
-void GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
+void MyGLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();
@@ -185,7 +185,7 @@ void GLESDebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Colo
     CHECK_GL_ERROR_DEBUG();
 }
 
-void GLESDebugDraw::DrawTransform(const b2Transform& xf)
+void MyGLESDebugDraw::DrawTransform(const b2Transform& xf)
 {
     b2Vec2 p1 = xf.p, p2;
     const float32 k_axisScale = 0.4f;
@@ -196,7 +196,7 @@ void GLESDebugDraw::DrawTransform(const b2Transform& xf)
     DrawSegment(p1,p2,b2Color(0,1,0));
 }
 
-void GLESDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
+void MyGLESDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();
@@ -219,14 +219,14 @@ void GLESDebugDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& colo
     CHECK_GL_ERROR_DEBUG();
 }
 
-void GLESDebugDraw::DrawString(int x, int y, const char *string, ...)
+void MyGLESDebugDraw::DrawString(int x, int y, const char *string, ...)
 {
 //    NSLog(@"DrawString: unsupported: %s", string);
     //printf(string);
     /* Unsupported as yet. Could replace with bitmap font renderer at a later date */
 }
 
-void GLESDebugDraw::DrawAABB(b2AABB* aabb, const b2Color& color)
+void MyGLESDebugDraw::DrawAABB(b2AABB* aabb, const b2Color& color)
 {
     mShaderProgram->use();
     mShaderProgram->setUniformsForBuiltins();

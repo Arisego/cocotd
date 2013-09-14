@@ -28,7 +28,7 @@ struct b2AABB;
 
 // This class implements debug drawing callbacks that are invoked
 // inside b2World::Step.
-class GLESDebugDraw : public b2Draw
+class MyGLESDebugDraw : public b2Draw
 {
     float32 mRatio;
     cocos2d::CCGLProgram* mShaderProgram;
@@ -36,9 +36,9 @@ class GLESDebugDraw : public b2Draw
 
     void initShader( void );
 public:
-    GLESDebugDraw();
+    MyGLESDebugDraw();
 
-    GLESDebugDraw( float32 ratio );
+    MyGLESDebugDraw( float32 ratio );
 
     virtual void DrawPolygon(const b2Vec2* vertices, int vertexCount, const b2Color& color);
 

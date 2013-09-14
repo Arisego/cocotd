@@ -115,7 +115,7 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 		}
 	}
 
-	//mte->setPosition(d);
+	mte->setPosition(d);
 	//mte->retain();
 	mte->name = mtca->getstring("name");				//Bullet name?
 	mte->group = mtca->getstring("group");				//Bullet group?
@@ -138,6 +138,5 @@ void WalkMap::addbullet(Script* mtca){										//bullet is a sensor. It only ca
 	//m_itemlist->setObject(mte,CCString::createWithFormat("%s_%s",mtca->getstring("group"),mtca->getstring("name"))->getCString());
 	//m_ea->addObject(mte);
 	//mte->retain();
-	//sheet->
-		addChild(mte);
+	//sheet->addChild(mte);
 }

@@ -112,7 +112,7 @@ bool BattleMap::init()
 	//////////////////////////////////////////////////////////////////////////
 #ifdef DEBUGDRAW
 
-	m_debugDraw =  new GLESDebugDraw( PTM_RATIO );
+	m_debugDraw =  new MyGLESDebugDraw( PTM_RATIO );
 	_world->SetDebugDraw(m_debugDraw);
 
 	unsigned int flags = 0;
