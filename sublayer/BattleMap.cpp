@@ -384,22 +384,22 @@ do
 	ballShapeDef.density = 1.0f;  
 	ballShapeDef.friction = 1.0f;  
 	ballShapeDef.restitution = 0.0f;  
-	ballShapeDef.isSensor = true;				// 将碰撞形状改为sensor不会提高多少效率却会破坏map原本事件机制。
+	ballShapeDef.isSensor = true;				// <将碰撞形状改为sensor不会提高多少效率却会破坏map原本事件机制。
 	
 	//// b2body准备工作
 	//////////////////////////////////////////////////////////////////////////
-	CCSize ts = m_tilemap->getTileSize();
-	b2PolygonShape boxShape;
-	float hbw = (ts.width-1)/( PTM_RATIO * 4);
-	float hbh = (ts.height-1)/( PTM_RATIO);
-	hbh *= 1.2;
-	boxShape.SetAsBox(hbw,hbh,b2Vec2(0,hbh),0);
+	//CCSize ts = m_tilemap->getTileSize();
+	//b2PolygonShape boxShape;
+	//float hbw = (ts.width-1)/( PTM_RATIO * 4);
+	//float hbh = (ts.height-1)/( PTM_RATIO);
+	//hbh *= 1.2;
+	//boxShape.SetAsBox(hbw,hbh,b2Vec2(0,hbh),0);
 
 
 	CCDictElement* cde = NULL;
 	CCDICT_FOREACH(m_itemlist,cde){
 		EChesses* t_ec = (EChesses*) cde->getObject();
-		
+
 		t_ec->initFiles(t_ec->psz.c_str());
 		CCPoint d = m_getViewc(t_ec->pos);
 
@@ -415,14 +415,14 @@ do
 		t_ec->m_body = _body;
 		_body->SetUserData(t_ec);			
 
-		b2FixtureDef boxFixtureDef;				
-		boxFixtureDef.shape = &boxShape;
-		boxFixtureDef.density = 1;
-		boxFixtureDef.filter.categoryBits = 0x0002;
-		boxFixtureDef.filter.maskBits = 0x0001;
-		boxFixtureDef.isSensor = true;
+		//b2FixtureDef boxFixtureDef;				
+		//boxFixtureDef.shape = &boxShape;
+		//boxFixtureDef.density = 1;
+		//boxFixtureDef.filter.categoryBits = 0x0002;
+		//boxFixtureDef.filter.maskBits = 0x0001;
+		//boxFixtureDef.isSensor = true;
 
-		_body->CreateFixture(&boxFixtureDef);
+		//_body->CreateFixture(&boxFixtureDef);
 	}
 	// EChesses in BattleMap has its own logic, so a logic based on sensor is no longer needed.
 

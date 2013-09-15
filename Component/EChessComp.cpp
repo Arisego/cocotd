@@ -71,8 +71,9 @@ void EChessComp::GoAHead()
 	if(miELock>0) return;
 	if(miScriptSum <= miScriptCount)
 	{
-		CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);
-		CC_SAFE_DELETE(mSp);
+		CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);	 	
+		CCLOG(">[ECC]over,owner position:%f,%f",((EChesses*) m_pOwner)->pos.x,((EChesses*) m_pOwner)->pos.y);
+		CC_SAFE_RELEASE_NULL(mSp);
 		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRelease();
 		
 	}else{
@@ -205,7 +206,7 @@ bool EChessComp::TestRange( CCPoint target )
 {
 	CCLog("[ECC]TestRange with pos:%d,%f",target.x,target.y);
 	vector<int> ars;
-	ars.push_back(1);
+	ars.push_back(3);
 
 	//GameManager::sharedLogicCenter()->ml->bm->m_controller = (EChesses*) m_pOwner;
 	//GameManager::sharedLogicCenter()->ml->bm->set_mouse_range(1,ars);	// <Get&Set Range Paras	

@@ -677,6 +677,7 @@ void MapLayer::click_act()
 				bm->b_battle = 4;
 				bm->m_bAnimateOver = false;
 				BattleField::sharedBattleField()->ActionFac();
+				BattleField::sharedBattleField()->miState = 5;
 				t_bm->dismiss();
 				//bm->b_battle = 1;
 				bm->clean_cs();

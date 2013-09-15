@@ -79,11 +79,14 @@ protected:
 	
 	//////////////////////////////////////////////////////////////////////////
 	// <战斗显示
+	int miSFlag;	// <标记战斗运行状态 || 0 - Src未未设置 | 1 -Src已经设置 等待可能的开始和判定 | 2 - 战斗经过第一次判定 <<< 以后的判定可以和mistate结合
+	bool mbIsMagic; // <是否是魔法攻击
 public:
 	void RefreshStats();	// <更新两边显示
 	EChesses* meTarget;		// <当前被用于显示的右边单位
 
 	void ActionFac();		// <动作被实际执行
+	bool CalRate(EChesses* tar_o,int hit_rate_base);
 	//void CheckBlood();		// <对血量进行检查
 
 private:

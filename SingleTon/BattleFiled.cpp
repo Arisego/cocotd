@@ -4,6 +4,13 @@
 
 static const int iBossHuiXin[] = {0,3,6,10,15};		// None C - S | 0 -4
 
+
+//////////////////////////////////////////////////////////////////////////
+
+int DisTPoints(CCPoint src,CCPoint dst);
+
+//////////////////////////////////////////////////////////////////////////
+
 BattleField *BattleField::mSharedBattleField = NULL;
 
 
@@ -100,7 +107,10 @@ void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 
 void BattleField::SetSrc( EChesses* aSrc )
 {
-	if(!aSrc) return;
+	if(!aSrc) {
+		miSFlag = 0;
+		return;
+	}
 	Clean();
 	meSrc = aSrc;
 	meOrig = aSrc;
@@ -108,6 +118,7 @@ void BattleField::SetSrc( EChesses* aSrc )
 	/* [SS] <目标被选中为操作单位  */
 	meOrig->m_pChara->PlaySS();
 	GameManager::sharedLogicCenter()->ml->m_lsb->SetContent(meSrc);
+	miSFlag = 1;
 }
 
 
@@ -400,74 +411,145 @@ void BattleField::Judge(){
 	int hurt;
 	bool tbSingle;
 	int hit_rate_base = src->getFixValue("hit")*5 + src->getFixValue("luk");
+
 	//////////////////////////////////////////////////////////////////////////
-	// <对每个单位进行伤害计算 || 技能的情况将相关的计算方法写进第三个参数即可
-	CCARRAY_FOREACH(meTar,tar_o){
-		tar = ((EChesses*) tar_o)->m_pChara;
-		
-		//////////////////////////////////////////////////////////////////////////
-		// <对单个单位进行伤害计算，为了便于与预估统一可能将会独立成为传引用的函数 || 注意预估时是没有mspval的，所以不能单纯移动！！
-		/* <计算命中率 */
-		float hit_rate = (( hit_rate_base - tar->getFixValue("avg") * 5 - tar->getFixValue("luk"))/100) + 0.7 + src->getFixRate();
-		CCLog(">[BF]MingZhong-%f",hit_rate);
-		tbSingle = (CCRANDOM_0_1()<hit_rate);
-		if(!tbSingle) {
-			((EChesses*) tar_o)->miAvgFlag = 1;
-			CCLog(">[BF]Miss....");
+	if(miSFlag == 1){
+		miSFlag = 2;
+		mbIsMagic = (mspVals!=NULL);
+		CCLog(">[BF]Cached its a magic attack.Remove all !mspVal check for magick.");
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// <新版本的伤害计算
+
+	// <生成Type值，type==0即为计算物理伤害 || tiFlag 为屏蔽旗标
+	int tiFlag	 = 0;
+	int tiDaType = 0;
+	if(mspVals){
+		tiDaType = mspVals->getint("type");
+	}
+
+	// <分支
+	switch(tiDaType)
+	{
+	case 0:	// <物理伤害计算
+		{
+			CCARRAY_FOREACH(meTar,tar_o){
+				tar = ((EChesses*) tar_o)->m_pChara;
+				hurt = 0;
+				bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
+				if(tbSingle){
+					tiHitFlag |= 1;
+					CCLog(">[BF]Extra Hurt.");
+					hurt = src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
+					meSrc->miHitFlag |= 1;
+				}else{
+					meSrc->miHitFlag |= 0;
+					hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
+				}
+				/* <根据是否玩家控制势力将会弹出格挡判定 */
+				// ....
+				hurt -= tar->getFixValue("def");
+				CCLog(">[BF]Physical Damage:%d",hurt);
+			}
+
+			((EChesses*) tar_o)->miDamage = hurt;
 			break;
 		}
-
-		((EChesses*) tar_o)->miAvgFlag = 0;
-		CCLog(">[BF]Hit");
-
-		/* <计算会心率 */
-		hit_rate = (src->getFixValue("base_hit") + src->getFixValue("luk")/5 - iBossHuiXin[tar->getvalue("boss_class")])/100 + src->getFixRate();
-		CCLog(">[BF]HuiXing-%f",hit_rate);
-		tbSingle = (CCRANDOM_0_1()<hit_rate);
-
-		//////////////////////////////////////////////////////////////////////////
-		/* <进行伤害计算||如果有需要将这个片段独立成函数 */
-		if(!mspVals){
-			if(tbSingle){
-				tiHitFlag |= 1;
-				CCLog(">[BF]Extra Hurt.");
-				hurt = src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
-				meSrc->miHitFlag = 1;
-			}else{
-				meSrc->miHitFlag = 0;
-				hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
-			}
-
-
-			/* <根据是否玩家控制势力将会弹出格挡判定 */
-			// ....
-			hurt -= tar->getFixValue("def");
-			CCLog(">[BF]Physical Damage:%d",hurt);
-		}else{
-			// in<<<  damage 基础伤害 type 伤害类型
-			hurt = mspVals->getint("damage");
-			switch (mspVals->getint("type"))
-			{
-			case 0:	// type == 0 || 无差别技能伤害
-				{
-					// <魔法种类？
-					break;
+	case 1:
+		{
+			CCARRAY_FOREACH(meTar,tar_o){
+				tar = ((EChesses*) tar_o)->m_pChara;
+				hurt = hurt + mspVals->getint("damage") + src->getvalue("mag"); 
+				int a;
+				EChesses d;
+				bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
+				if(tbSingle){
+					tiHitFlag |= 1;
+					CCLog(">[BF]Extra Hurt.");
+					hurt *= 1.3;
+					meSrc->miHitFlag |= 1;
+				}else{
+					meSrc->miHitFlag |= 0;
 				}
-			default:
-				CCLog(">[BF]Invalid Skill Dmamage Type. Check DB skill_list.");
-				break;
+
+				hurt -= tar->getFixValue("rst");
+				((EChesses*) tar_o)->miDamage = hurt;
+			}
+			break;
+		}
+	case 2:
+		{
+			map<pair<int,int>,EChesses*> fl_list;	// <扩散缓存
+
+			int flam = mspVals->getint("flam");	// <衰减半径
+			int radiu = mspVals->getint("radiu"); // <扩散半径
+			float fdec = mspVals->getfloat("dec"); // <衰减参数
+
+			CCARRAY_FOREACH(meTar,tar_o){
+				hurt = 0;
+				if(DisTPoints(meSrc->pos,((EChesses*) tar_o)->pos) < flam){
+					hurt = hurt + mspVals->getint("damage") + src->getvalue("mag"); 
+
+					bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
+					if(tbSingle){
+						tiHitFlag |= 1;
+						CCLog(">[BF]Extra Hurt.");
+						hurt *= 1.3;
+						meSrc->miHitFlag |= 1;
+					}else{
+						meSrc->miHitFlag |= 0;
+					}
+					((EChesses*) tar_o)->miDamage = hurt;
+
+					int mx = ((EChesses*) tar_o)->pos.x;
+					int my = ((EChesses*) tar_o)->pos.y;
+
+					int dx = mx - meSrc->pos.x;
+					int dy = my - meSrc->pos.y;
+
+					if(dx){ // <横向扩展
+						dx = dx/abs(dx);
+						for(int i = 0; i< radiu;){
+							++i;
+							fl_list[make_pair(mx+dx*i,my)] = ((EChesses*) tar_o);		// <不检查直接替换
+							CCLog("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+						}
+					}
+
+					if(dy){ // <纵向扩展
+						dy = dy/abs(dy);
+						for(int i = 0; i< radiu;){
+							++i;
+							fl_list[make_pair(mx,my+dy*i)] = ((EChesses*) tar_o);		// <不检查直接替换
+							CCLog("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+						}
+					}
+
+				}else{
+					((EChesses*) tar_o)->miDamage = -1;
+				}
 			}
 
-			hurt -= tar->getFixValue("rst");
-			CCLog(">[BF]Magick Damage:%d",hurt);
-		}
-		
-		//////////////////////////////////////////////////////////////////////////
+			CCARRAY_FOREACH(meTar,tar_o){ // <对衰减范围外的进行重新演算
+				if(((EChesses*) tar_o)->miDamage == -1){
+					EChesses* teS = fl_list[make_pair(((EChesses*) tar_o)->pos.x,((EChesses*) tar_o)->pos.y)];
+					int ds = DisTPoints(teS->pos,((EChesses*) tar_o)->pos);
+					((EChesses*) tar_o)->miDamage = teS->miDamage * (1-ds*fdec);
+					CCLog(">[BF]FDec...");
+				}
+				
+				((EChesses*) tar_o)->miDamage -= ((EChesses*) tar_o)->m_pChara->getFixValue("rst");
+				CCLog(">[BF]Mageck Damage with rst:%d",((EChesses*) tar_o)->miDamage);
+			}
 
-		/* <计算完成导入Entile并计算经验值 */
-		// ...
-		((EChesses*) tar_o)->miDamage = hurt;
+			break;
+		}
+	default:
+		CCLog(">[BF]Judge Err:Error Type Provided:%d. Hurt will be 0.",tiDaType);
+		break;
 	}
+
 	
 	if(tiHitFlag != 0){
 		meSrc->miHitFlag = 1;
@@ -504,7 +586,7 @@ bool BattleField::LogicContinue()
 		}
 	case 3:		// <攻击发起方可反击的情况
 		{
-			if(!mspVals){		
+			if(!mbIsMagic){		
 				// <第三次攻击只有可能是普通攻击
 				GameManager::sharedLogicCenter()->ml->bm->m_caTarget->removeAllObjects();
 				GameManager::sharedLogicCenter()->ml->bm->m_caTarget->addObject(meSrc);
@@ -623,7 +705,7 @@ bool BattleField::TestBackCh(EChesses* atar)
 			miState = 2;
 			CC_BREAK_IF(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,2));		// <FindFitRe会根据自己的状态对miState进行修改
 		}else if(delta_spd <= -5){					// <攻击发起对象速度较快
-			if(!mspVals){
+			if(!mbIsMagic){
 				miState = 3;
 				if(((EChessComp*) atar->getComponent("controller"))->FindFitRe(meOrig,1)) break;
 				else{				// <对方无法进行反击的情况下延迟0.2秒并再次攻击
@@ -786,3 +868,38 @@ void BattleField::ActionFac()
 	GameManager::sharedLogicCenter()->ml->Dissmiss_Arrows();
 }
 
+//////////////////////////////////////////////////////////////////////////
+// <Judge伤害计算辅助函数
+
+
+int DisTPoints(CCPoint src,CCPoint dst){
+	CCLOG(">[BF]CDisTPoints:%d",abs(src.x - dst.x) + abs(src.y - dst.y));
+	return (abs(src.x - dst.x) + abs(src.y - dst.y));
+}
+// < 概率计算函数：命中和会心
+bool BattleField::CalRate(EChesses* tar_o,int hit_rate_base)
+{
+	do 
+	{
+		Chara* tar = tar_o->m_pChara;
+		Chara* src = meSrc->m_pChara;
+
+		float hit_rate = (( hit_rate_base - tar->getFixValue("avg") * 5 - tar->getFixValue("luk"))/100) + 0.7 + src->getFixRate();
+		CCLog(">[BF]MingZhong-%f",hit_rate);
+		bool tbSingle = (CCRANDOM_0_1()<hit_rate);
+		if(!tbSingle) {
+			((EChesses*) tar_o)->miAvgFlag = 1;
+			CCLog(">[BF]Miss....");
+			break;
+		}
+
+		((EChesses*) tar_o)->miAvgFlag = 0;
+		CCLog(">[BF]Hit");
+
+		/* <计算会心率 */
+		hit_rate = (src->getFixValue("base_hit") + src->getFixValue("luk")/5 - iBossHuiXin[tar->getvalue("boss_class")])/100 + src->getFixRate();
+		CCLog(">[BF]HuiXing-%f",hit_rate);
+		return (CCRANDOM_0_1()<hit_rate);
+	} while (0);
+	return false;
+}
