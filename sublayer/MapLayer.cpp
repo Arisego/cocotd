@@ -496,6 +496,7 @@ void MapLayer::menu_back( CCObject* pSender )
 	
 	bm->miRangeType = 0;
 	BattleField::sharedBattleField()->setBattle(false);
+	CC_SAFE_RELEASE_NULL(m_SkillList);							// <防止右键层级中可能出现的bug
 
 	switch(m_iFuncType){
 	case(1):
@@ -951,6 +952,7 @@ void MapLayer::right_click()
 					if(m_rsb) m_rsb->setVisible(false);
 					bm->clean_cs();
 					bm->b_battle = 2;
+					Dissmiss_Arrows();
 					break;
 				}
 			}

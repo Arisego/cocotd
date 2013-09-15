@@ -60,4 +60,5 @@ void SoulBall::setAli( int ai )
 			mics_SBList[i]->setOpacity(255);
 		}
 	}
+	miALive = ai;
 }

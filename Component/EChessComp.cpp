@@ -175,6 +175,14 @@ void EChessComp::DerScript( Script* asp )
 					
 						break;
 					}
+				case 6:	// type = 6 | <ÊýÖµÐÞÕý
+					{
+						Chara* tow = ((EChesses*) m_pOwner)->m_pChara;
+						string tname =  tmp->getstring("name");
+						tow->setvalue(tname,tow->getvalue(tname)+tmp->getint("value"));
+						BattleField::sharedBattleField()->RefreshStats();
+						break;
+					}
 				default:
 					break;
 				}

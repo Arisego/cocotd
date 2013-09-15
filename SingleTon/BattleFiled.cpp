@@ -536,6 +536,7 @@ void BattleField::Judge(){
 					EChesses* teS = fl_list[make_pair(((EChesses*) tar_o)->pos.x,((EChesses*) tar_o)->pos.y)];
 					int ds = DisTPoints(teS->pos,((EChesses*) tar_o)->pos);
 					((EChesses*) tar_o)->miDamage = teS->miDamage * (1-ds*fdec);
+					((EChesses*) tar_o)->miAvgFlag = teS->miAvgFlag;
 					CCLog(">[BF]FDec...");
 				}
 				
