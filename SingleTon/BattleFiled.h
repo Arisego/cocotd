@@ -27,6 +27,8 @@ public:
 	void ChessMoved(EChesses* ae, CCPoint astart, CCPoint aend); // <人物移动，调整统帅数值
 	void Judge();						// <判定
 
+	bool HasChess(int ax, int ay);		// <返回一个点是否存在人物
+
 	//////////////////////////////////////////////////////////////////////////
 	// <战斗控制
 	void SetUp(EChesses* aSrc, CCArray* aTar,Script* sp = NULL);		// <战斗设置接口
@@ -80,8 +82,9 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	// <战斗显示
 	int miSFlag;	// <标记战斗运行状态 || 0 - Src未未设置 | 1 -Src已经设置 等待可能的开始和判定 | 2 - 战斗经过第一次判定 <<< 以后的判定可以和mistate结合
-	bool mbIsMagic; // <是否是魔法攻击
+	
 public:
+	bool mbIsMagic; // <是否是魔法攻击
 	void RefreshStats();	// <更新两边显示
 	EChesses* meTarget;		// <当前被用于显示的右边单位
 

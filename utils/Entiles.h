@@ -23,8 +23,8 @@ typedef enum{
 	MS_STOP
 } MoveDirect;
 
-//所有地图实体的基类
-//保证实体类的单纯性，实体类不负责进行HUD显示，所有HUD相关事宜由ML和TM处理。
+// <所有地图实体的基类
+// <保证实体类的单纯性，实体类不负责进行HUD显示，所有HUD相关事宜由ML和TM处理。
 class Entiles : public CCNode, public SimControl
 {
 protected:
@@ -37,6 +37,7 @@ public:
 	int miHitFlag;			// <攻击方状态
 	int miAvgFlag;			// <被攻击状态 1 - 闪避
 	int miDamage;			// <被攻击数值伤害
+	int miHitGroup;			// <打击播放组，请在每次播放完成后置为0。默认为0。在播放的Scp中有指定时就只对指定的组别进行播放和判定。
 
 	b2Body *m_body;
 	string name,group,psz;
@@ -80,7 +81,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// <攻击
 	void setState(int ai);
-	void playAnimate(string name,int times);
+	void playAnimate(string name,int times, float afBegin = 0.0, float afEnd = -1.0);
 
 	virtual void ChangeFace( const CCPoint ac );
 	void ShowDamage();

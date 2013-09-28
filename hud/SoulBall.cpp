@@ -50,6 +50,12 @@ void SoulBall::GenerateSB()
 
 void SoulBall::setAli( int ai )
 {
+	if(ai<0){	
+		CCLog(">[SoulBall]Error. Soul can not handle value below zero. Check tho logic.");
+		//CCAssert(ai>=0,">[SoulBall]Error. Soul can not handle value below zero. Check tho logic.");
+		ai = 0;
+	}
+
 	if(ai == miALive) return;
 	else if(ai<miALive){
 		for(int i = ai; i < miALive;++i){

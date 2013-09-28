@@ -60,7 +60,7 @@ void BattleField::Clean()
 	meSrc = NULL;
 	meTar = NULL;
 
-	mMapC.clear();
+	//mMapC.clear();
 
 	//BackChess1 = NULL;
 	//BackChess2 = NULL;
@@ -165,7 +165,7 @@ void BattleField::InitChessRefreh()
 	EChesses* te;
 	EChesses* ste;
 	int tiLead;
-	// <扩散统帅属性 --< 需要修改
+	// <扩散统帅属性 
 	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
 		te = it->second;
 		
@@ -183,6 +183,7 @@ void BattleField::InitChessRefreh()
 //////////////////////////////////////////////////////////////////////////
 // <统帅
 
+/* <根据统帅属性值计算统帅输出 */
 int BattleField::DerLead( int val,int cx, int cy,int dx, int dy )
 {
 	int t = abs(cx-dx) + abs(cy-dy);
@@ -265,14 +266,17 @@ void BattleField::ChessMoved( EChesses* ae, CCPoint astart, CCPoint aend )
 	mMapC.erase(make_pair(astart.x,astart.y));
 	mMapC.insert(make_pair(make_pair(aend.x,aend.y),ae));
 
+	// <移除和替换已有的统帅输出
 	UnDerLead(tiLead,astart.x,astart.y);
 	DerLead(tiLead,aend.x,aend.y);
 
+	// <移除自身所得到的统帅加成
 	ae->m_pChara->ClearLead();
 
 	EChesses* ste;
 	CCLog(">[BF]Initing the chess lead values...");
 
+	// <获得新的统帅加成
 	for(map<pair<int,int>,EChesses*>::iterator sit = mMapC.begin(); sit != mMapC.end(); ++sit){
 		ste = sit->second;
 		tiLead = ste->m_pChara->getLead();
@@ -309,6 +313,7 @@ void BattleField::DepLead( int centx, int centy, int range, int val )
 	}
 }
 
+/* <注意函数有同名重载，扩散统帅属性。 */
 void BattleField::DerLead( int val,int cx, int cy ){
 	switch (val)
 	{
@@ -408,7 +413,7 @@ void BattleField::Judge(){
 	Chara* src = meSrc->m_pChara;
 	CCObject* tar_o = NULL;
 	Chara* tar = NULL;
-	int hurt;
+	int hurt = 0;
 	bool tbSingle;
 	int hit_rate_base = src->getFixValue("hit")*5 + src->getFixValue("luk");
 
@@ -428,69 +433,42 @@ void BattleField::Judge(){
 	if(mspVals){
 		tiDaType = mspVals->getint("type");
 	}
-
-	// <分支
-	switch(tiDaType)
-	{
-	case 0:	// <物理伤害计算
+	
+	if(meTar->count() > 0){
+		// <分支
+		switch(tiDaType)
 		{
-			CCARRAY_FOREACH(meTar,tar_o){
-				tar = ((EChesses*) tar_o)->m_pChara;
-				hurt = 0;
-				bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
-				if(tbSingle){
-					tiHitFlag |= 1;
-					CCLog(">[BF]Extra Hurt.");
-					hurt = src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
-					meSrc->miHitFlag |= 1;
-				}else{
-					meSrc->miHitFlag |= 0;
-					hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
-				}
-				/* <根据是否玩家控制势力将会弹出格挡判定 */
-				// ....
-				hurt -= tar->getFixValue("def");
-				CCLog(">[BF]Physical Damage:%d",hurt);
-			}
-
-			((EChesses*) tar_o)->miDamage = hurt;
-			break;
-		}
-	case 1:
-		{
-			CCARRAY_FOREACH(meTar,tar_o){
-				tar = ((EChesses*) tar_o)->m_pChara;
-				hurt = hurt + mspVals->getint("damage") + src->getvalue("mag"); 
-				int a;
-				EChesses d;
-				bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
-				if(tbSingle){
-					tiHitFlag |= 1;
-					CCLog(">[BF]Extra Hurt.");
-					hurt *= 1.3;
-					meSrc->miHitFlag |= 1;
-				}else{
-					meSrc->miHitFlag |= 0;
+		case 0:	// <物理伤害计算
+			{
+				CCARRAY_FOREACH(meTar,tar_o){
+					tar = ((EChesses*) tar_o)->m_pChara;
+					hurt = 0;
+					bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
+					if(tbSingle){
+						tiHitFlag |= 1;
+						CCLog(">[BF]Extra Hurt.");
+						hurt = src->getFixValue("atk") * 2.5 + src->getFixValue("a_atk");
+						meSrc->miHitFlag |= 1;
+					}else{
+						meSrc->miHitFlag |= 0;
+						hurt = src->getFixValue("atk") + src->getFixValue("a_atk");				// hurt = mspVals->getint("damage") + src->getvalue("mag") - tar->getvalue("rst");
+					}
+					/* <根据是否玩家控制势力将会弹出格挡判定 */
+					// ....
+					hurt -= tar->getFixValue("def");
+					CCLog(">[BF]Physical Damage:%d",hurt);
 				}
 
-				hurt -= tar->getFixValue("rst");
 				((EChesses*) tar_o)->miDamage = hurt;
+				break;
 			}
-			break;
-		}
-	case 2:
-		{
-			map<pair<int,int>,EChesses*> fl_list;	// <扩散缓存
-
-			int flam = mspVals->getint("flam");	// <衰减半径
-			int radiu = mspVals->getint("radiu"); // <扩散半径
-			float fdec = mspVals->getfloat("dec"); // <衰减参数
-
-			CCARRAY_FOREACH(meTar,tar_o){
-				hurt = 0;
-				if(DisTPoints(meSrc->pos,((EChesses*) tar_o)->pos) < flam){
+		case 1:
+			{
+				CCARRAY_FOREACH(meTar,tar_o){
+					tar = ((EChesses*) tar_o)->m_pChara;
 					hurt = hurt + mspVals->getint("damage") + src->getvalue("mag"); 
-
+					//int a;
+					EChesses d;
 					bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
 					if(tbSingle){
 						tiHitFlag |= 1;
@@ -500,56 +478,86 @@ void BattleField::Judge(){
 					}else{
 						meSrc->miHitFlag |= 0;
 					}
+
+					hurt -= tar->getFixValue("rst");
 					((EChesses*) tar_o)->miDamage = hurt;
+				}
+				break;
+			}
+		case 2:
+			{
+				map<pair<int,int>,EChesses*> fl_list;	// <扩散缓存
 
-					int mx = ((EChesses*) tar_o)->pos.x;
-					int my = ((EChesses*) tar_o)->pos.y;
+				int flam = mspVals->getint("flam");	// <衰减半径
+				int radiu = mspVals->getint("radiu"); // <扩散半径
+				float fdec = mspVals->getfloat("dec"); // <衰减参数
 
-					int dx = mx - meSrc->pos.x;
-					int dy = my - meSrc->pos.y;
+				CCARRAY_FOREACH(meTar,tar_o){
+					hurt = 0;
+					if(DisTPoints(meSrc->pos,((EChesses*) tar_o)->pos) < flam){
+						hurt = hurt + mspVals->getint("damage") + src->getvalue("mag"); 
 
-					if(dx){ // <横向扩展
-						dx = dx/abs(dx);
-						for(int i = 0; i< radiu;){
-							++i;
-							fl_list[make_pair(mx+dx*i,my)] = ((EChesses*) tar_o);		// <不检查直接替换
-							CCLog("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+						bool tbSingle = CalRate((EChesses*) tar_o,hit_rate_base);
+						if(tbSingle){
+							tiHitFlag |= 1;
+							CCLog(">[BF]Extra Hurt.");
+							hurt *= 1.3;
+							meSrc->miHitFlag |= 1;
+						}else{
+							meSrc->miHitFlag |= 0;
 						}
+						((EChesses*) tar_o)->miDamage = hurt;
+
+						int mx = ((EChesses*) tar_o)->pos.x;
+						int my = ((EChesses*) tar_o)->pos.y;
+
+						int dx = mx - meSrc->pos.x;
+						int dy = my - meSrc->pos.y;
+
+						if(dx){ // <横向扩展
+							dx = dx/abs(dx);
+							for(int i = 0; i< radiu;){
+								++i;
+								fl_list[make_pair(mx+dx*i,my)] = ((EChesses*) tar_o);		// <不检查直接替换
+								CCLog("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+							}
+						}
+
+						if(dy){ // <纵向扩展
+							dy = dy/abs(dy);
+							for(int i = 0; i< radiu;){
+								++i;
+								fl_list[make_pair(mx,my+dy*i)] = ((EChesses*) tar_o);		// <不检查直接替换
+								CCLog("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+							}
+						}
+
+					}else{
+						((EChesses*) tar_o)->miDamage = -1;
+					}
+				}
+
+				CCARRAY_FOREACH(meTar,tar_o){ // <对衰减范围外的进行重新演算
+					if(((EChesses*) tar_o)->miDamage == -1){
+						EChesses* teS = fl_list[make_pair(((EChesses*) tar_o)->pos.x,((EChesses*) tar_o)->pos.y)];
+						int ds = DisTPoints(teS->pos,((EChesses*) tar_o)->pos);
+						((EChesses*) tar_o)->miDamage = teS->miDamage * (1-ds*fdec);
+						((EChesses*) tar_o)->miAvgFlag = teS->miAvgFlag;
+						CCLog(">[BF]FDec...");
 					}
 
-					if(dy){ // <纵向扩展
-						dy = dy/abs(dy);
-						for(int i = 0; i< radiu;){
-							++i;
-							fl_list[make_pair(mx,my+dy*i)] = ((EChesses*) tar_o);		// <不检查直接替换
-							CCLog("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-						}
-					}
-
-				}else{
-					((EChesses*) tar_o)->miDamage = -1;
+					((EChesses*) tar_o)->miDamage -= ((EChesses*) tar_o)->m_pChara->getFixValue("rst");
+					CCLog(">[BF]Mageck Damage with rst:%d",((EChesses*) tar_o)->miDamage);
 				}
-			}
 
-			CCARRAY_FOREACH(meTar,tar_o){ // <对衰减范围外的进行重新演算
-				if(((EChesses*) tar_o)->miDamage == -1){
-					EChesses* teS = fl_list[make_pair(((EChesses*) tar_o)->pos.x,((EChesses*) tar_o)->pos.y)];
-					int ds = DisTPoints(teS->pos,((EChesses*) tar_o)->pos);
-					((EChesses*) tar_o)->miDamage = teS->miDamage * (1-ds*fdec);
-					((EChesses*) tar_o)->miAvgFlag = teS->miAvgFlag;
-					CCLog(">[BF]FDec...");
-				}
-				
-				((EChesses*) tar_o)->miDamage -= ((EChesses*) tar_o)->m_pChara->getFixValue("rst");
-				CCLog(">[BF]Mageck Damage with rst:%d",((EChesses*) tar_o)->miDamage);
+				break;
 			}
-
+		default:
+			CCLog(">[BF]Judge Err:Error Type Provided:%d. Hurt will be 0.",tiDaType);
 			break;
 		}
-	default:
-		CCLog(">[BF]Judge Err:Error Type Provided:%d. Hurt will be 0.",tiDaType);
-		break;
 	}
+
 
 	
 	if(tiHitFlag != 0){
@@ -877,6 +885,7 @@ int DisTPoints(CCPoint src,CCPoint dst){
 	CCLOG(">[BF]CDisTPoints:%d",abs(src.x - dst.x) + abs(src.y - dst.y));
 	return (abs(src.x - dst.x) + abs(src.y - dst.y));
 }
+
 // < 概率计算函数：命中和会心
 bool BattleField::CalRate(EChesses* tar_o,int hit_rate_base)
 {
@@ -903,4 +912,11 @@ bool BattleField::CalRate(EChesses* tar_o,int hit_rate_base)
 		return (CCRANDOM_0_1()<hit_rate);
 	} while (0);
 	return false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// <是否存在单位
+bool BattleField::HasChess( int ax, int ay )
+{
+	return mMapC.count(make_pair(ax,ay)) > 0;
 }

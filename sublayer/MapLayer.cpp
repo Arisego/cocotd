@@ -24,6 +24,10 @@ MapLayer::~MapLayer(){
 	delete BFsp;
 	removeAllChildren();
 	
+	if(m_SkillList) {
+		//m_SkillList->removeFromParent();
+		CC_SAFE_RELEASE_NULL(m_SkillList);							// <防止右键层级中可能出现的bug
+	}
 
 	CC_SAFE_RELEASE_NULL(bm);
 	CC_SAFE_RELEASE_NULL(wm);
@@ -344,7 +348,7 @@ void MapLayer::show_menu()
 		return;
 	}
 
-
+	if(!bm->m_touch) return;
 	if(!t_bm){
 		t_bm = new BattleMenu();			//TODO:Decide what to show by bit lock.
 		CCLog(">LKDJFLKJ----- New Menu.....");
@@ -354,6 +358,7 @@ void MapLayer::show_menu()
 	BattleField::sharedBattleField()->SetSrc((EChesses*) bm->m_controller);				// <尝试移动到控制交接的函数里
 
 	t_bm->setAnchorPoint(CCPointZero);
+	
 	float nx = bm->m_touch->getLocation().x+30;
 	if(nx>450) nx -= 170;
 	t_bm->setPosition(nx,200);
@@ -432,15 +437,17 @@ void MapLayer::ItemBack( CCObject* pSender )
 	// <置换标志位
 	bm->b_battle = 3;
 	// <获得usecase参数
-	m_iSUseCase = stoi(m_SkillList->getval("usecase",m_iItem));		//No use; Test Only. Read out range and effect_dis from database "additional". They should be stored in pair of int value.
+	m_iSUseCase = stoi(m_SkillList->getval("usecase",m_iItem));		
 	bm->miRangeType = m_iSUseCase;
+	// <技能链接作用设置 09-27
+	bm->setLink(stoi(m_SkillList->getval("link",m_iItem)));
 	//////////////////////////////////////////////////////////////////////////
 	// <获取范围参数
 
 	CCLog("[ML]Read Skill Range");
 	stringstream ss;
 	ss<<m_SkillList->getval("additional",m_iItem);
-	int k,j;
+	int k;//,j;
 	vector<int> ars;
 
 	///////////
@@ -454,7 +461,15 @@ void MapLayer::ItemBack( CCObject* pSender )
 			bm->draw_skill_range(1,ars);
 			break;
 		}
-
+	case 2:
+		{
+			ss>>k;
+			ars.push_back(k);
+			ss>>k;
+			ars.push_back(k);
+			bm->draw_skill_range(2,ars);
+			break;
+		}
 	default:
 		break;
 	}
@@ -480,6 +495,11 @@ void MapLayer::ItemBack( CCObject* pSender )
 			bm->set_mouse_range(2,ars);
 			break;
 		}
+	case 3:	// <区间包含的矩形
+		{
+			bm->set_mouse_range(3,ars);
+			break;
+		}
 	default:
 		break;
 	}
@@ -496,7 +516,10 @@ void MapLayer::menu_back( CCObject* pSender )
 	
 	bm->miRangeType = 0;
 	BattleField::sharedBattleField()->setBattle(false);
-	CC_SAFE_RELEASE_NULL(m_SkillList);							// <防止右键层级中可能出现的bug
+	if(m_SkillList) {
+		m_SkillList->removeFromParent();
+		CC_SAFE_RELEASE_NULL(m_SkillList);							// <防止右键层级中可能出现的bug
+	}
 
 	switch(m_iFuncType){
 	case(1):
@@ -579,7 +602,7 @@ void MapLayer::menu_back( CCObject* pSender )
 
 			stringstream ss;
 			ss<<t_ssm.at("additional");
-			int k,j;
+			int k;//,j;
 			vector<int> ars;
 						CCLog("Ready for dest.");
 
@@ -639,7 +662,8 @@ void MapLayer::click_act()
 		{
 			//[IN]ts_last;
 			//[IN]m_iSUseCase;
-			if(bm->arange_targetwithtest(m_iSUseCase)){
+			
+			if(bm->testLink()){
 				CCLOG(">Prepare for EC-SkillUsing.");
 				bm->clean_cs();
 				EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？

@@ -153,10 +153,14 @@ namespace SCMLHelper
 		void Restart();
 		CCSpriterX *animato;
 		std::string mName;
+
+		void setDec(float afBegin = 0.0, float afEnd = -1);			// <设置动画的播放开始和结束
 	private:
 		int mId;
 		
-		float mLength;
+		float mfBegin,mfEnd;	// <动画的开始和程度限定
+
+		float mLength;			// <动画的总长度
 		bool mLooping;
 		bool mDone;
 
@@ -186,7 +190,7 @@ namespace SCMLHelper
 		void AddAnimation(Animation *animation);
 
 		void NextAnimation();
-		void PlayTarget(const char *name);
+		void PlayTarget(const char *name, float afBegin = 0.0, float afEnd = -1);
 
 
 	private:
@@ -219,8 +223,8 @@ public:
 
 	cocos2d::CCSprite *getSprite(int folderId, int fileId);	//TODO:tricks aruond here
 
-	void PlayNext();		//OVER:使用name来调用动画
-	void PlayAnim(const char* name, int aiTimes = -1,const char* alast = "");
+	void PlayNext();		// <OVER:使用name来调用动画
+	void PlayAnim(const char* name, int aiTimes = -1,const char* alast = "", float afBegin = 0.0, float afEnd = -1.0);
 	void PlayLast();
 	
 	string msLast;

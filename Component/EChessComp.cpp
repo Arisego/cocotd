@@ -74,6 +74,7 @@ void EChessComp::GoAHead()
 		CCLog(">[ECC]over:%d,%d",miScriptSum,miScriptCount);	 	
 		CCLOG(">[ECC]over,owner position:%f,%f",((EChesses*) m_pOwner)->pos.x,((EChesses*) m_pOwner)->pos.y);
 		CC_SAFE_RELEASE_NULL(mSp);
+		((EChesses*) m_pOwner)->miHitGroup = 0;			// <将播放组置为0，发生变更时修改这里。
 		((MapLayerComp*) GameManager::sharedLogicCenter()->ml->getComponent("controller"))->ActRelease();
 		
 	}else{
@@ -111,6 +112,17 @@ void EChessComp::DerScript( Script* asp )
 	{
 		CCLog("handle scripte:%d/%d",i,tiSum);
 		Script* tmp = (Script*) acts->objectAtIndex(i);//use tag to define node's having state
+
+		// <检查是否是改播放组的动画，如果组别不同则跳过该播放。
+		if(((EChesses*) m_pOwner)->miHitGroup != tmp->getint("group")) {
+			if(tmp->type == sChange && tmp->getint("type") == 0){
+				ELock();
+				m_pOwner->runAction(CCSequence::create(CCDelayTime::create(tmp->getfloat("delay")),FRELEASE,NULL));
+				CCLog("delay:%f",tmp->getfloat("delay"));
+			}
+			continue;
+		}	
+
 		switch(tmp->type)
 		{
 		case sShowText:
@@ -124,14 +136,14 @@ void EChessComp::DerScript( Script* asp )
 				CCLog("Change Type int:%i",tiType);
 				switch (tiType)
 				{
-				case 0:			// type = 0 | Delay float
+				case 0:			// type = 0 | <延迟，每组里面一个就够了。
 					{
 						ELock();
 						m_pOwner->runAction(CCSequence::create(CCDelayTime::create(tmp->getfloat("delay")),FRELEASE,NULL));
 						CCLog("delay:%f",tmp->getfloat("delay"));
 						break;
 					}
-				case 1:			// type = 1 | <进行攻击判定.
+				case 1:			// type = 1 | <进行攻击判定并播放攻击动画。 || 普通攻击用
 					{
 						BattleField::sharedBattleField()->Judge();
 
@@ -142,9 +154,15 @@ void EChessComp::DerScript( Script* asp )
 						{
 							((Entiles*) m_pOwner)->playAnimate("gongji",tmp->getint("repeat"));
 						}
+						break;					
+					}
+				case -1:		// type = -1 | <进行判定，不播放动画。 || 技能用
+					{
+						BattleField::sharedBattleField()->Judge();
+						((Entiles*) m_pOwner)->setState(3);
 						break;
 					}
-				case 2:			// type = 2.. <被攻击
+				case 2:			// type = 2.. <被攻击 || 在攻击方发起判定后的时间点才能正常执行 || 格挡的判定将在这里发起
 					{
 						((Entiles*) m_pOwner)->setState(3);
 						/* <目前无格挡 */
@@ -165,22 +183,41 @@ void EChessComp::DerScript( Script* asp )
 						BattleField::sharedBattleField()->RefreshStats();
 						break;
 					}
-				case 5:			// type = 5 | <播放指定的动画-Skill.
+				case 5:			// type = 5 | <播放指定的动画-Skill.  || 注意传入的 begin 和 end是针对特殊的技能的。
 					{
-						BattleField::sharedBattleField()->Judge();
+						//BattleField::sharedBattleField()->Judge();
 
-						((Entiles*) m_pOwner)->setState(3);
-	
-						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("name"),tmp->getint("repeat"));
+						float tb = tmp->getfloat("begin");
+						float te = tmp->getfloat("end");
+						if(te == 0) te = -1;
+
+						((Entiles*) m_pOwner)->setState(3);	
+						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("name"),tmp->getint("repeat"), tb, te);
 					
 						break;
 					}
-				case 6:	// type = 6 | <数值修正
+				case 6:	// type = 6 | <数值修正，用于非Hp的数值变化
 					{
 						Chara* tow = ((EChesses*) m_pOwner)->m_pChara;
 						string tname =  tmp->getstring("name");
 						tow->setvalue(tname,tow->getvalue(tname)+tmp->getint("value"));
 						BattleField::sharedBattleField()->RefreshStats();
+						break;
+					}
+				case 7:	// type = 7 | <跳转位置，用于技能中单位瞬间移动的情况 || 当前单位跳转 || 用于技能的目标跳转
+					{
+						// <注意可以利用的元素，通常情况下技能在被传入脚本前都会对单位执行changeFace();
+						int dx = tmp->getint("dx");
+						int dy = tmp->getint("dy");
+						if(dx == 0 && dy == 0){  // <没有提供跳转目标的情况下将会跳转到 m_con_cur || 跳转到鼠标点击的格子上
+							GameManager::sharedGameManager()->sharedLogicCenter()->ml->bm->moveChessConcru((EChesses*) getOwner());
+						}
+						break;
+					}
+				case 8:	// type = 8 | <调整单位的朝向 | 一般由被攻击单位发起
+					{
+						 //GameManager::sharedGameManager()->sharedLogicCenter()->ml->bm->ChangeFaceConcur((EChesses*) m_pOwner);	// <攻击发起单位转向本单位
+						GameManager::sharedGameManager()->sharedLogicCenter()->ml->bm->ChangeAllFace();		// <如果需要单独的再根据参数细分，暂时全部调整
 						break;
 					}
 				default:
@@ -214,7 +251,7 @@ bool EChessComp::TestRange( CCPoint target )
 {
 	CCLog("[ECC]TestRange with pos:%d,%f",target.x,target.y);
 	vector<int> ars;
-	ars.push_back(3);
+	ars.push_back(9);			// <测试模式！！！反击目前还没有做。
 
 	//GameManager::sharedLogicCenter()->ml->bm->m_controller = (EChesses*) m_pOwner;
 	//GameManager::sharedLogicCenter()->ml->bm->set_mouse_range(1,ars);	// <Get&Set Range Paras	

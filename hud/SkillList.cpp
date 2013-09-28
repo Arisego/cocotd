@@ -143,15 +143,15 @@ bool SkillList::setChara( Chara* ac )
 	if(m_pChara->m_viSkills.size() == 0) return false;
 	
 	
-	CCDictionary* m_cid = new CCDictionary();
+	//CCDictionary* m_cid = new CCDictionary();
 	string t_sMask;
 	for(map<int,int>::iterator it = m_pChara->m_viSkills.begin(); it != m_pChara->m_viSkills.end(); ++it)
 	{
 		int t_id = it->second;
 		t_sMask +=  CCString::createWithFormat("%d,",t_id)->getCString();
-		ItemCellData* t_icd	=	new ItemCellData(t_id,0,0);
-		m_cid->setObject(t_icd,t_id);
-		t_icd->autorelease();
+		//ItemCellData* t_icd	=	new ItemCellData(t_id,0,0);
+		//m_cid->setObject(t_icd,t_id);
+		//t_icd->autorelease();
 	}
 	t_sMask.erase(t_sMask.length()-1);
 	CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());

@@ -60,13 +60,19 @@ public:
 	void draw_moving_block();				//generate block and disable tiles.
 	void draw_skill_range(int a_type, vector<int> a_ran);				//draw the range of skill and item use;[IN] a_type && paralist int
 	void set_mouse_range(int a_type, vector<int> a_ran);				// <设置鼠标的实时绘制图形 0 - 点 1 - 正方形
-	void draw_mouse_range(CCPoint a_cp);
+	void draw_mouse_range(CCPoint a_cp);								// <进行鼠标实时绘制的点的集合的生成
 
+private:
 	void dps_ring(CCPoint a_cp, set<pair<int,int>> &a_dt, int a_max);			// Generate a set for ring. 十字架
 	void dps_rect(CCPoint a_cp, set<pair<int,int>> &a_dt, int a_max);			//正方形
 	void dps_range(CCPoint a_cp , set<pair<int,int>> &a_dt, int a_max);	
 
+	void dps_szd(CCPoint a_cp, set<pair<int,int>> &a_dt, int a_min , int a_max);		// <生成图形：十字架段
+	void dps_rectangle(CCPoint a_cp, set<pair<int,int>> &a_dt, CCPoint a1, CCPoint a2);  // <生成图形： 从a1到a2的矩形
+
 	void imply_set(set<pair<int,int>> a_dt, unsigned int d_c,bool ab_clean = false);		//Draw the specify set with specify color.
+
+public:
 	CCPoint m_mou_cur;			//Current mouse point.
 	bool move_control();		//trying to move the controller.
 	void clean_cs();			// clean states;
@@ -93,6 +99,17 @@ public:
 	int center_i,center_j;
 
 	bool ArrangePoint(CCPoint a);
+	//////////////////////////////////////////////////////////////////////////
+	// <技能是否满足点击发动的条件
+private:
+	int miLink;		// <技能生效类型
+	bool mbLink;	// <技能生效的标志位
+	void calLink(CCPoint a_cp/* <当前鼠标所在的点*/);	// <进行技能生效演算
+public:
+	void setLink(int aiLink);	// <设置生效类型
+	bool testLink();	// <对生效标志位进行判定
+
+
 protected:
 	CCPoint m_con_cur;			//Current controller point; inner use only.
 
@@ -120,7 +137,14 @@ public:
 	bool f_Arange(int a_type,CCObject* atar);
 	void find_target_arrage(int atype);				// <寻找范围内的单位的实际执行体
 	//////////////////////////////////////////////////////////////////////////
-	// <战场控制
+	// <技能中单位的移动和操作
+	void moveChess(EChesses* at, CCPoint ta, bool isRelate = true);		// <移动指定的单位
+	void moveChessConcru(EChesses* at);				// <移动指定的单位到当前鼠标的位置
+
+	void ChangeFace(EChesses* asrc, EChesses* atar);	// <改变单位的朝向 | 前面的朝向后面的
+	void ChangeFaceConcur(EChesses* atar);					// <使得m_controller朝向指定的单位
+
+	void ChangeAllFace();
 
 };
 

@@ -502,7 +502,7 @@ namespace SCMLHelper
 	void Animation::Restart()
 	{
 		mDone = false;
-		mTimer = 0;
+		mTimer = mfBegin;
 		mCurrKeyframe = 0;
 
 	}
@@ -631,6 +631,12 @@ namespace SCMLHelper
 
 	}
 
+	void Animation::setDec( float afBegin /*= 0.0*/, float afEnd /*= -1*/ )
+	{
+		mfBegin = afBegin;
+		if(afEnd >= 0) mfEnd = mLength;
+	}
+
 	//void Animation::Render()		//TODO:某些函数已经没有用了，需要被移除
 	//{
 	//	//sheet->removeAllChildren();
@@ -694,10 +700,11 @@ namespace SCMLHelper
 
 	//}
 
-	void Entity::PlayTarget(const char *name)
+	void Entity::PlayTarget(const char *name, float afBegin /*= 0.0*/, float afEnd/* = -1*/)
 	{
 		mCurrAnimation = mAniNames[name];
 		Animation *animation = mAnimations[mCurrAnimation];
+		animation->setDec(afBegin,afEnd);
 		animation->Restart();
 	}
 
@@ -803,7 +810,7 @@ void CCSpriterX::update(float dt)
 //}
 
 
-void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
+void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, float afBegin, float afEnd){
 	if(strcmp(msCur.c_str(),name) == 0) {
 		////[SPX]CCLOG(">[SPX]Duplicate name.");
 		return;
@@ -811,7 +818,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast){
 	miPlayTimes = aiTimes - 1;
 	Entity *entity = mEntities[mCurrEntity];		//当前4a版只有单entity
 	msCur = name;
-	entity->PlayTarget(name);
+	entity->PlayTarget(name, afBegin, afEnd);
 	msLast = alast;
 	CCLOG(">[SPX]Play Animation:%s. %d times",name,aiTimes);
 	//[0803]CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());

@@ -356,6 +356,17 @@ void EChesses::load_chara_dbsp( Script* sp )
 	}
 }
 
+EChesses::EChesses(){	
+	m_pChara = NULL;
+	state = 0;
+	m_bMoving = false;
+	EChessComp* ecp = new EChessComp();
+	ecp->autorelease();
+	addComponent(ecp);
+	miHitGroup = 0;
+	//scheduleUpdate();	
+}
+
 EChesses::~EChesses()
 {
 	CC_SAFE_RELEASE_NULL(m_pChara);

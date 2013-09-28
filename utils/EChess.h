@@ -32,15 +32,7 @@ public:
 	}
 	
 	~EChesses();
-	EChesses(){
-		m_pChara = NULL;
-		state = 0;
-		m_bMoving = false;
-		EChessComp* ecp = new EChessComp();
-		ecp->autorelease();
-		addComponent(ecp);
-		//scheduleUpdate();
-	}
+	EChesses();
 
 	void lin();
 	b2AABB* f_search();

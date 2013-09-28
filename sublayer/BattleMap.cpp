@@ -491,6 +491,11 @@ void BattleMap::draw_skill_range(int a_type, vector<int> a_ran)
 			dps_rect(t_ce->pos, cs_y, radiu);
 			break;
 		}
+	case(2):
+		{
+			dps_szd(t_ce->pos, cs_y,a_ran[0],a_ran[1]);
+			break;
+		}
 	}
 
 	imply_set(cs_y,c_y);			//Imply.
@@ -551,20 +556,45 @@ void BattleMap::draw_moving_block()
 	cs_block.erase(make_pair(m_con_cur.x,m_con_cur.y));
 }
 
-void BattleMap::dps_ring( CCPoint a_cp , set<pair<int,int>> &a_dt, int a_max)
-{	
+void BattleMap::dps_rectangle(CCPoint a_cp, set<pair<int,int>> &a_dt, CCPoint a1, CCPoint a2){
+	int low_x = min(a1.x,a2.x);
+	int low_y = min(a1.y,a2.y);
+
+	int h = abs(a1.y-a2.y);
+	int w = abs(a1.x-a2.x);
+
+	h = max(1,h);
+	w = max(1,w);
+
+	//low_x;
+	//low_y;
+
+	for(int i = 0; i<h;++i){
+		for(int j= 0;j<w;++j){
+			a_dt.insert(make_pair(low_x+j,low_y+i));
+		}
+	}
+	a_dt.erase(make_pair(a_cp.x,a_cp.y));
+}
+
+void BattleMap::dps_szd(CCPoint a_cp, set<pair<int,int>> &a_dt, int a_min , int a_max){
 	int t_x = a_cp.x;
 	int t_y = a_cp.y;
 	a_dt.insert(make_pair(t_x,t_y));
 
 	//no one can block ring, we just add them into set.
 
-	for(int i = 0; i<a_max; ++i){
+	for(int i = a_min; i<a_max; ++i){
 		a_dt.insert(make_pair(t_x+i,t_y));
 		a_dt.insert(make_pair(t_x-i,t_y));
 		a_dt.insert(make_pair(t_x,t_y+i));
 		a_dt.insert(make_pair(t_x,t_y-i));
 	}
+}
+
+void BattleMap::dps_ring( CCPoint a_cp , set<pair<int,int>> &a_dt, int a_max)
+{	
+	dps_szd(a_cp,a_dt,0,a_max);
 	
 }
 
@@ -929,7 +959,10 @@ void BattleMap::set_mouse_range( int a_type, vector<int> a_ran )
 	m_mouse_arrs	=	a_ran;
 }
 
-void BattleMap::draw_mouse_range(CCPoint a_cp)
+/*
+	<a_cp -- 当前鼠标所在的点
+*/
+void BattleMap::draw_mouse_range(CCPoint a_cp/* <当前鼠标所在的点*/)
 {
 	
 	switch(m_mouse_type)
@@ -950,7 +983,7 @@ void BattleMap::draw_mouse_range(CCPoint a_cp)
 			}
 			break;
 		}
-	case(2):
+	case(2):		// <2 | 弹跳传递 
 		{
 			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0)
 			{
@@ -989,7 +1022,40 @@ void BattleMap::draw_mouse_range(CCPoint a_cp)
 			}
 			break;
 		}
+	case(3):	// < 3 | 两点之间的矩形区域 + 十字搜索1格 (狂嗜·突袭·追击)
+		{
+			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0){
+				dps_rect(a_cp, ts_last, 1);		// <如果有复用的情况就传入动态的参数
+				ts_last.erase(make_pair(a_cp.x,a_cp.y));
+				find_target_arrage(1);			// <优先搜索敌方单位
+				if(m_caTarCharas->count() == 0){ // <搜索友方单位
+					find_target_arrage(0);
+				}
+				ts_last.clear();
+				if(m_caTarCharas->count()>0){
+					EChesses* te = (EChesses*) m_caTarget->lastObject();
+					ts_last.insert(make_pair(te->pos.x,te->pos.y));
+					cs_cy.insert(make_pair(te->pos.x,te->pos.y));
+					te->miHitGroup = 1;			// <攻击编组，不同的编组所播放的技能特效会不同。
+					CCLog(">[BM]Find the third place entile:%s",te->name.c_str());
+				}
+
+				CCPoint tcp = ((EChesses*) m_controller)->pos;
+				dps_rectangle(a_cp,ts_last,a_cp,tcp);
+				dps_rectangle(a_cp,cs_cy,a_cp,tcp);
+
+				//ts_last.insert(make_pair(a_cp.x,a_cp.y));
+				//cs_cy.insert(make_pair(a_cp.x,a_cp.y));
+			}
+
+			
+
+
+			break;
+		}
 	}
+
+	calLink(a_cp);
 }
 
 bool BattleMap::arange_targetwithtest( int a_type )
@@ -1030,31 +1096,45 @@ void BattleMap::find_target_arrage(int a_type)
 	m_caTarCharas = new CCArray();
 	m_caTarget = new CCArray();
 	int g_id = m_controller->group_id;
-	if(a_type>0){
-		CCDICT_FOREACH(m_itemlist,t_cde){
-			EChesses* t_cfie = (EChesses*) t_cde->getObject();
-			if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
 
-				if(! (t_cfie->group_mask & g_id)){
-					m_caTarget->addObject(t_cfie);
-					m_caTarCharas->addObject(t_cfie->m_pChara);
+	switch (a_type)
+	{
+	case 0:				// <标准索敌模式
+		{
+			CCDICT_FOREACH(m_itemlist,t_cde){
+				EChesses* t_cfie = (EChesses*) t_cde->getObject();
+				if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
+					if(t_cfie->group_mask & g_id){
+						m_caTarget->addObject(t_cfie);
+						m_caTarCharas->addObject(t_cfie->m_pChara);
+					}
 				}
-			}
 
+			}
+			break;
+		}
+	case 1:				// <只寻找友军单位
+		{
+			CCDICT_FOREACH(m_itemlist,t_cde){
+				EChesses* t_cfie = (EChesses*) t_cde->getObject();
+				if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
+
+					if(! (t_cfie->group_mask & g_id)){
+						m_caTarget->addObject(t_cfie);
+						m_caTarCharas->addObject(t_cfie->m_pChara);
+					}
+				}
+
+			}
+			break;
 		}
 
-	}else{
-		CCDICT_FOREACH(m_itemlist,t_cde){
-			EChesses* t_cfie = (EChesses*) t_cde->getObject();
-			if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
-				if(t_cfie->group_mask & g_id){
-					m_caTarget->addObject(t_cfie);
-					m_caTarCharas->addObject(t_cfie->m_pChara);
-				}
-			}
 
-		}
-	}		//TODO: a_type < 0 ;
+	default:
+		break;
+	}
+
+
 }
 
 // <检查范围内是否有指定的单位类型
@@ -1115,8 +1195,10 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 {
 	// m_caTarget	<被选中的目标单位
 	// ts_last		<被选中的所有点的集合
+	if(!m_caTarget) return;
+	
 	CCArray* t_caS = asp->m_caScript;
-	m_controller->ChangeFace(((EChesses*) m_caTarget->objectAtIndex(0))->pos);
+	
 	CCLog(">[BM]Tying to pass sp to owner unit....");
 	Script* tsc;
 	if(t_caS->count()<3){
@@ -1124,7 +1206,7 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	}else{
 		tsc = (Script*) t_caS->objectAtIndex(2);
 	}
-	
+	ChangeAllFace();
 	BattleField::sharedBattleField()->SetUp((EChesses*) m_controller,m_caTarget,tsc);
 	((EChessComp*) m_controller->getComponent("controller"))->RunScript((Script*) t_caS->objectAtIndex(0));
 	CCLog(">[BM]Passing owner is over...");
@@ -1221,3 +1303,84 @@ bool BattleMap::f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint 
 	return ts_range.count(make_pair(a.x,a.y)) > 0;
 }
 
+
+//////////////////////////////////////////////////////////////////////////
+// <技能 09-27
+void BattleMap::setLink(int aiLink)
+{
+	miLink = aiLink;
+	mbLink = true;		// <默认为真，不满足条件时会被置为假。
+}
+
+bool BattleMap::testLink()
+{
+	return mbLink;
+}
+
+/* <单位判定也被转移到了这个函数里面 */
+void BattleMap::calLink(CCPoint a_cp/* <当前鼠标所在的点*/)
+{
+	mbLink = arange_targetwithtest(miRangeType);
+	switch (miLink)
+	{
+	case 1:		// < miLink == 1 || 该点上不可以存在其他人物。无视是否有覆盖到单位。 [螺旋冲击？]
+		{
+			mbLink = !BattleField::sharedBattleField()->HasChess(a_cp.x,a_cp.y);
+			break;
+		}
+	default:
+		{
+			break;
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// <技能跳转执行类 || 由技能发起方主动跳转或者由被攻击单位拉取跳转。
+
+/* <移动指定的单位的位置 || 位移是相对的 */
+void BattleMap::moveChess(EChesses* at, CCPoint ta, bool isRelate)
+{
+	CCPoint tOrigCP = at->pos;
+	CCPoint tEndCP;
+
+	if(isRelate){
+		tEndCP = tOrigCP + ta;
+	}else{
+		tEndCP = ta;		
+	}
+
+	ta = m_getViewc(tEndCP);
+
+	b2Vec2 d = at->m_body->GetPosition();
+	at->m_body->SetTransform(b2Vec2((ta.x+dtx)/PTM_RATIO,(ta.y+dty)/PTM_RATIO),0);
+	BattleField::sharedBattleField()->ChessMoved(at, tOrigCP, tEndCP);
+	at->pos = tEndCP;
+}
+
+/* <以鼠标所点击的地方为落点 */
+void BattleMap::moveChessConcru( EChesses* at )
+{
+	moveChess(at,m_mou_cur,false);
+}
+
+void BattleMap::ChangeFace( EChesses* asrc, EChesses* atar )
+{
+	asrc->ChangeFace(atar->pos);
+}
+
+void BattleMap::ChangeFaceConcur( EChesses* atar )
+{
+	ChangeFace((EChesses*) m_controller,atar);
+}
+
+void BattleMap::ChangeAllFace()
+{
+	if(m_caTarget->count()>0) m_controller->ChangeFace(((EChesses*) m_caTarget->objectAtIndex(0))->pos);
+	else m_controller->ChangeFace(m_mou_cur);
+
+	for(int i = 0; i< m_caTarget->count(); ++i){
+		((EChesses*) m_caTarget->objectAtIndex(i))->ChangeFace(m_con_cur);
+
+	}
+}
