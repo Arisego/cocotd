@@ -85,7 +85,7 @@ public:
 
 	virtual void ChangeFace( const CCPoint ac );
 	void ShowDamage();
-
+	void AnimateNoLastO();
 };
 
 #endif

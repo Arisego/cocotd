@@ -128,10 +128,15 @@ void Entiles::setState( int ai )
 	state = ai;
 }
 
+void Entiles::AnimateNoLastO(){
+	m_animator->SetNoLast(false);
+}
+
 void Entiles::playAnimate( string name,int times, float afBegin /*= 0.0 */, float afEnd /*= -1.0*/)
 {
 	//[0803]CCLog(">[ET]The given direct:%d",direc);
-	m_animator->PlayAnim(CCString::createWithFormat("%s_%s",name.c_str(),sDirect[direc])->getCString(),times);
+	m_animator->PlayAnim(CCString::createWithFormat("%s_%s",name.c_str(),sDirect[direc])->getCString(),times, "", afBegin, afEnd);
+	m_animator->SetNoLast(true);
 }
 
 void Entiles::ChangeFace( const CCPoint ac ){

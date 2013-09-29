@@ -226,12 +226,14 @@ public:
 	void PlayNext();		// <OVER:使用name来调用动画
 	void PlayAnim(const char* name, int aiTimes = -1,const char* alast = "", float afBegin = 0.0, float afEnd = -1.0);
 	void PlayLast();
+	void SetNoLast(bool anl);
+	bool mbNoLast;
 	
 	string msLast;
 	string msCur;
 	int miPlayTimes;
-private:
 
+protected:	
 	std::vector <SCMLHelper::Folder *> mFolders;
 	std::vector <SCMLHelper::Entity *> mEntities;
 

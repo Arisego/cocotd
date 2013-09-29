@@ -513,15 +513,17 @@ namespace SCMLHelper
 
 		animato->removeAllChildren();
 		mTimer += dt;
-		if (mTimer >= mLength)
+		if (mTimer >= mfEnd)
 		{
 			mDone = true;
 			////[0803]CCLog(">[spx]miPlayTimes:%d",animato->miPlayTimes);
 			if(animato->miPlayTimes < 0){
 				Restart();
 			}else if(animato->miPlayTimes == 0){
-				animato->PlayLast();
-				return;
+				if(!animato->mbNoLast){
+					animato->PlayLast();
+					return;
+				}
 			}else{
 				--animato->miPlayTimes;
 				Restart();			// always looping for now
@@ -634,7 +636,8 @@ namespace SCMLHelper
 	void Animation::setDec( float afBegin /*= 0.0*/, float afEnd /*= -1*/ )
 	{
 		mfBegin = afBegin;
-		if(afEnd >= 0) mfEnd = mLength;
+		if(afEnd >= 0) mfEnd = afEnd;
+		else mfEnd = mLength;
 	}
 
 	//void Animation::Render()		//TODO:某些函数已经没有用了，需要被移除
@@ -820,6 +823,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, floa
 	msCur = name;
 	entity->PlayTarget(name, afBegin, afEnd);
 	msLast = alast;
+	mbNoLast = false;
 	CCLOG(">[SPX]Play Animation:%s. %d times",name,aiTimes);
 	//[0803]CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
@@ -946,8 +950,14 @@ void CCSpriterX::PlayLast()
 	}else{
 		msLast = "stand_left";
 		PlayLast();
+
 		//[SPX]CCLOG(">[SPX]:No Last.");
 	}
+}
+
+void CCSpriterX::SetNoLast( bool anl )
+{
+	mbNoLast = anl;
 }
 
 

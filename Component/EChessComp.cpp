@@ -154,6 +154,7 @@ void EChessComp::DerScript( Script* asp )
 						{
 							((Entiles*) m_pOwner)->playAnimate("gongji",tmp->getint("repeat"));
 						}
+						((Entiles*) m_pOwner)->AnimateNoLastO();
 						break;					
 					}
 				case -1:		// type = -1 | <进行判定，不播放动画。 || 技能用
@@ -194,6 +195,11 @@ void EChessComp::DerScript( Script* asp )
 						((Entiles*) m_pOwner)->setState(3);	
 						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("name"),tmp->getint("repeat"), tb, te);
 					
+						break;
+					}
+				case -5:	// type = -5 | <取消动画的连续播放状态 || 动画播放时为了防止闪烁会自动打开NoLast模式
+					{
+						((Entiles*) m_pOwner)->AnimateNoLastO();
 						break;
 					}
 				case 6:	// type = 6 | <数值修正，用于非Hp的数值变化
