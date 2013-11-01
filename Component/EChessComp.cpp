@@ -194,7 +194,6 @@ void EChessComp::DerScript( Script* asp )
 
 						((Entiles*) m_pOwner)->setState(3);	
 						((Entiles*) m_pOwner)->playAnimate(tmp->getstring("name"),tmp->getint("repeat"), tb, te);
-					
 						break;
 					}
 				case -5:	// type = -5 | <取消动画的连续播放状态 || 动画播放时为了防止闪烁会自动打开NoLast模式
@@ -224,6 +223,21 @@ void EChessComp::DerScript( Script* asp )
 					{
 						 //GameManager::sharedGameManager()->sharedLogicCenter()->ml->bm->ChangeFaceConcur((EChesses*) m_pOwner);	// <攻击发起单位转向本单位
 						GameManager::sharedGameManager()->sharedLogicCenter()->ml->bm->ChangeAllFace();		// <如果需要单独的再根据参数细分，暂时全部调整
+						break;
+					}
+				case 9: // type = 9 | <接续 | 具体功能待定~
+					{
+						//////////////////////////////////////////////////////////////////////////
+						// <生成可以接续的表
+						
+						//////////////////////////////////////////////////////////////////////////
+						// <判定和选择
+
+						//////////////////////////////////////////////////////////////////////////
+						// <接续指定的技能
+						GameManager::sharedGameManager()->sharedLogicCenter()->ml->SC_Popup();		// <注意区分是否成功
+						
+
 						break;
 					}
 				default:

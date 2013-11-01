@@ -13,6 +13,7 @@
 #include "sublayer/InfoTab.h"
 #include "utils/EffectControler.h"
 #include "packui/InterfaceEffect.h"
+#include "utils/COShaderNode.h"
 
 
 #define SELTAG 1010
@@ -316,6 +317,8 @@ void GameScene::onExit(){
 
 void GameScene::update(float dt)	//负责整个scene的初始化
 {
+	static float fsumt = 0;
+	fsumt += dt;
 	switch(m_StageState){
 	case(0):			// 0 --> stage未初始化
 		{
@@ -355,6 +358,16 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			// Get window size and place the label upper. 
 			CCSize size = CCDirector::sharedDirector()->getWinSize();
 
+			//FlameShader
+			COShaderNode *shadern = COShaderNode::shaderNodeWithVertex("Shaders/test.vsh", "Shaders/test.fsh");
+			//sn->initTexure("");
+
+			shadern->setPosition(ccp(size.width/2, size.height/2));
+			shadern->setSize(size.width,size.height);
+			SplashLayer->addChild(shadern);
+			shadern->autorelease();
+
+
 			//Sun
 			CCParticleSystem* sun = CCParticleSun::create();
 			sun->setTexture(CCTextureCache::sharedTextureCache()->addImage("Images/fire.png"));
@@ -364,6 +377,7 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 			sun->setLife(0.6f);
 			SplashLayer->addChild(sun);
 
+			//Label
 			pLabel->setPosition(ccp(size.width / 2, size.height - 50));
 
 			CCFiniteTimeAction* fate = CCSpawn::create(CCTintBy::create(0.1,-100,-100,-200),CCFadeOut::create(0.1),NULL);
@@ -410,7 +424,7 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 		}
 	case(1):			// 1 --> stage初始化中
 		{
-			if(initover) m_StageState = 2;
+			if(initover && fsumt>2.0) m_StageState = 2;
 			else CCLOG("Init being called.Render the splash.");
 			break;
 		}

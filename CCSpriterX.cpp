@@ -516,7 +516,8 @@ namespace SCMLHelper
 		if (mTimer >= mfEnd)
 		{
 			mDone = true;
-			////[0803]CCLog(">[spx]miPlayTimes:%d",animato->miPlayTimes);
+			////[0803]
+			CCLog(">[spx]miPlayTimes:%s||>%s,%d",animato->msCur.c_str(),animato->msLast.c_str(),animato->miPlayTimes);
 			if(animato->miPlayTimes < 0){
 				Restart();
 			}else if(animato->miPlayTimes == 0){
@@ -825,7 +826,8 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, floa
 	msLast = alast;
 	mbNoLast = false;
 	CCLOG(">[SPX]Play Animation:%s. %d times",name,aiTimes);
-	//[0803]CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
+	//[0803]
+	CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
 }
 
@@ -943,7 +945,8 @@ bool CCSpriterX::initWithFile(const char *filename)
 
 void CCSpriterX::PlayLast()
 {
-	//[0803]CCLog(">[SPX]Play Last.");
+	//[0803]
+	CCLog(">[SPX]Play Last.Las:%s,Cur:%s",msLast.c_str(),msCur.c_str());
 	msCur.clear();
 	if(msLast.length()>0){
 		PlayAnim(msLast.c_str());
@@ -951,7 +954,8 @@ void CCSpriterX::PlayLast()
 		msLast = "stand_left";
 		PlayLast();
 
-		//[SPX]CCLOG(">[SPX]:No Last.");
+		//[SPX]
+		CCLOG(">[SPX]:No Last.");
 	}
 }
 

@@ -1139,6 +1139,7 @@ bool MapLayer::show_skill_list()
 		return true;
 	}else
 	{
+		// < [11-01][Notice] | 这个地方貌似不会被用到
 		m_SkillList->setVisible(false);
 		CC_SAFE_RELEASE_NULL(m_SkillList);
 		return false;
@@ -1221,4 +1222,20 @@ void MapLayer::Dissmiss_Arrows()
 	if(m_bottomArrow) m_bottomArrow->removeFromParent();
 	m_bottomArrow = NULL;
 	m_upArrow = NULL;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//
+
+bool MapLayer::SC_Popup()
+{
+	tm->pauseSchedulerAndActions();
+	bool ret = false;
+	do 
+	{
+		ret = show_skill_list();
+	} while (false);
+	if(!ret) 
+		tm->resumeSchedulerAndActions();		// <恢复所有的活动。
+	return ret;
 }
