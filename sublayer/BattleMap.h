@@ -24,7 +24,7 @@ public:
 
 	CCPoint m_touchpoint;
 	CCTouch* m_touch;
-	int b_battle;			//battlemap用state标记 || 1 - 等待弹出菜单 2 - 菜单弹出，拒绝事件 3 - 等待地图对象选择并返回给draw_func();
+	int b_battle;			//battlemap用state标记 || 1 - 等待弹出菜单 2 - 菜单弹出，拒绝事件 3 - 等待地图对象选择并返回给draw_func(); || 4 || 5 || 6 技能接续
 	int m_mi,m_mj;
 	set<pair<int,int>> cs_y,cs_b,cs_r,cs_block,cs_dis,cs_hit_block;			//记录二维数组的集合 cs_block - ZOC区域 cs_dis - 无法站立的区域 cs_hit_block - 在移动范围内的zoc
 	set<pair<int,int>> cs_cy;	// <cs_cy - 额外的显示黄色的区域
@@ -146,6 +146,8 @@ public:
 
 	void ChangeAllFace();
 
+	void PauseAllActs();		// <停止所有需要停止的子节点
+	void ResumeAllActs();		// <恢复
 };
 
 #endif

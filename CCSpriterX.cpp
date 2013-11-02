@@ -937,6 +937,7 @@ bool CCSpriterX::initWithFile(const char *filename)
 
 	CC_SAFE_DELETE_ARRAY(buffer);
 
+	mbPaused = false;
 	this->scheduleUpdate();
 
 	return true;
@@ -962,6 +963,18 @@ void CCSpriterX::PlayLast()
 void CCSpriterX::SetNoLast( bool anl )
 {
 	mbNoLast = anl;
+}
+
+void CCSpriterX::PauseMe()
+{
+	mbPaused = true;
+	unscheduleUpdate();
+}
+
+void CCSpriterX::ResuMe()
+{
+	mbPaused = false;
+	scheduleUpdate();
 }
 
 

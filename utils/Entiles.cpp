@@ -164,3 +164,13 @@ void Entiles::ShowDamage()
 
 }
 
+void Entiles::PauseMe()
+{
+	m_animator->PauseMe();
+}
+
+void Entiles::ResuMe()
+{
+	m_animator->ResuMe();
+}
+

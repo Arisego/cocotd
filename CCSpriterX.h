@@ -232,8 +232,12 @@ public:
 	string msLast;
 	string msCur;
 	int miPlayTimes;
+	void PauseMe();
+	void ResuMe();
 
 protected:	
+	bool mbPaused;
+
 	std::vector <SCMLHelper::Folder *> mFolders;
 	std::vector <SCMLHelper::Entity *> mEntities;
 

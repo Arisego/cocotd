@@ -86,6 +86,11 @@ public:
 	virtual void ChangeFace( const CCPoint ac );
 	void ShowDamage();
 	void AnimateNoLastO();
+
+	//////////////////////////////////////////////////////////////////////////
+	// <暂停 | 线路上的动画暂停，留言可能引起的空指针调用 = = [1102]
+	void PauseMe();
+	void ResuMe();
 };
 
 #endif

@@ -1384,3 +1384,23 @@ void BattleMap::ChangeAllFace()
 
 	}
 }
+
+void BattleMap::PauseAllActs()
+{
+	CCDictElement* cde;
+	CCDICT_FOREACH(m_itemlist,cde){
+		EChesses* t_ec = (EChesses*) cde->getObject();
+		t_ec->pauseSchedulerAndActions();
+		t_ec->PauseMe();
+	}
+}
+
+void BattleMap::ResumeAllActs()
+{
+	CCDictElement* cde;
+	CCDICT_FOREACH(m_itemlist,cde){
+		EChesses* t_ec = (EChesses*) cde->getObject();
+		t_ec->resumeSchedulerAndActions();
+		t_ec->ResuMe();
+	}
+}

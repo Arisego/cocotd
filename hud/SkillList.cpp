@@ -135,7 +135,7 @@ bool SkillList::setChara( Chara* ac )
 	}
 
 	if(!ac) return false;
-	if(m_pChara == ac) return true;
+	if(m_pChara == ac) ;//return true;
 
 	m_pChara = ac;
 

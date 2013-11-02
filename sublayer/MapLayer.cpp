@@ -973,10 +973,16 @@ void MapLayer::right_click()
 					}else{
 						t_bm->setVisible(true);
 					}
-					if(m_rsb) m_rsb->setVisible(false);
+					if(m_rsb) 
+						m_rsb->setVisible(false);
 					bm->clean_cs();
 					bm->b_battle = 2;
 					Dissmiss_Arrows();
+					break;
+				}
+			case(4):						// <弹出技能列表进行接续
+				{
+					CCLog(">[ML] Over and continue.");
 					break;
 				}
 			}
@@ -1229,13 +1235,26 @@ void MapLayer::Dissmiss_Arrows()
 
 bool MapLayer::SC_Popup()
 {
-	tm->pauseSchedulerAndActions();
+	bm->PauseAllActs();
+	bm->cancontrol = true;
+	bm->b_battle = 6;
+	//m_pActionManager->pauseTarget(this);
+	//f_pauseall();		// < 不可用，需要调用每个entile的暂停 = = 可能受到了节点关系的影响，重载一下函数吧
+	
 	bool ret = false;
 	do 
 	{
 		ret = show_skill_list();
 	} while (false);
-	if(!ret) 
-		tm->resumeSchedulerAndActions();		// <恢复所有的活动。
+	if(!ret) {		
+		//f_resumeall();		// <恢复所有的活动。
+		//m_pScheduler->resumeTarget(this);
+		//m_pActionManager->resumeTarget(this);
+		bm->cancontrol = false;
+		bm->ResumeAllActs();
+	}
+		
 	return ret;
 }
+
+
