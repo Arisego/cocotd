@@ -103,6 +103,7 @@ private:
 	static BattleField *mSharedBattleField;
 	bool mbIsOver;
 	//int miEnemy;
+	void setMeTar(CCArray* atar); // <meTar的封装接口
 };
 
 #endif

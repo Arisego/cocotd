@@ -43,7 +43,7 @@ bool BattleField::init()
 	{
 		mspVals = NULL;
 		meSrc = NULL;
-		meTar = NULL;
+		meTar = new CCArray();
 		Clean();
 		mSpLinker = new Scriptor();
 
@@ -58,7 +58,7 @@ void BattleField::Clean()
 
 	mspVals = NULL;
 	meSrc = NULL;
-	meTar = NULL;
+	meTar->removeAllObjects();
 
 	//mMapC.clear();
 
@@ -73,7 +73,7 @@ void BattleField::Clean()
 
 void BattleField::CheckOver()
 {
-	if(!meTar) return;
+	if(meTar->count()==0) return;
 	do 
 	{
 		//CC_BREAK_IF(meTar->count() == 0);
@@ -93,7 +93,7 @@ void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 {
 	Clean();
 	meSrc = aSrc;
-	meTar = aTar;
+	setMeTar(aTar);
 	mspVals = sp;
 	CCLog(">[BF]Battle Field Receive the battle:%d",aTar->count());
 
@@ -130,7 +130,7 @@ void BattleField::SetTars( CCArray* aTar )
 		GameManager::sharedLogicCenter()->ml->m_lsb->SetNullAct();
 		return;
 	}
-	meTar = aTar;
+	setMeTar(aTar);
 	if(!mbIsInBattle) {
 		return;
 	}
@@ -621,7 +621,7 @@ bool BattleField::NormalAttackC()
 		
 		//meTar->
 		// <首先挑选出
-		if(!meTar) return false;
+		if(meTar->count()==0) return false;
 		CheckBackCh();
 
 		// <弹出选择将交由EChessComp负责
@@ -864,7 +864,7 @@ void BattleField::ShowChess( EChesses* atar )
 void BattleField::RefreshStats()
 {
 	if(meSrc) GameManager::sharedLogicCenter()->ml->m_lsb->RefreshAll();
-	if(meTar) GameManager::sharedLogicCenter()->ml->m_rsb->RefreshAll();
+	if(meTar->count()>0) GameManager::sharedLogicCenter()->ml->m_rsb->RefreshAll();
 	
 }
 
@@ -919,4 +919,14 @@ bool BattleField::CalRate(EChesses* tar_o,int hit_rate_base)
 bool BattleField::HasChess( int ax, int ay )
 {
 	return mMapC.count(make_pair(ax,ay)) > 0;
+}
+
+void BattleField::setMeTar( CCArray* atar )
+{
+	meTar->removeAllObjects();
+
+	CCObject* to;
+	CCARRAY_FOREACH(atar,to){
+		meTar->addObject(to);
+	}
 }

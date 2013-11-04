@@ -1410,11 +1410,7 @@ void BattleMap::ResumeAllActs()
 
 void BattleMap::set_bbattle( int i )
 {
-	if(i<6){
-		CCLog("Fuck its here!");
-	}
 	b_battle = i;
-
 }
 
 int BattleMap::get_bbattle()
