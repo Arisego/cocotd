@@ -31,7 +31,7 @@ bool BattleMap::init()
 	cancontrol = false;
 	vx= 0;vy = 0;
 	m_touch = NULL;
-	b_battle = -1;
+	set_bbattle(-1);
 	m_mi=-1;m_mj=-1;
 	cs_y.clear();cs_r.clear();cs_b.clear();
 	cs_cy.clear();
@@ -152,7 +152,7 @@ bool BattleMap::init()
 	c_r = colordic->valueForKey("red")->intValue();
 	c_b = colordic->valueForKey("blue")->intValue();
 	c_y = colordic->valueForKey("yellow")->intValue();
-	b_battle = 1;
+	set_bbattle(1);
 
 	//////////////////////////////////////////////////////////////////////////
 	mFolCamara = CCNode::create();
@@ -208,6 +208,7 @@ void BattleMap::update(float dt)
 			break;
 		}
 	case(3):						// state == 3 : <移动鼠标并选择目标.
+	case(7):
 		{		
 			CC_BREAK_IF(!m_touch);
 			fAutoCamara();
@@ -231,12 +232,12 @@ void BattleMap::update(float dt)
 			CC_BREAK_IF(!m_touch);
 			((EChessComp*) m_controller->getComponent("controller"))->move_by_path(vc_path);
 			m_bAnimateOver = false;
-			b_battle = -1;
+			set_bbattle(-1);
 			break;
 		}
 	case(5):
 		{
-			b_battle = -1;
+			set_bbattle(-1);
 			m_bAnimateOver = false;
 			break;
 		}
@@ -682,7 +683,7 @@ bool BattleMap::move_control()
 
 		//[0803]CCLog(">Try to move all the element.");
 		a_star();
-		b_battle = 4;
+		set_bbattle(4);
 		vc_path.pop_back();		// <最后一个点是起点，所以将其弹出。
 
 		((EChesses*) m_controller)->pos = m_mou_cur;
@@ -1142,6 +1143,8 @@ bool BattleMap::arange_target( int a_type )
 {
 	find_target_arrage(a_type);
 
+	// [1103] <临时性的，小心技能不执行 :D
+	if(b_battle>= 6) return m_caTarget->count()>0;
 	if(m_caTarget->count()>0){
 
 		BattleField::sharedBattleField()->SetTars(m_caTarget);
@@ -1403,4 +1406,18 @@ void BattleMap::ResumeAllActs()
 		t_ec->resumeSchedulerAndActions();
 		t_ec->ResuMe();
 	}
+}
+
+void BattleMap::set_bbattle( int i )
+{
+	if(i<6){
+		CCLog("Fuck its here!");
+	}
+	b_battle = i;
+
+}
+
+int BattleMap::get_bbattle()
+{
+	return b_battle;
 }

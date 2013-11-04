@@ -367,7 +367,7 @@ void MapLayer::show_menu()
 	if(m_lsb) m_lsb->setVisible(true);
 	t_bm->show();
 	t_bm->setVisible(true);
-	bm->b_battle = 2;
+	bm->set_bbattle(2);
 }
 
 void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
@@ -379,7 +379,7 @@ void MapLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 	switch(m_iMLState){
 	case(2):
 		{
-			switch(bm->b_battle){
+			switch(bm->get_bbattle()){
 			case(1):
 				{
 					bm->checkpoint(pTouch);
@@ -435,7 +435,10 @@ void MapLayer::ItemBack( CCObject* pSender )
 	// <隐藏技能选择框
 	m_SkillList->setVisible(false);
 	// <置换标志位
-	bm->b_battle = 3;
+	if(bm->get_bbattle() >= 6)
+		bm->set_bbattle(7);
+	else
+		bm->set_bbattle(3);
 	// <获得usecase参数
 	m_iSUseCase = stoi(m_SkillList->getval("usecase",m_iItem));		
 	bm->miRangeType = m_iSUseCase;
@@ -527,7 +530,7 @@ void MapLayer::menu_back( CCObject* pSender )
 			t_bm->setVisible(false);
 			t_bm->miFlag = -1;
 			t_bm->Refresh_Button();
-			bm->b_battle = 1;
+			bm->set_bbattle(1);
 			
 			break;
 		}
@@ -585,7 +588,7 @@ void MapLayer::menu_back( CCObject* pSender )
 			Chara* mpChara = t_ec->m_pChara;
 			int t_iType = mpChara->getvalue("attack");		// <[TODO]从单位中获得攻击属性,具体的来源需要根据设计进行变更，注意默认取得的是0
 
-			bm->b_battle = 3;
+			bm->set_bbattle(3);
 
 			t_bm->setVisible(false);
 			t_bm->Refresh_Button();
@@ -644,7 +647,7 @@ void MapLayer::menu_back( CCObject* pSender )
 	case(32):		// <移动
 		{
 			bm->draw_moving_tile();
-			bm->b_battle = 3;
+			bm->set_bbattle(3);
 			t_bm->setVisible(false);
 			t_bm->Refresh_Button();
 			bm->m_mouse_type = 0;
@@ -667,7 +670,7 @@ void MapLayer::click_act()
 				CCLOG(">Prepare for EC-SkillUsing.");
 				bm->clean_cs();
 				EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
-				bm->b_battle = 5;
+				bm->set_bbattle(5);
 				bm->m_bAnimateOver = false;
 
 				BattleField::sharedBattleField()->ActionFac();
@@ -688,7 +691,7 @@ void MapLayer::click_act()
 
 				bm->HandleScriptor(BFsp);
 				bm->clean_cs();
-				bm->b_battle = 5;
+				bm->set_bbattle(5);
 				bm->m_bAnimateOver = false;
 				BattleField::sharedBattleField()->ActionFac();
 				//[0803]CCLog(">Reach here if every thing is right.....");
@@ -699,7 +702,7 @@ void MapLayer::click_act()
 	case(32):				// type == 32 | move controller.
 		{
 			if(bm->move_control()){
-				bm->b_battle = 4;
+				bm->set_bbattle(4);
 				bm->m_bAnimateOver = false;
 				BattleField::sharedBattleField()->ActionFac();
 				BattleField::sharedBattleField()->miState = 5;
@@ -790,7 +793,7 @@ void MapLayer::update( float fDelta )
 		{
 			do 
 			{
-				CC_BREAK_IF(bm->b_battle != -1);	// < == -1 则前进
+				CC_BREAK_IF(bm->get_bbattle() != -1);	// < == -1 则前进
 				CC_BREAK_IF(!bm->m_bAnimateOver);
 
 				bm->control_switch();
@@ -860,7 +863,7 @@ void MapLayer::switch_control()
 				if(xd>0){
 					bm->f_setcontroller(ce);
 					bm->f_setcamara(ce);
-					bm->b_battle = 1;
+					bm->set_bbattle(1);
 					
 					//ce->m_pChara->setvalue("b_xudong",xd-1);
 
@@ -878,7 +881,7 @@ void MapLayer::switch_control()
 					CCLog(">[ML]None Plyaer.XD:%d",xd-1);
 					bm->f_setcontroller(ce);
 					bm->f_setcamara(ce);
-					bm->b_battle = -1;					
+					bm->set_bbattle(-1);					
 					ce->m_pChara->setvalue("b_xudong",xd-1);
 
 					give_control();
@@ -902,7 +905,7 @@ void MapLayer::switch_control()
 	}else{
 		CCLog(">[ML]Turn is now over.Wait for next.");
 		m_iMLState = 2;
-		bm->b_battle = 1;
+		bm->set_bbattle(1);
 	}
 	
 }
@@ -920,7 +923,7 @@ void MapLayer::give_control()
 	case(0x02):					//TODO: Enemy now directly give up control, add AI here.
 		{
 			//switch_control();		
-			bm->b_battle = 0;
+			bm->set_bbattle(0);
 			break;
 		}
 	}
@@ -937,7 +940,7 @@ void MapLayer::right_click()
 	switch(m_iMLState){
 	case(2):{			// state 2 popup menu they may need to be canceled;
 
-			switch(bm->b_battle){
+			switch(bm->get_bbattle()){
 			case(1):
 				{
 					CCLOG(">No need for right click.");
@@ -957,7 +960,7 @@ void MapLayer::right_click()
 						t_bm->setVisible(false);
 						t_bm->miFlag = -1;
 						t_bm->Refresh_Button();
-						bm->b_battle = 1;
+						bm->set_bbattle(1);
 						CC_SAFE_RELEASE_NULL(t_bm);
 						if(m_lsb) m_lsb->setVisible(false);
 					}
@@ -976,14 +979,23 @@ void MapLayer::right_click()
 					if(m_rsb) 
 						m_rsb->setVisible(false);
 					bm->clean_cs();
-					bm->b_battle = 2;
+					bm->set_bbattle(2);
 					Dissmiss_Arrows();
 					break;
 				}
-			case(4):						// <弹出技能列表进行接续
+			case(6):						// <弹出技能列表进行接续
 				{
 					CCLog(">[ML] Over and continue.");
+					m_SkillList->setVisible(false);
+					ReleaseCLock();
 					break;
+				}
+			case(7):
+				{
+					m_SkillList->setVisible(true);
+					bm->clean_cs();
+					bm->set_bbattle(6);
+					Dissmiss_Arrows();
 				}
 			}
 			
@@ -1237,7 +1249,7 @@ bool MapLayer::SC_Popup()
 {
 	bm->PauseAllActs();
 	bm->cancontrol = true;
-	bm->b_battle = 6;
+	bm->set_bbattle(6);
 	//m_pActionManager->pauseTarget(this);
 	//f_pauseall();		// < 不可用，需要调用每个entile的暂停 = = 可能受到了节点关系的影响，重载一下函数吧
 	
@@ -1250,11 +1262,18 @@ bool MapLayer::SC_Popup()
 		//f_resumeall();		// <恢复所有的活动。
 		//m_pScheduler->resumeTarget(this);
 		//m_pActionManager->resumeTarget(this);
-		bm->cancontrol = false;
-		bm->ResumeAllActs();
+		ReleaseCLock();
 	}
 		
 	return ret;
+}
+
+// <解除接续锁定时所要执行的操作
+void MapLayer::ReleaseCLock()
+{
+	bm->cancontrol = false;
+	bm->ResumeAllActs();
+	bm->set_bbattle(-1);		// [AT] <待考
 }
 
 

@@ -517,7 +517,7 @@ namespace SCMLHelper
 		{
 			mDone = true;
 			////[0803]
-			CCLog(">[spx]miPlayTimes:%s||>%s,%d",animato->msCur.c_str(),animato->msLast.c_str(),animato->miPlayTimes);
+			//[PLAYSTATEDEBUG]CCLog(">[spx]miPlayTimes:%s||>%s,%d",animato->msCur.c_str(),animato->msLast.c_str(),animato->miPlayTimes);
 			if(animato->miPlayTimes < 0){
 				Restart();
 			}else if(animato->miPlayTimes == 0){
@@ -816,7 +816,7 @@ void CCSpriterX::update(float dt)
 
 void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, float afBegin, float afEnd){
 	if(strcmp(msCur.c_str(),name) == 0) {
-		////[SPX]CCLOG(">[SPX]Duplicate name.");
+		////[SPX]//[PLAYSTATEDEBUG]CCLog(">[spx]Duplicate name.");
 		return;
 	}
 	miPlayTimes = aiTimes - 1;
@@ -825,7 +825,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, floa
 	entity->PlayTarget(name, afBegin, afEnd);
 	msLast = alast;
 	mbNoLast = false;
-	CCLOG(">[SPX]Play Animation:%s. %d times",name,aiTimes);
+	//[PLAYSTATEDEBUG]CCLog(">[spx]Play Animation:%s. %d times",name,aiTimes);
 	//[0803]
 	CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
@@ -833,7 +833,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, floa
 
 void CCSpriterX::PlayNext()
 {
-	//[SPX]CCLOG(">[Spx]Play Next()");
+	//[SPX]//[PLAYSTATEDEBUG]CCLog(">[spx]Play Next()");
 	Entity *entity = mEntities[mCurrEntity];
 	entity->NextAnimation();
 
@@ -947,7 +947,7 @@ bool CCSpriterX::initWithFile(const char *filename)
 void CCSpriterX::PlayLast()
 {
 	//[0803]
-	CCLog(">[SPX]Play Last.Las:%s,Cur:%s",msLast.c_str(),msCur.c_str());
+	//[PLAYSTATEDEBUG]CCLog(">[spx]Play Last.Las:%s,Cur:%s",msLast.c_str(),msCur.c_str());
 	msCur.clear();
 	if(msLast.length()>0){
 		PlayAnim(msLast.c_str());
@@ -956,7 +956,7 @@ void CCSpriterX::PlayLast()
 		PlayLast();
 
 		//[SPX]
-		CCLOG(">[SPX]:No Last.");
+		//[PLAYSTATEDEBUG]CCLog(">[spx]:No Last.");
 	}
 }
 
