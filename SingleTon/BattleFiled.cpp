@@ -621,7 +621,8 @@ bool BattleField::NormalAttackC()
 		
 		//meTar->
 		// <首先挑选出
-		if(meTar->count()==0) return false;
+		if(meTar->count()==0) 
+			return false;
 		CheckBackCh();
 
 		// <弹出选择将交由EChessComp负责

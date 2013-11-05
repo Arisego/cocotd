@@ -117,7 +117,7 @@ protected:
 	
 
 	ListDBView<ItemCell>* m_ldb;
-	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map 
+	int m_iMLState;				//MapLayerState || -1 Init | 1 WalkMap With Hud | 2 Battle Map | 3 The world rotating for next control group
 public:
 	int m_iFuncType;
 	int m_iSUseCase;
@@ -160,6 +160,7 @@ public:
 	bool SC_Popup();		// <弹出可接续的技能进行选择，无法弹出则返回false;
 private:
 	void ReleaseCLock();	// <解除接续选项的锁定状态
+	void CtnSkill();		// <接续发生作用
 
 public:
 	void show_hud();

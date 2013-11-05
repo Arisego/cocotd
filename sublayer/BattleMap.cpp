@@ -1296,9 +1296,10 @@ bool BattleMap::f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint 
 		{
 			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) + cs_cy.count(make_pair(a_cp.x,a_cp.y)) > 0)
 			{
-				int radiu = a_ran[0];
-				dps_rect(a_cp, ts_range, radiu);
+				CCLog(">[BM_Id Rag Che] I forget why these is being check. So i disable it.");
 			}
+			int radiu = a_ran[0];
+			dps_rect(a_cp, ts_range, radiu);
 			break;
 		}
 	}
