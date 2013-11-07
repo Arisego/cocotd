@@ -962,10 +962,14 @@ void BattleMap::set_mouse_range( int a_type, vector<int> a_ran )
 
 /*
 	<a_cp -- 当前鼠标所在的点
+	< 本函数通过传入的鼠标位置和预先设置的类型进行判定
+	< 将绘制目标传入ts_last和cs_cy
 */
 void BattleMap::draw_mouse_range(CCPoint a_cp/* <当前鼠标所在的点*/)
 {
-	
+	set<pair<int,int>> ts_temp;		// <临时容器
+	CCObject* toe;
+
 	switch(m_mouse_type)
 	{
 	case(0):
@@ -1026,25 +1030,39 @@ void BattleMap::draw_mouse_range(CCPoint a_cp/* <当前鼠标所在的点*/)
 	case(3):	// < 3 | 两点之间的矩形区域 + 十字搜索1格 (狂嗜·突袭·追击)
 		{
 			if(cs_y.count(make_pair(a_cp.x,a_cp.y)) > 0){
-				dps_rect(a_cp, ts_last, 1);		// <如果有复用的情况就传入动态的参数
-				ts_last.erase(make_pair(a_cp.x,a_cp.y));
-				find_target_arrage(1);			// <优先搜索敌方单位
+				//////////////////////////////////////////////////////////////////////////
+				// <十字搜索1格
+
+				ts_temp.clear();
+				dps_rect(a_cp, ts_temp, 1);		// <如果有复用的情况就传入动态的参数
+				ts_temp.erase(make_pair(a_cp.x,a_cp.y));
+				find_target_arrage(1, ts_temp);			// <优先搜索敌方单位
 				if(m_caTarCharas->count() == 0){ // <搜索友方单位
 					find_target_arrage(0);
 				}
-				ts_last.clear();
+				ts_temp.clear();
 				if(m_caTarCharas->count()>0){
 					EChesses* te = (EChesses*) m_caTarget->lastObject();
-					ts_last.insert(make_pair(te->pos.x,te->pos.y));
+					ts_temp.insert(make_pair(te->pos.x,te->pos.y));
 					cs_cy.insert(make_pair(te->pos.x,te->pos.y));
-					te->miHitGroup = 1;			// <攻击编组，不同的编组所播放的技能特效会不同。
+					te->miHitGroup |= 2;			// <攻击编组，不同的编组所播放的技能特效会不同。
 					CCLog(">[BM]Find the third place entile:%s",te->name.c_str());
 				}
+				ts_last.insert(ts_temp.begin(),ts_temp.end());
+				//////////////////////////////////////////////////////////////////////////
+				// <矩形搜索
 
+				ts_temp.clear();
 				CCPoint tcp = ((EChesses*) m_controller)->pos;
-				dps_rectangle(a_cp,ts_last,a_cp,tcp);
+				dps_rectangle(a_cp,ts_temp,a_cp,tcp);
 				dps_rectangle(a_cp,cs_cy,a_cp,tcp);
+				find_target_arrage(1);
+				CCARRAY_FOREACH(m_caTarget,toe){
+					((EChesses*) toe)->miHitFlag |= 1;
+				}
 
+				ts_last.insert(ts_temp.begin(),ts_temp.end());
+				//////////////////////////////////////////////////////////////////////////
 				//ts_last.insert(make_pair(a_cp.x,a_cp.y));
 				//cs_cy.insert(make_pair(a_cp.x,a_cp.y));
 			}
@@ -1088,11 +1106,17 @@ bool BattleMap::f_Arange( int a_type , CCObject* atar)
 	return false;
 }
 
-
-void BattleMap::find_target_arrage(int a_type) 
-{
-	CCDictElement* t_cde = NULL;
+void BattleMap::clear_mcaTarget(){
+	CCObject* toe;
+	CCARRAY_FOREACH(m_caTarget,toe){
+		((EChesses*) toe)->miHitFlag = 0;
+	}
 	CC_SAFE_RELEASE_NULL(m_caTarget);
+}
+
+void BattleMap::find_target_arrage(int a_type, set<pair<int,int>> &a_dt){
+	CCDictElement* t_cde = NULL;
+
 	CC_SAFE_RELEASE_NULL(m_caTarCharas);
 	m_caTarCharas = new CCArray();
 	m_caTarget = new CCArray();
@@ -1104,7 +1128,7 @@ void BattleMap::find_target_arrage(int a_type)
 		{
 			CCDICT_FOREACH(m_itemlist,t_cde){
 				EChesses* t_cfie = (EChesses*) t_cde->getObject();
-				if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
+				if(a_dt.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
 					if(t_cfie->group_mask & g_id){
 						m_caTarget->addObject(t_cfie);
 						m_caTarCharas->addObject(t_cfie->m_pChara);
@@ -1118,7 +1142,7 @@ void BattleMap::find_target_arrage(int a_type)
 		{
 			CCDICT_FOREACH(m_itemlist,t_cde){
 				EChesses* t_cfie = (EChesses*) t_cde->getObject();
-				if(ts_last.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
+				if(a_dt.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
 
 					if(! (t_cfie->group_mask & g_id)){
 						m_caTarget->addObject(t_cfie);
@@ -1135,6 +1159,11 @@ void BattleMap::find_target_arrage(int a_type)
 		break;
 	}
 
+}
+
+void BattleMap::find_target_arrage(int a_type) 
+{
+	find_target_arrage(a_type, ts_last);
 
 }
 

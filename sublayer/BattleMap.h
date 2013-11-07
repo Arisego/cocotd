@@ -139,7 +139,8 @@ protected:
 public:
 	bool f_RangeTest(int a_type, vector<int> a_ran, CCPoint a_cp,CCPoint a);
 	bool f_Arange(int a_type,CCObject* atar);
-	void find_target_arrage(int atype);				// <寻找范围内的单位的实际执行体
+	void find_target_arrage(int atype);										// <寻找范围内的单位的实际执行体
+	void find_target_arrage(int a_type, set<pair<int,int>> &a_dt);			// <寻找集合走红是否有特定类型的单位
 	//////////////////////////////////////////////////////////////////////////
 	// <技能中单位的移动和操作
 	void moveChess(EChesses* at, CCPoint ta, bool isRelate = true);		// <移动指定的单位
@@ -152,6 +153,7 @@ public:
 
 	void PauseAllActs();		// <停止所有需要停止的子节点
 	void ResumeAllActs();		// <恢复
+	void clear_mcaTarget();		// <清楚mcatarget列表中的mihit值，防止可能的bug
 };
 
 #endif

@@ -113,15 +113,25 @@ void EChessComp::DerScript( Script* asp )
 		CCLog("handle scripte:%d/%d",i,tiSum);
 		Script* tmp = (Script*) acts->objectAtIndex(i);//use tag to define node's having state
 
-		// <检查是否是改播放组的动画，如果组别不同则跳过该播放。
-		if(((EChesses*) m_pOwner)->miHitGroup != tmp->getint("group")) {
+		//////////////////////////////////////////////////////////////////////////
+		// <组别检查
+		// <脚本注意： 第零组就是第一组
+		// <gi也就是脚本中指明的运行对象是旗标形式的而hitgroup是匹配用的。
+		bool bcan;
+		int gi = tmp->getint("group");
+		int gn = ((EChesses*) m_pOwner)->miHitGroup;
+
+		if(0 == gn) gn = 1;
+		if(0 == gi) gi = 1;
+
+		if(gn & gi == 0){
 			if(tmp->type == sChange && tmp->getint("type") == 0){
 				ELock();
 				m_pOwner->runAction(CCSequence::create(CCDelayTime::create(tmp->getfloat("delay")),FRELEASE,NULL));
 				CCLog("delay:%f",tmp->getfloat("delay"));
 			}
 			continue;
-		}	
+		}
 
 		switch(tmp->type)
 		{

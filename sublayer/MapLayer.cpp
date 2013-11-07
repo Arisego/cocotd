@@ -1284,18 +1284,19 @@ void MapLayer::ReleaseCLock()
 void MapLayer::CtnSkill()
 {
 	CCLog(">[ML_CTN] Skll Ctn. Try to copy and change the code frome click_act().");
-	// < Case 1: qingxi
-	//if(bm->testLink()){
-	//	CCLOG(">Prepare for EC-SkillUsing.");
-	//	bm->clean_cs();
-	//	EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
-	//	bm->set_bbattle(5);
-	//	bm->m_bAnimateOver = false;
+	// < Case 1: qingxi | suc 注意反击组已经被重置了
+	if(bm->testLink()){
+		ReleaseCLock();
+		CCLOG(">Prepare for EC-SkillUsing.");
+		bm->clean_cs();
+		EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
+		bm->set_bbattle(5);
+		bm->m_bAnimateOver = false;
 
-	//	BattleField::sharedBattleField()->ActionFac();
-	//}else{
-	//	return;
-	//}
+		//BattleField::sharedBattleField()->ActionFac();
+	}else{
+		return;
+	}
 }
 
 
