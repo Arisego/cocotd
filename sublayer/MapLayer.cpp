@@ -678,6 +678,10 @@ void MapLayer::click_act()
 				bm->set_bbattle(5);
 				bm->m_bAnimateOver = false;
 
+				// <设定技能标志位 || 可接续的技能将会存储在script中
+				((EChesses*) bm->m_controller)->m_pChara->cur_sid = m_iItem;
+				((EChesses*) bm->m_controller)->m_pChara->cur_shit = false;
+
 				BattleField::sharedBattleField()->ActionFac();
 			}else{
 				return;
@@ -1248,9 +1252,9 @@ void MapLayer::Dissmiss_Arrows()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
+// <接续
 
-bool MapLayer::SC_Popup()
+bool MapLayer::SC_Popup(const char* asName)
 {
 	bm->PauseAllActs();
 	bm->cancontrol = true;
@@ -1261,7 +1265,7 @@ bool MapLayer::SC_Popup()
 	bool ret = false;
 	do 
 	{
-		ret = show_skill_list();
+		ret = popup_ctn(asName);
 	} while (false);
 	if(!ret) {		
 		//f_resumeall();		// <恢复所有的活动。
@@ -1284,19 +1288,45 @@ void MapLayer::ReleaseCLock()
 void MapLayer::CtnSkill()
 {
 	CCLog(">[ML_CTN] Skll Ctn. Try to copy and change the code frome click_act().");
-	// < Case 1: qingxi | suc 注意反击组已经被重置了
+	// < 关于反击组，反击组的生成是在第一次单位进行反击的时候进行的。
+
+	// < Case 1: 清洗 | 默认行为 
+	// < BattleMap::HandleScriptor 之后被攻击的目标数组会被修改
 	if(bm->testLink()){
 		ReleaseCLock();
 		CCLOG(">Prepare for EC-SkillUsing.");
 		bm->clean_cs();
-		EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			// <[TODO]技能修改入口点，尝试让EC吐出所有的sp？
+		EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);			
 		bm->set_bbattle(5);
 		bm->m_bAnimateOver = false;
-
-		//BattleField::sharedBattleField()->ActionFac();
 	}else{
 		return;
 	}
+}
+
+// <弹出菜单
+bool MapLayer::popup_ctn(const char* sMask)
+{
+	if(!m_SkillList){
+		m_SkillList = new SkillList();
+		m_SkillList->f_init();
+		m_SkillList->setAnchorPoint(ccp(0,1));
+		m_SkillList->setPosition(0,400);
+		m_SkillList->setactivator(this,menu_selector(MapLayer::ItemBack));
+
+		addChild(m_SkillList,2);
+	}
+	if(m_SkillList->setctns(((EChesses*) bm->m_controller)->m_pChara,sMask)){
+		m_SkillList->setVisible(true);
+		return true;
+	}else
+	{
+		// < [11-01][Notice] | 这个地方貌似不会被用到
+		m_SkillList->setVisible(false);
+		CC_SAFE_RELEASE_NULL(m_SkillList);
+		return false;
+	}
+
 }
 
 

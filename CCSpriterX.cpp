@@ -815,12 +815,20 @@ void CCSpriterX::update(float dt)
 
 
 void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, float afBegin, float afEnd){
-	//if(strcmp(msCur.c_str(),name) == 0 && afBegin == ca && afEnd == cb) {
-	//	////[SPX]//[PLAYSTATEDEBUG]CCLog(">[spx]Duplicate name.");
-	//	return;
-	//}
-	// <变更，即便是重复的动画名也依然播放
+	// <再次变更，使用同一参数的动画将不会被播放
+	static float ca = -0.8;
+	static float cb = -0.8;
 
+	if(strcmp(msCur.c_str(),name) == 0 && afBegin == ca && afEnd == cb) {
+		////[SPX]//[PLAYSTATEDEBUG]CCLog(">[spx]Duplicate name:%s", name);
+		return;
+	}
+
+	ca = afBegin;
+	cb = afEnd;
+
+	//////////////////////////////////////////////////////////////////////////
+	//
 
 	miPlayTimes = aiTimes - 1;
 	Entity *entity = mEntities[mCurrEntity];		//当前4a版只有单entity
@@ -829,8 +837,7 @@ void CCSpriterX::PlayAnim(const char* name, int aiTimes, const char* alast, floa
 	msLast = alast;
 	mbNoLast = false;
 	//[PLAYSTATEDEBUG]CCLog(">[spx]Play Animation:%s. %d times",name,aiTimes);
-	//[0803]
-	CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
+	//[0803]CCLog(">Play %s&Coding Last:%s",name,msLast.c_str());
 
 }
 
@@ -959,7 +966,8 @@ void CCSpriterX::PlayLast()
 		PlayLast();
 
 		//[SPX]
-		//[PLAYSTATEDEBUG]CCLog(">[spx]:No Last.");
+		//[PLAYSTATEDEBUG]
+		CCLog(">[spx]:No Last.");
 	}
 }
 

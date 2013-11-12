@@ -44,6 +44,11 @@ private:
 
 	vector<SkillListMeta*> m_viSkmL; 
 	void RefreshSm();					// <刷新显示
+
+public:
+	////////////////////////////////////////////////////////////////////////////
+	// <技能接续
+	bool setctns(Chara* ac, const char* sMask);			// <根据传入的技能列表弹出菜单
 };
 
 #endif

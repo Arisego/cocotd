@@ -1036,9 +1036,9 @@ void BattleMap::draw_mouse_range(CCPoint a_cp/* <当前鼠标所在的点*/)
 				ts_temp.clear();
 				dps_rect(a_cp, ts_temp, 1);		// <如果有复用的情况就传入动态的参数
 				ts_temp.erase(make_pair(a_cp.x,a_cp.y));
-				find_target_arrage(1, ts_temp);			// <优先搜索敌方单位
+				find_target_arrage(0, ts_temp);			// <优先搜索敌方单位
 				if(m_caTarCharas->count() == 0){ // <搜索友方单位
-					find_target_arrage(0);
+					find_target_arrage(1);
 				}
 				ts_temp.clear();
 				if(m_caTarCharas->count()>0){
@@ -1056,9 +1056,10 @@ void BattleMap::draw_mouse_range(CCPoint a_cp/* <当前鼠标所在的点*/)
 				CCPoint tcp = ((EChesses*) m_controller)->pos;
 				dps_rectangle(a_cp,ts_temp,a_cp,tcp);
 				dps_rectangle(a_cp,cs_cy,a_cp,tcp);
-				find_target_arrage(1);
+				find_target_arrage(-1);
+
 				CCARRAY_FOREACH(m_caTarget,toe){
-					((EChesses*) toe)->miHitFlag |= 1;
+					((EChesses*) toe)->miHitGroup |= 1;
 				}
 
 				ts_last.insert(ts_temp.begin(),ts_temp.end());
@@ -1124,6 +1125,18 @@ void BattleMap::find_target_arrage(int a_type, set<pair<int,int>> &a_dt){
 
 	switch (a_type)
 	{
+	case -1:			// <全员伤害型
+		{
+			CCDICT_FOREACH(m_itemlist,t_cde){
+				EChesses* t_cfie = (EChesses*) t_cde->getObject();
+				if(a_dt.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
+					m_caTarget->addObject(t_cfie);
+					m_caTarCharas->addObject(t_cfie->m_pChara);
+				}
+
+			}
+			break;
+		}
 	case 0:				// <标准索敌模式
 		{
 			CCDICT_FOREACH(m_itemlist,t_cde){

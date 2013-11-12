@@ -161,6 +161,7 @@ bool SkillList::setChara( Chara* ac )
 	int m_number = vdata.size();
 	DBUtil::closeDB(); 
 
+	m_miiViDb.clear();
 	for(int i = 0;i<m_number;i++){
 		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
 		int item_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
@@ -176,7 +177,7 @@ bool SkillList::setChara( Chara* ac )
 void SkillList::RefreshSm()
 {
 	int ti;
-	for(int i = 0;i<8;++i){
+	for(int i = 0;i<m_miiViDb.size();++i){
 		ti = m_pChara->m_viSkills[i];
 		if(ti !=0 ){
 			m_viSkmL[i]->setSKLabel(vdata.at(m_miiViDb[ti]).at("name").c_str());
@@ -190,4 +191,52 @@ void SkillList::RefreshSm()
 const char* SkillList::getval( const char* aname,int ait )
 {
 	return vdata.at(m_miiViDb[ait]).at(aname).c_str();
+}
+
+bool SkillList::setctns( Chara* ac, const char* sMask )
+{
+	for(int i = 0;i<8;++i){
+		m_viSkmL[i]->setVisible(false);
+	}
+
+	if(!ac) return false;
+	m_pChara = ac;
+
+	vdata.clear();
+	if(m_pChara->m_viSkills.size() == 0) return false;		// <只有装备了的技能才会被触发。
+
+	std::string t_sMask;
+	std::string t_ts = sMask;
+	for(map<int,int>::iterator it = m_pChara->m_viSkills.begin(); it != m_pChara->m_viSkills.end(); ++it)
+	{
+		int t_id = it->second;
+		if( t_ts.find(CCString::createWithFormat("%d",t_id)->getCString())<t_ts.length()){
+			t_sMask += CCString::createWithFormat("%d,",t_id)->getCString();
+		}
+		
+	}
+	t_sMask.erase(t_sMask.length()-1);
+	if(t_sMask.length() == 0) {
+		CCLog("[CTN] None Skill Ctn avalible");
+		return false;
+	}
+	CCString* t_csSql = CCString::createWithFormat("select * from skill_list where itemid IN (%s)",t_sMask.c_str());
+	CCLog("[CTN] sql string:%s",t_csSql->getCString());
+
+	DBUtil::initDB("save.db");
+	vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
+	int m_number = vdata.size();
+	DBUtil::closeDB(); 
+
+	m_miiViDb.clear();
+	for(int i = 0;i<m_number;i++){
+		map<string,string> t_ssm = (map<string,string>) vdata.at(i);
+		int item_id = stoi(t_ssm.at("itemid"));			//PrimaryKey:ItemID
+		m_miiViDb[item_id] = i;							//方便查找
+
+		CCLOG(">Read for item id:%d.", item_id);
+	}
+
+	RefreshSm();
+	return true;
 }

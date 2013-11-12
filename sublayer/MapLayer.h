@@ -157,8 +157,10 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// <外部调用技能 | 接续用
-	bool SC_Popup();		// <弹出可接续的技能进行选择，无法弹出则返回false;
+	bool SC_Popup(const char* asName);		// <弹出可接续的技能进行选择，无法弹出则返回false;
+	
 private:
+	bool popup_ctn(const char* sMask);	// <弹出接续技能调用的功能函数
 	void ReleaseCLock();	// <解除接续选项的锁定状态
 	void CtnSkill();		// <接续发生作用
 
@@ -173,7 +175,7 @@ public:
 	int m_iItem;				// Store which skill or item is being waiting. It's not only for item.
 
 	virtual void right_click();			//EventCenter::sharedEventCenter()->setBmCake(NULL);should be called .
-
+	
 	int m_iMaxGroup;			// <最大的组别编号
 	int m_iCurGroup;			// <当前拥有控制权的组别
 	int m_iTurn;

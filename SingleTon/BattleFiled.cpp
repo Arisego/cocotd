@@ -56,7 +56,7 @@ void BattleField::Clean()
 {
 	mbIsOver = false;
 
-	mspVals = NULL;
+	CC_SAFE_RELEASE_NULL(mspVals);
 	meSrc = NULL;
 	meTar->removeAllObjects();
 
@@ -95,6 +95,7 @@ void BattleField::SetUp(EChesses* aSrc, CCArray* aTar, Script* sp)
 	meSrc = aSrc;
 	setMeTar(aTar);
 	mspVals = sp;
+	if(sp) mspVals->retain();
 	CCLog(">[BF]Battle Field Receive the battle:%d",aTar->count());
 
 	if(sp=NULL) 
@@ -930,4 +931,24 @@ void BattleField::setMeTar( CCArray* atar )
 	CCARRAY_FOREACH(atar,to){
 		meTar->addObject(to);
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// < ½ÓÐø
+
+bool BattleField::fGetCont( const char* sname )
+{
+	bool ret = false;
+	do 
+	{
+		string ts_skills = mspVals->getstring(sname);
+		CC_BREAK_IF(ts_skills.length() == 0);
+
+		CCLog("[BF] Ctn Skill mask:%s",ts_skills.c_str());
+
+		GameManager::sharedGameManager()->sharedLogicCenter()->ml->SC_Popup(ts_skills.c_str());
+
+		ret = true;
+	} while (0);
+	return ret;
 }

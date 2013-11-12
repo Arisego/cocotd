@@ -124,7 +124,7 @@ void EChessComp::DerScript( Script* asp )
 		if(0 == gn) gn = 1;
 		if(0 == gi) gi = 1;
 
-		if(gn & gi == 0){
+		if((gn & gi) == 0){
 			if(tmp->type == sChange && tmp->getint("type") == 0){
 				ELock();
 				m_pOwner->runAction(CCSequence::create(CCDelayTime::create(tmp->getfloat("delay")),FRELEASE,NULL));
@@ -239,15 +239,7 @@ void EChessComp::DerScript( Script* asp )
 					{
 						//////////////////////////////////////////////////////////////////////////
 						// <生成可以接续的表
-						
-						//////////////////////////////////////////////////////////////////////////
-						// <判定和选择
-
-						//////////////////////////////////////////////////////////////////////////
-						// <接续指定的技能
-						GameManager::sharedGameManager()->sharedLogicCenter()->ml->SC_Popup();		// <注意区分是否成功
-						
-
+						BattleField::sharedBattleField()->fGetCont(tmp->getstring("name"));
 						break;
 					}
 				default:

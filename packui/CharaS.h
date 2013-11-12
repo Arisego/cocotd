@@ -39,6 +39,10 @@ public:
 	map<int,int> m_viSkills;
 
 	bool m_bIsDead;
+	//////////////////////////////////////////////////////////////////////////
+	// CTN
+	int cur_sid;	//Current skill id.
+	bool cur_shit;	//If the skill hits?
 
 
 	Chara(){
