@@ -239,14 +239,14 @@ void Entiles::ShowDamage()
 			((EChesses*) this)->meRS->m_pChara->Trig(TR_DEATH);
 		}
 		((EChesses*) this)->meRS->m_pChara->Trig(TR_DAMAGE);
+		((EChesses*) this)->m_pChara->miBeDamage = miFianDamage;	// <输入累计的伤害而不是最后一次
 	}else{
 		CCLog(">[Entiles] ShowDamage() | >>> MISS");
 		tsShow << "MISS";
+		((EChesses*) this)->m_pChara->miBeDamage  = 0;
 	}
 
 	ShowTextS(tsShow.str().c_str());
-
-	((EChesses*) this)->m_pChara->miBeDamage = miFianDamage;	// <输入累计的伤害而不是最后一次
 
 	miFianDamage = 0;
 	miDamage = 0;

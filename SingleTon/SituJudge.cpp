@@ -81,7 +81,7 @@ void SituJudge::JudgeMove( EChesses* tar )
 	}
 
 	FilterVals();
-	float tiMax = 0;
+	float tfMax = 0;
 	int tnx = 0;
 	int tny = 0;
 	GameManager::sharedLogicCenter()->ml->bm->draw_moving_tile();
@@ -90,28 +90,29 @@ void SituJudge::JudgeMove( EChesses* tar )
 		if(it->first.second<0) continue;
 		//if(abs(cx- (it->first.first))+abs(cy-(it->first.second))>tiMove) continue;
 		if(GameManager::sharedLogicCenter()->ml->bm->cs_y.count(make_pair(it->first.first,it->first.second)) == 0 && GameManager::sharedLogicCenter()->ml->bm->cs_hit_block.count(make_pair(it->first.first,it->first.second)) == 0 ) continue;
+		if(GameManager::sharedLogicCenter()->ml->bm->mBlockSet.count(make_pair(it->first.first,it->first.second)) > 0) continue;
 
 		CCLog(">[SituJudge]JudgeMove() Point Comp:%d, %d || %0.2f", it->first.first, it->first.second, it->second);
-		CCLog(">[SituJudge]JudgeMove() Check:%0.2f, %0.2f", tiMax, it->second);
-		if(it->second > tiMax){		
+		CCLog(">[SituJudge]JudgeMove() Check:%0.2f, %0.2f", tfMax, it->second);
+		if(it->second > tfMax){		
 			if(m_Locks.count(it->first)){
 				CCLog(">[SituJudge]JudgeMove() You can not stand here, because somebody is here...");
 				continue;
 			}
-			tiMax = it->second;
+			tfMax = it->second;
 			tnx = it->first.first;
 			tny = it->first.second;
 		}
 		
 	}
 
-	if(tiMax == 0){
+	if(tfMax == 0){
 		CCLog(">[SituJudge]JudgeMove() || No Point Fit.");
 		tnx = cx;
 		tny = cy;
 	}
-	CCLog(">[SituJudge]JudgeMove() Find:%d,%d match best", tnx, tny);
-	((AIComponent*) meThink->getComponent("ai"))->setTargetPoint(tnx,tny);		// Test ONly
+	CCLog(">[SituJudge]JudgeMove() | Owner: %s | Find:%d,%d match best|Value:%f", tar->name.c_str(), tnx, tny, tfMax);
+	((AIComponent*) meThink->getComponent("ai"))->setTargetPoint(tnx,tny,tfMax);		// Test ONly
 	//exit(97);
 	//GameManager::sharedLogicCenter()->ml->bm->clean_allcs();
 }

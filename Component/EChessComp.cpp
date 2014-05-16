@@ -921,21 +921,33 @@ bool EChessComp::FindFitRe( CCObject* tar,int atime )
 		CCLog(">[EChessComp] FindFitRe()| Player Chara Bing.");
 	}
 	/* <玩家决策 */
-	if( (!HaveAI()) && (!mbThinked)){
+	if( (!mbThinked)){
 		if(miReState == 2) return false;
 		CCLog(">[EChessComp] FindFitRe() | Try popup Re for pc.");
 		BattleField::sharedBattleField()->miState = 2;
 		
 		mbThinked = true;
-		if(BattleField::sharedBattleField()->PUSkillFilt(m_pOwner, tar, 1)){
-			return true;
+
+		if(HaveAI()){
+			//int b_r = CCRANDOM_0_1() * 100;
+			//if(b_r < 100){	/* <50%的几率尝试进行技能反击 */
+				if(BattleField::sharedBattleField()->PUSkillFilt(m_pOwner, tar, 1)){
+					return true;
+				}
+			//}
+
+		}else{
+			if(BattleField::sharedBattleField()->PUSkillFilt(m_pOwner, tar, 1)){
+				return true;
+			}
 		}
+
 		
 		CCLog(">[EChessComp] FindFitRe() | Pop up Skill List Failed.");
 		
 	}
 
-	if(mbThinked){
+	if((!HaveAI()) && mbThinked){
 		CCLog(">[EChessComp] FindFitRe() | Thinked, state:%d", miReState);
 		if(miReState == 2) return false;
 		mbThinked = false;
@@ -947,36 +959,9 @@ bool EChessComp::FindFitRe( CCObject* tar,int atime )
 	CCLog(">[EChessComp] FindFitRe() | Ready For Normal Attack.");
 	miReState = 1;
 	--miReCount;
-
-	//int t_iType = (((EChesses*) m_pOwner)->m_pChara)->getvalue("attack");		// <[TODO]从单位中获得攻击属性,具体的来源需要根据设计进行变更，注意默认取得的是0
-	////t_iType = 1;																// <[TestOnly] 使用上面获取的值
-	//
-
-	//vector<map<string,string>> vdata;
-	//vdata.clear();
-	//DBUtil::initDB("save.db");
-	//CCString* t_csSql = CCString::createWithFormat("select * from attr_attact where id = %d",t_iType);
-	//vdata = DBUtil::getDataInfo(t_csSql->getCString(),NULL);
-	//int m_number = vdata.size();
-	//DBUtil::closeDB(); 
-
-	//t_ssm = (map<string,string>) vdata.at(0);	
-	//(((EChesses*) m_pOwner)->m_pChara)->miRange = stoi(t_ssm.at("range"));
-
-	//CCLog(">[EChessComp] FindFitRe() | Checking db ready.");
 		
 	 if(TestRange(tar, true)){
 		 CCLog(">[EChessComp] FindFitRe() | Can Act and act.");
-		 //Scriptor* scp = new Scriptor();
-		 //scp->parse_string(t_ssm.at("action_sp"));
-		 //GameManager::sharedLogicCenter()->ml->bm->f_setcontroller((EChesses*) m_pOwner);
-		 //GameManager::sharedLogicCenter()->ml->bm->m_caTarget->removeAllObjects();
-		 //GameManager::sharedLogicCenter()->ml->bm->m_caTarget->addObject(tar);
-		 //GameManager::sharedLogicCenter()->ml->bm->HandleScriptor(scp);
-
-		 //scp->re_init();
-		 //delete scp;
-
 		 miReState = 2;
 		 return true;
 	 }
@@ -1131,8 +1116,8 @@ void EChessComp::CheckAlive()
 	EChesses* tEc = (EChesses*) getOwner();
 
 	if(tEc == BattleField::sharedBattleField()->meConS) BattleField::sharedBattleField()->meConS = NULL;
-	GameManager::sharedLogicCenter()->ml->bm->m_itemlist->removeObjectForKey(tEc->name) ;	// <通知BattleMap进行处理	
-	GameManager::sharedLogicCenter()->ml->bm->_world->DestroyBody(tEc->m_body);				// < 保存列表并交付给逻辑循环处理[添加对应的函数接口] || world.destroyBody(b);
+
+	GameManager::sharedLogicCenter()->ml->bm->RemoveWhileDead(tEc);
 
 	for (vector<CollideInfo*>::iterator iter = GameManager::sharedLogicCenter()->ml->bm->colse->bc.begin();iter!= GameManager::sharedLogicCenter()->ml->bm->colse->bc.end();iter++)  
 	{

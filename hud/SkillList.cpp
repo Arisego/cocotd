@@ -231,12 +231,13 @@ void SkillList::randomactfc()
 	setVisible(true);
 	
 	int ti = m_siSkillEn.size();
-	bool rt = (CCRANDOM_0_1() < 0.5);
+	bool rt = (CCRANDOM_0_1() < 1.5);
 
 	if(rt){
 		
 		float tf = floor(ti * (CCRANDOM_0_1()));
 		ti = tf;
+		//ti = 2;	// <ต๗สิ
 		CCLog(">[SkillList] randomactfc() | ti:%d", ti);
 
 		for(int i = 0; i<8; ++i){
@@ -247,6 +248,11 @@ void SkillList::randomactfc()
 					break;
 				}
 			}
+		}
+
+		if(GameManager::sharedLogicCenter()->ml->mbIsDirect){
+			GameManager::sharedLogicCenter()->ml->right_click();
+			GameManager::sharedLogicCenter()->ml->right_click();
 		}
 		
 	}else{

@@ -21,6 +21,7 @@ AIComponent::AIComponent():
 	mpChara = NULL;
 	msSkillDis.clear();
 	miSkillP = ccp(0,0);
+	mfLastMJ = 0;
 }
 
 AIComponent::~AIComponent()
@@ -67,22 +68,27 @@ void AIComponent::releaseControl()
 	GameManager::sharedLogicCenter()->ml->releaseControl();
 }
 
-void AIComponent::setTargetPoint( int ax, int ay )
+void AIComponent::setTargetPoint( int ax, int ay, float afVal )
 {
 	mbMoving = true;
 	miState = AI_STATE_MOVING;
 	CCLog(">[AIComponent] setTargetPoint( int %d, int %d )", ax, ay);
-	if((ax == ((EChesses*) getOwner())->pos.x) & (ay == ((EChesses*) getOwner())->pos.y)){
+	CCLog(">[AIComponent] setTargetPoint( mfLastMJ %f, afVal %f )", mfLastMJ, afVal);
+	if(((ax == ((EChesses*) getOwner())->pos.x) && (ay == ((EChesses*) getOwner())->pos.y)) || afVal == mfLastMJ ){
 		CCLog(">[AIComponent] No need to move");
+		
+		mfLastMJ = afVal;
+
 		MoveOver();
 	}else{
 		miAtx = ax;
 		miAty = ay;
 
+		mfLastMJ = afVal;
+
 		CCLog(">[AIComponent] Ask BM to move our chess to %d,%d", ax, ay);		
 		GameManager::sharedLogicCenter()->ml->bm->draw_moving_tile();
 		GameManager::sharedLogicCenter()->ml->bm->move_control(ax,ay);
-		
 	}
 }
 
@@ -140,6 +146,7 @@ void AIComponent::UseSkill()
 
 void AIComponent::ActSkill()
 {
+	//mfLastMJ = 0;
 	miState = AI_STATE_SKILLUSING;
 	++miDebugCount;
 	if(!BattleField::sharedBattleField()->mbIsInBattle) BattleField::sharedBattleField()->mbIsMagic = true;
@@ -209,6 +216,8 @@ bool AIComponent::CheckXuDong()
 	do 
 	{
 		if(mpChara->checkXuDong()) break;
+
+		//mfLastMJ = 0;
 		return true;
 	} while (false);
 	return false;

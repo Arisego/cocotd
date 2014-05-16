@@ -16,7 +16,7 @@ public:
 	void giveControl();		/* <获得控制权 */
 	Chara* mpChara;			/* <角色信息指针 */
 
-	void setTargetPoint(int ax, int ay);	/* <设定[移动|技能]目标 */
+	void setTargetPoint(int ax, int ay, float afVal );	/* <设定[移动|技能]目标 */
 	void MoveOver();						/* <移动已经完成 */
 
 	void SetNextSkill(int ais);				/* <设置下次攻击技能 */
@@ -24,7 +24,7 @@ public:
 	set<int> msSkillDis;					/* <已经否决的技能列表 */
 	
 	void ActOver();							/* <完成通知接口 || 外部调用 */
-	void setSkillTargetPoint( int tiX, int tiY );	/* <设置技能目标点 */
+	void setSkillTargetPoint( int tiX, int tiY);	/* <设置技能目标点 */
 private:
 	void releaseControl();	/* <释放控制权 */
 	int miAtx, miAty;		/* <移动目标 */
@@ -47,6 +47,7 @@ private:
 	void GiveOut();			/* <AI活动结束 */
 	
 	bool mbMoving;			/* <AI正在执行移动指令 */
+	float mfLastMJ;			/* <上一次判定移动的值| 防止在同等价值的点之间重复移动 */
 	
 };
 

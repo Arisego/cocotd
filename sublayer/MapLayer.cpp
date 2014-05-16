@@ -552,10 +552,14 @@ void MapLayer::ItemBack( CCObject* pSender )
 
 	// <检查技能是否可以使用
 	if(!EffectControler::sharedEffectControler()->DerLock()){
-		SoundManager::sharedSoundManager()->PlayDisablSFX();
+
+		if(!((EChessComp*) bm->m_controller->getComponent("controller"))->HaveAI())
+			SoundManager::sharedSoundManager()->PlayDisablSFX();
+
 		return;			
 	}else{
-		SoundManager::sharedSoundManager()->PlayDecideSFX();
+		if(!((EChessComp*) bm->m_controller->getComponent("controller"))->HaveAI())
+			SoundManager::sharedSoundManager()->PlayDecideSFX();
 		//BattleField::sharedBattleField()->mbIsMagic = true;
 	}
 
@@ -584,9 +588,14 @@ void MapLayer::ItemBack( CCObject* pSender )
 	BMSkDrawMove(tsAddition);
 
 	if(BattleField::sharedBattleField()->mCachedSPp.size()>0){
-		bm->m_mou_cur = BattleField::sharedBattleField()->mCachedSPp.at(m_iItem);
-		bm->f_decide(BattleField::sharedBattleField()->mCachedSPp.at(m_iItem).x, BattleField::sharedBattleField()->mCachedSPp.at(m_iItem).y);
-		CtnSkill();
+		if(BattleField::sharedBattleField()->mCachedSPp.count(m_iItem)){
+			bm->m_mou_cur = BattleField::sharedBattleField()->mCachedSPp.at(m_iItem);
+			bm->f_decide(BattleField::sharedBattleField()->mCachedSPp.at(m_iItem).x, BattleField::sharedBattleField()->mCachedSPp.at(m_iItem).y);
+			CtnSkill();
+		}else{	// <没有目标的技能
+			CtnSkill();
+		}
+		BattleField::sharedBattleField()->mCachedSPp.clear();
 	}
 	
 	//EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,mpChara);		
@@ -623,6 +632,9 @@ void MapLayer::menu_back( CCObject* pSender )
 			m_BattleMenu->miFlag = -1;
 			m_BattleMenu->Refresh_Button();
 			BattleField::sharedBattleField()->ActionFac();
+
+			((EChesses*) bm->m_controller)->m_pChara->miSHitBClass = 0;
+
 			switch_control();
 			break;
 		}
@@ -1442,6 +1454,7 @@ void MapLayer::CtnSkill()
 bool MapLayer::popup_ctn(const char* sMask,int aiFlag)
 {
 	int tai = ((EChessComp*) bm->m_controller->getComponent("controller"))->HaveAI();
+	CCLog(">[MapLayer] popup_ctn() | AI Control: %d", tai);
 	//if(tai){
 	//	// <AI控制
 	//	
@@ -1450,7 +1463,7 @@ bool MapLayer::popup_ctn(const char* sMask,int aiFlag)
 	//}
 
 	// <格挡状态不能使用接续类技能
-	if(EventCenter::sharedEventCenter()->mbDefendLock) return false;
+	if(EventCenter::sharedEventCenter()->mbDefendLock && !tai) return false;
 	
 	CCLog(">[MapLayer] popup_ctn() | Player Control Give In");
 
@@ -1579,6 +1592,7 @@ void MapLayer::BMSkDrawMove( string tsAddition )
 			if(m_iItem>=0){
 				CCLog(">[MapLayer] BMSkDrawMove() | %d | addit check", m_iItem);
 				int ti = m_SkillList->getval(m_iItem)->m_iUseCase;
+
 				if(ti>10){	// <直接添加Buffer的技能 | 没有特效
 					/*((EChesses*) bm->m_controller)->m_pChara->LoadBuffer(ti);*/
 					BufferSkill(m_iItem, bm->m_controller);
@@ -1595,6 +1609,8 @@ void MapLayer::BMSkDrawMove( string tsAddition )
 
 			
 			if(EGroup::sharedEGroup()->CheckGrp(bm->m_controller)) {		
+				if(!BattleField::sharedBattleField()->mbIsInBattle) BattleField::sharedBattleField()->mbIsMagic = true;
+				BattleField::sharedBattleField()->mbCurMagic = true;
 
 				ActSkill();	
 				ReleaseCLock();
@@ -1782,6 +1798,8 @@ void MapLayer::FastShift()
 				{
 					if(!BattleField::sharedBattleField()->meConS)
 					{
+						bm->m_controller = (Entiles*) BattleField::sharedBattleField()->meConS;
+
 						CCDictElement* tc;
 						CCDictionary* te = bm->m_itemlist;
 						bool tMatch = false;

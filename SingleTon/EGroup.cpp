@@ -232,6 +232,8 @@ bool EGroup::AtkPlay(Script* asp, CCObject* aesrc, CCObject* aetar)
 		teTar =  (EChesses*) meTar;
 	}
 
+	if(!teTar) return false;
+
 	teSrc->ChangeFace(teTar->pos);
 	teTar->ChangeFace(teSrc->pos);	
 

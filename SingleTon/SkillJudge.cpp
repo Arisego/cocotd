@@ -298,6 +298,7 @@ bool SkillJudge::CheckNorM(CCObject* tai, CCObject* tar, bool abact)
 				break;
 			}else
 			{
+				GameManager::sharedLogicCenter()->ml->bm->cs_y.erase(make_pair(tte->pos.x, tte->pos.y));
 				CCLog(">[SkillJudge] CheckNorm() || cs_y.size == %d", GameManager::sharedLogicCenter()->ml->bm->cs_y.size());
 				CCLog(">[SkillJudge]CheckNorM() -------------------------------------------------------------- Begins ----------------------------------------------------------------");
 

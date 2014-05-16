@@ -160,8 +160,8 @@ void EChesses::SCMoveto(CCPoint c){
 	CCPoint cur = GameManager::sharedLogicCenter()->ml->tm->m_checkPoint(ccp(m_body->GetPosition().x,m_body->GetPosition().y));
 
 	CCLog(">Move to: [%f,%f] --> [%f,%f]", cur.x, cur.y, c.x, c.y);
-	if(cur.x < 3) exit(903);
-	if(cur.y < 3) exit(904);
+	if(cur.x < 1) exit(903);
+	if(cur.y < 1) exit(904);
 
 	m_bMoving = true;
 	mbMoved = true;

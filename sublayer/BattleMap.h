@@ -190,6 +190,8 @@ public:
 	void RemoveSCBKState();		// <撤销回退相关信息
 
 	bool mbLockCamera;			// <镜头锁定
+
+	void RemoveWhileDead(CCObject* achess);	// <死亡时移除单位
 };
 
 #endif

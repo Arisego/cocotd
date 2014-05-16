@@ -215,8 +215,8 @@ void BattleMap::f_decide(int i, int j){		// <通过新的选中tile对map进行�
 
 	if(i<0) return;
 	if(j<0) return;
-	if(i>map->getMapSize().width) return;
-	if(j>map->getMapSize().height) return;
+	if(i>=map->getMapSize().width) return;
+	if(j>=map->getMapSize().height) return;
 
 	CCLog(">[BattleMap] f_decide() | Pass the Filter.");
 	imply_set(ts_last,0);
@@ -332,6 +332,8 @@ void BattleMap::ccTouchMoved(CCTouch *touch, CCEvent * pEvent){
 /* <生成敌人单位 [EChess-Chara] */
 void BattleMap::f_generateEnemy( int i )
 {
+	Scriptor* tsp = new Scriptor();
+
 	CC_SAFE_RELEASE_NULL(m_itemlist);
 	m_itemlist = new CCDictionary();
 	vector<map<string,string>> vdata;
@@ -397,6 +399,13 @@ void BattleMap::f_generateEnemy( int i )
 		m_itemlist->setObject(t_fij_ecd,t_fij_ecd->name);
 		//t_fij_ecd->autorelease();
 		t_fij_ecd->m_pChara->initWithSsm(t_ssm);
+
+		//////////////////////////////////////////////////////////////////////////
+		tsp->re_init();
+		tsp->parse_string(t_ssm.at("sound"));
+		t_fij_ecd->m_pChara->m_ssLib		 =	 tsp->mapscps;
+		tsp->mapscps->retain();
+
 		CCLog(">[BattleMap] f_generateEnemy() | %d - Over", t_id);
 
 		//BattleField::sharedBattleField()->SetChess(t_fij_ecd,t_fij_ecd->pos.x,t_fij_ecd->pos.y);
@@ -405,7 +414,7 @@ void BattleMap::f_generateEnemy( int i )
 	CCLOG(">Enemy Generationg Over.");
 
 	CC_SAFE_DELETE(t_scp);
-
+	CC_SAFE_DELETE(tsp);
 
 }
 
@@ -619,6 +628,7 @@ void BattleMap::draw_moving_tile()
 	draw_moving_block();
 	dps_range(m_con_cur, cs_y, t_iMove);
 
+	CCLog(">[BattleMap] draw_moving_tile() | dps_range() overed.");
 	cs_y.erase(make_pair(m_con_cur.x,m_con_cur.y));
 	imply_set(cs_y,c_y);			//Imply.
 	
@@ -783,7 +793,7 @@ void BattleMap::dps_range( CCPoint a_cp , set<pair<int,int>> &a_dt, int a_max )
 	int t_x = a_cp.x;
 	int t_y = a_cp.y;
 
-	//CCLog(">Dps_range_begin:%d,%d",t_x,t_y);
+	CCLog(">Dps_range_begin:%d,%d",t_x,t_y);
 	
 	if(cs_block.count(make_pair(t_x,t_y))>0){
 		cs_hit_block.insert(make_pair(t_x,t_y));
@@ -795,7 +805,7 @@ void BattleMap::dps_range( CCPoint a_cp , set<pair<int,int>> &a_dt, int a_max )
 		return;
 	}
 
-	//CCLog(">Dps_range_pass:%d,%d",t_x,t_y);
+	CCLog(">Dps_range_pass:%d,%d",t_x,t_y);
 
 	if(a_dt.count(make_pair(t_x,t_y))>0) return;
 	a_dt.insert(make_pair(t_x,t_y));
@@ -1639,6 +1649,7 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	// m_caTarget	<被选中的目标单位
 	// ts_last		<被选中的所有点的集合
 	GameManager::sharedLogicCenter()->ml->m_iItem = -1;
+	BattleField::sharedBattleField()->meSrc = (EChesses*) m_controller;
 	
 	clear_Arrange();
 	BattleField::sharedBattleField()->mCachedSPp.clear();
@@ -2095,4 +2106,19 @@ void BattleMap::RemoveSCBKState()
 	micECx = -1;
 	micECy = -1;
 }
+
+void BattleMap::RemoveWhileDead(CCObject* achess)
+{
+	EChesses* tEc = (EChesses*) achess;
+
+	m_itemlist->removeObjectForKey(tEc->name) ;	// <通知BattleMap进行处理
+	m_caTarCharas->removeObject(tEc->m_pChara);
+	_world->DestroyBody(tEc->m_body);				// < 保存列表并交付给逻辑循环处理[添加对应的函数接口] || world.destroyBody(b);
+
+	m_caTarCharas->removeObject(tEc->m_pChara);
+	m_caTarget->removeObject(tEc->m_pChara);
+
+	if(m_controller == tEc) m_controller = nullptr;
+}
+
 

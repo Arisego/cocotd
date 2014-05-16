@@ -1003,6 +1003,7 @@ void CCSpriterX::PauseMe()
 
 void CCSpriterX::ResuMe()
 {
+	if(!mbPaused) return;
 	mbPaused = false;
 	scheduleUpdate();
 }

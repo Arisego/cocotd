@@ -29,6 +29,8 @@ void BattleField::InitCheck()
 bool BattleField::ActChack()
 {
 	CCLog(">[BattleFieldScp]ActCheck() | Is SomeOne Dead.");
+
+	//return false;
 	EChesses* tEc = NULL;
 	for (;m_EIt != mMapC.end();++m_EIt)
 	{
@@ -225,6 +227,7 @@ void BattleField::onDeadEvent(EChesses* tar)
 	if(meOrig == tar) {
 		meOrig = nullptr;
 	}
+
 	if(BackChess1 == tar) BackChess1 = nullptr;
 	if(BackChess2 == tar) BackChess2 = nullptr;
 	if(BackChess3 == tar) BackChess3 = nullptr;
@@ -239,15 +242,25 @@ void BattleField::onDeadEvent(EChesses* tar)
 	int gid = tar->group_id;
 
 	mMapC.erase(make_pair(tx,ty));
+	CCLog(">[BattleFieldScp] onDeadEvent() | Remove Chess: (%d, %d) ", tx, ty);
 
 	tar->m_pChara->RemoveRefHalos();
 	onEvent((tar->name+"_dead").c_str());
 
 	int ti = 0;
 	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
+		// <重置缓存变量
+		CCLog(">[BattleFieldScp] onDeadEvent() | Check for cacked ptr. | %s", it->second->m_pChara->m_sName.c_str());
+		if(it->second->m_pChara->mcTar){
+			CCLog(">[BattleFieldScp] onDeadEvent() | Check for cacked ptr. | tar:%s", ((Chara*) it->second->m_pChara->mcTar)->m_sName.c_str() );
+			if(((EChesses*) ((Chara*) it->second->m_pChara->mcTar)->mEcOwner) == tar ) 
+				it->second->m_pChara->mcTar = NULL;
+		}
+		
+		// <检查是否有友军存活
 		if(it->second->group_id == gid){
-			ti = 1;
-			break;
+			++ti;
+			//break;
 		}
 	}
 
