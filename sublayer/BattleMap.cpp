@@ -1718,7 +1718,7 @@ void BattleMap::HandleScriptor( Scriptor* asp )
 	}
 
 	if(BattleField::sharedBattleField()->mbCurMagic){
-		BattleField::sharedBattleField()->miSeType = 4;
+		((EChesses*) m_controller)->m_pChara->miSeType = 4;
 		BattleField::sharedBattleField()->PlaySe(((EChesses*) m_controller)->m_pChara);
 	}
 	

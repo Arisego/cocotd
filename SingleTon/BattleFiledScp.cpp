@@ -231,6 +231,7 @@ void BattleField::onDeadEvent(EChesses* tar)
 	if(BackChess1 == tar) BackChess1 = nullptr;
 	if(BackChess2 == tar) BackChess2 = nullptr;
 	if(BackChess3 == tar) BackChess3 = nullptr;
+	if(meLastRe == tar)	  meLastRe = nullptr;
 
 	if(GameManager::sharedLogicCenter()->ml->m_lsb->getContent() == tar) 
 		GameManager::sharedLogicCenter()->ml->m_lsb->SetContent(NULL);

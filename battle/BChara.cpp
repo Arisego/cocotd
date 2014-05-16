@@ -44,6 +44,8 @@ Chara::Chara(){
 	mfLastHpJudge = 1.0;
 	miSSCount = 0;
 	miRateMax = 100;
+
+	miSeType = 0;
 }
 
 Chara::~Chara(){

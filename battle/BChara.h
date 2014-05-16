@@ -196,6 +196,7 @@ private:
 
 public:
 	string msAttakAttrs;						// <攻击属性数组
+	int		miSeType;							// <播放的声音类型| 由BattleField转移到这里
 };
 
 #endif

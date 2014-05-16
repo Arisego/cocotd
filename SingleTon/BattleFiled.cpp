@@ -168,7 +168,7 @@ void BattleField::SetSrc( EChesses* aSrc )
 	meLastRe = NULL;
 	mbIsMagic = false;
 	mbCurMagic = false;
-	miSeType = 0;
+	meOrig->m_pChara->miSeType = 0;
 
 	/* [SS] <目标被选中为操作单位  */
 	if(meOrig->m_pChara->getvalue("b_xudong") == meOrig->m_pChara->getvalue("b_maxxudong")) {
@@ -515,18 +515,13 @@ bool BattleField::LogicContinue()
 	case 3:		// <攻击发起方可反击的情况 || 对于多重的普通攻击将会分别进行第三次攻击
 		{
 			if(!mbIsMagic){		
-				// <第三次攻击只有可能是普通攻击
-				//GameManager::sharedLogicCenter()->ml->bm->m_caTarget->removeAllObjects();
-				//GameManager::sharedLogicCenter()->ml->bm->m_caTarget->addObject(meSrc);
-				//GameManager::sharedLogicCenter()->ml->bm->m_controller = meOrig;
-				//GameManager::sharedLogicCenter()->ml->RePack();
+				meOrig->m_pChara->miSeType = 2;
 
-				miSeType = 2;
-				ret = SkillJudge::sharedSkillJudge()->CheckNorM(meOrig, meLastRe, true);
+				if(meLastRe)
+					ret = SkillJudge::sharedSkillJudge()->CheckNorM(meOrig, meLastRe, true);
 				
 				miState = 1;			// <回到初始反击查询状态
 				if(!ret) ret = LogicContinue();
-				//ret = true;
 			}else{
 				CCLog(">[BattleField] LogicContinue | mbIsMagec == true");
 				miState = 1;
@@ -679,7 +674,7 @@ void BattleField::CheckBackCh()
 
 	// < -- 播放音效 | ATK/SKILL
 	if(!mbIsMagic){
-		miSeType = 1;
+		meOrig->m_pChara->miSeType = 1;
 	}
 
 	//
@@ -763,7 +758,7 @@ bool BattleField::TestBackCh(EChesses* atar)
 			exit(0x999);
 		}
 		
-		miSeType = 3;
+		atar->m_pChara->miSeType = 3;
 
 		meTarget = atar;	// <当前被作为目标的角色设定
 		meLastRe = atar;
@@ -1118,6 +1113,12 @@ void BattleField::ActOver()
 	mCachedSPp.clear();
 	mCachedSPpScs.clear();
 	miLastSkillID = 0;
+
+	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
+		it->second->m_pChara->miSeType = 0;
+	}
+
+	
 	//Clean();  <已转移到checkover中，否则会影响checkover的机制
 	
 }
@@ -2034,8 +2035,8 @@ void BattleField::PlaySpxPo(CCPoint apos, Script* asp)
 void BattleField::PlaySe(CCObject* aeChara)
 {
 	Chara* tc = ((Chara*) aeChara);
-	CCLog(">[BattleField] PlaySe | %d",  miSeType);
-	switch (miSeType)
+	CCLog(">[BattleField] PlaySe | %d",  tc->miSeType);
+	switch (tc->miSeType)
 	{
 	case 1:	/* <普通攻击 */
 		{
@@ -2092,7 +2093,7 @@ void BattleField::PlaySe(CCObject* aeChara)
 		return;
 		break;
 	}
-	miSeType = 0;
+	tc->miSeType = 0;
 	miLastSkillID = 0;
 	tc->PlayVodActor();
 }

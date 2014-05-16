@@ -1597,7 +1597,7 @@ void MapLayer::BMSkDrawMove( string tsAddition )
 					/*((EChesses*) bm->m_controller)->m_pChara->LoadBuffer(ti);*/
 					BufferSkill(m_iItem, bm->m_controller);
 
-					BattleField::sharedBattleField()->miSeType = 4;
+					((EChesses*)  bm->m_controller)->m_pChara->miSeType = 4;
 					BattleField::sharedBattleField()->PlaySe(((EChesses*)  bm->m_controller)->m_pChara);
 
 					if(((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->mbThinked && !SkillJudge::sharedSkillJudge()->mbJudging) ((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->miReState = 2;

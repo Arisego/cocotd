@@ -231,13 +231,13 @@ void SkillList::randomactfc()
 	setVisible(true);
 	
 	int ti = m_siSkillEn.size();
-	bool rt = (CCRANDOM_0_1() < 1.5);
+	bool rt = (CCRANDOM_0_1() < 0.35);
 
 	if(rt){
 		
 		float tf = floor(ti * (CCRANDOM_0_1()));
 		ti = tf;
-		//ti = 2;	// <ต๗สิ
+		//ti = 5;	// <ต๗สิ
 		CCLog(">[SkillList] randomactfc() | ti:%d", ti);
 
 		for(int i = 0; i<8; ++i){
