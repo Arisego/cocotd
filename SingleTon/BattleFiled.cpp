@@ -1114,6 +1114,11 @@ void BattleField::ActOver()
 	mCachedSPpScs.clear();
 	miLastSkillID = 0;
 
+	BackChess3 = nullptr;
+	BackChess1 = nullptr;
+	BackChess2 = nullptr;
+	meLastRe = nullptr;
+
 	for(map<pair<int,int>,EChesses*>::iterator it = mMapC.begin(); it != mMapC.end(); ++it){
 		it->second->m_pChara->miSeType = 0;
 	}
@@ -1765,6 +1770,8 @@ void BattleField::JudgeEnti(Script* ascp)
 			CCLog(">[BattleField]Judge Err:Error Type Provided:%d. Hurt will be 0.",tiDaType);
 			break;
 		}
+	}else{
+		exit(9999);
 	}
 
 

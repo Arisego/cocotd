@@ -116,28 +116,36 @@ void AIComponent::UseSkill()
 	bool ret = false;
 	msSkillDis.clear();
 
+
 	do 
 	{
-		
+
 		ret = SkillJudge::sharedSkillJudge()->CheckSkill(this);
-		
+
 		if(ret) break;				// <返回假表示该技能无法使用，为真则找到可使用的技能
 		msSkillDis.insert(miNextSkill);
 		SkillJudge::sharedSkillJudge()->JudgeSkill(this);
 		GameManager::sharedLogicCenter()->ml->bm->clean_allcs();
 		if(miNextSkill<0) break;	// <未能找到有效的技能，则放弃寻找
 	} while (true);
+
 	
 	CCLog(">[AIComponent] UseSkill() | Pass");
-	if(!ret){
+	if(!ret || CCRANDOM_0_1() < 0.55){
 		GameManager::sharedLogicCenter()->ml->bm->clean_allcs();
 		
 		if(!SkillJudge::sharedSkillJudge()->CheckNorM(m_pOwner)){
 			GameManager::sharedLogicCenter()->ml->bm->clean_allcs();
-			SkillOver();
+			
+			if(!ret){
+				SkillOver();
+				return;		// <没有找到可用的技能
+			}
+		}else{
+			GameManager::sharedLogicCenter()->ml->bm->clean_allcs();
+			return;
 		}
 		
-		return;		// <没有找到可用的技能
 	}
 	
 	BattleField::sharedBattleField()->setBattle(true);
@@ -146,6 +154,30 @@ void AIComponent::UseSkill()
 
 void AIComponent::ActSkill()
 {
+
+	do{
+		if(GameManager::sharedLogicCenter()->ml->bm->cs_y.size() > 0) break;
+
+		BSkill* tbs = mpChara->mSkillList->getSkill(miNextSkill);
+
+		// <几乎不可能发生的情况
+		//if(!tbs){ 
+		//	SkillOver();
+		//	return;
+		//	break;
+		//}
+
+		GameManager::sharedLogicCenter()->ml->bm->setLink(tbs->m_iLink);
+		GameManager::sharedLogicCenter()->ml->BMSkDrawMove(tbs->msAddition);
+
+		int tiUseCase = tbs->m_iUseCase;
+		GameManager::sharedLogicCenter()->ml->m_iSUseCase = tiUseCase;		
+		GameManager::sharedLogicCenter()->ml->bm->miRangeType = tiUseCase;
+
+		GameManager::sharedLogicCenter()->ml->bm->clear_mcaTarget();
+		GameManager::sharedLogicCenter()->ml->bm->clear_Arrange();
+	}while(0);
+
 	//mfLastMJ = 0;
 	miState = AI_STATE_SKILLUSING;
 	++miDebugCount;

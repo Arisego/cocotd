@@ -993,6 +993,8 @@ void EChessComp::DelayUnLock(float dt )
 {
 	ELock();
 	miScriptSum = -1;
+	miScriptCount = 0;
+
 	m_pOwner->runAction(CCSequence::create(CCDelayTime::create(dt),FRELEASE,NULL));
 }
 

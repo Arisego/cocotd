@@ -258,8 +258,9 @@ bool SkillJudge::CheckSkill( AIComponent* tai )
 bool SkillJudge::CheckNorM(CCObject* tai, CCObject* tar, bool abact)	
 {
 	EChesses* tte = (EChesses*) tai;
-	if(!tte->m_pChara->CanAct()) return false;
 
+	if(!tte->m_pChara->CanAct()) return false;
+	
 	mbJudging = true;
 
 	do 
@@ -310,6 +311,7 @@ bool SkillJudge::CheckNorM(CCObject* tai, CCObject* tar, bool abact)
 
 					GameManager::sharedLogicCenter()->ml->bm->clear_mcaTarget();
 					GameManager::sharedLogicCenter()->ml->bm->clear_Arrange();
+					GameManager::sharedLogicCenter()->ml->bm->miRangeType = 0;
 
 					GameManager::sharedLogicCenter()->ml->bm->f_decide(it->first, it->second);
 					if(GameManager::sharedLogicCenter()->ml->bm->arange_targetwithtest(0)){
@@ -333,6 +335,7 @@ bool SkillJudge::CheckNorM(CCObject* tai, CCObject* tar, bool abact)
 				}
 				CCLog(">[SkillJudge]CheckNorM() -------------------------------------------------------------- End ----------------------------------------------------------------");
 
+				GameManager::sharedLogicCenter()->ml->bm->cs_y.insert(make_pair(tte->pos.x, tte->pos.y));
 				GameManager::sharedLogicCenter()->ml->bm->clear_mcaTarget();
 				GameManager::sharedLogicCenter()->ml->bm->clear_Arrange();
 
