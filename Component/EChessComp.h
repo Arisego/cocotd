@@ -83,6 +83,11 @@ public:
 	int			getCurGrp();					// <获得当前的HitGroup
 	void		setSrc(CCObject* teSrc);		// <设置脚本伤害来源
 	CCObject*	getSrc();						// <与上面的相对
+
+	bool		mbReSkill;						// <反击是否使用技能
+
+	void		ReFactSkill();					// <反击选择释放技能
+	int			miCacheReState;					// <缓存state|BF
 };
 
 

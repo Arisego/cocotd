@@ -900,6 +900,20 @@ bool EChessComp::AtkTestRange( CCPoint target )
 	return GameManager::sharedLogicCenter()->ml->bm->f_RangeTest(1,ars,((EChesses*) m_pOwner)->pos,target);
 }
 
+void EChessComp::ReFactSkill()
+{
+	if(!mbThinked) return;
+
+	miReState = 2;
+	mbReSkill = true;
+
+	BattleField::sharedBattleField()->miState = miCacheReState;
+	miCacheReState = 0;
+
+	BattleField::sharedBattleField()->ClearReASkill();
+
+}
+
 /* <寻找反击策略 */
 bool EChessComp::FindFitRe( CCObject* tar,int atime )
 {
@@ -920,10 +934,14 @@ bool EChessComp::FindFitRe( CCObject* tar,int atime )
 	}else{
 		CCLog(">[EChessComp] FindFitRe()| Player Chara Bing.");
 	}
+
+	CCLog(">[EChessComp] FindFitRe() | miReCount:%d", miReCount);
 	/* <玩家决策 */
-	if( (!mbThinked)){
+	if( (!mbThinked) && miReCount == 2){
 		if(miReState == 2) return false;
 		CCLog(">[EChessComp] FindFitRe() | Try popup Re for pc.");
+
+		miCacheReState = BattleField::sharedBattleField()->miState;
 		BattleField::sharedBattleField()->miState = 2;
 		
 		mbThinked = true;
@@ -954,7 +972,7 @@ bool EChessComp::FindFitRe( CCObject* tar,int atime )
 	}
 
 	CCLog(">[EChessComp] FindFitRe() | LastPass, state:%d", miReState);
-	if(miReState == 2) return false;
+	if(miReState == 2 && miReCount == 0) return false;
 
 	CCLog(">[EChessComp] FindFitRe() | Ready For Normal Attack.");
 	miReState = 1;
@@ -978,6 +996,7 @@ void EChessComp::CleanRe()
 	miReCount = 2;
 	miReState = 0;
 	mbThinked = false;
+	mbReSkill = false;
 }
 
 int EChessComp::PreCheckRe( CCObject* tar,int atime )

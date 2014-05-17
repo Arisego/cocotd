@@ -131,7 +131,7 @@ void AIComponent::UseSkill()
 
 	
 	CCLog(">[AIComponent] UseSkill() | Pass");
-	if(!ret || CCRANDOM_0_1() < 0.55){
+	if(!ret || CCRANDOM_0_1() < 0.8){
 		GameManager::sharedLogicCenter()->ml->bm->clean_allcs();
 		
 		if(!SkillJudge::sharedSkillJudge()->CheckNorM(m_pOwner)){

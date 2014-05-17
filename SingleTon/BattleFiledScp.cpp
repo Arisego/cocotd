@@ -269,3 +269,9 @@ void BattleField::onDeadEvent(EChesses* tar)
 		onEvent("all_dead");		// <测试用，实际使用时请指明势力
 	}
 }
+
+void BattleField::ClearReASkill(){
+	if(BackChess1 == meLastRe) BackChess1 = nullptr;
+	if(BackChess2 == meLastRe) BackChess2 = nullptr;
+	if(BackChess3 == meLastRe) BackChess3 = nullptr;
+}

@@ -1770,9 +1770,9 @@ void BattleField::JudgeEnti(Script* ascp)
 			CCLog(">[BattleField]Judge Err:Error Type Provided:%d. Hurt will be 0.",tiDaType);
 			break;
 		}
-	}else{
+	}/*else{
 		exit(9999);
-	}
+	}*/
 
 
 

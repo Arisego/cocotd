@@ -1436,7 +1436,7 @@ void MapLayer::CtnSkill()
 		}
 		
 		CCLog(">[MapLayer] CtnSkill() | Prepare for EC-SkillUsing.");
-		if(((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->mbThinked) ((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->miReState = 2;
+		((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->ReFactSkill();
 		
 		bm->clean_cs();
 		EffectControler::sharedEffectControler()->md_use_skill(this,m_iItem,((EChesses*) bm->m_controller)->m_pChara);		
@@ -1584,7 +1584,9 @@ void MapLayer::BMSkDrawMove( string tsAddition )
 		{
 			CCLog(">[MapLayer] BMSkDrawMove() | Skill type directly run.");
 			mbIsDirect = true;
-			if(((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->mbThinked && !SkillJudge::sharedSkillJudge()->mbJudging) ((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->miReState = 2;
+			if(((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->mbThinked && !SkillJudge::sharedSkillJudge()->mbJudging){
+				((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->ReFactSkill();
+			}
 			bm->find_target_arrage(-99);
 
 			if(mbCheckLock) return;
@@ -1600,7 +1602,9 @@ void MapLayer::BMSkDrawMove( string tsAddition )
 					((EChesses*)  bm->m_controller)->m_pChara->miSeType = 4;
 					BattleField::sharedBattleField()->PlaySe(((EChesses*)  bm->m_controller)->m_pChara);
 
-					if(((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->mbThinked && !SkillJudge::sharedSkillJudge()->mbJudging) ((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->miReState = 2;
+					if(((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->mbThinked && !SkillJudge::sharedSkillJudge()->mbJudging){
+						((EChessComp*) ((EChesses*) bm->m_controller)->getComponent("controller"))->ReFactSkill();
+					}
 					ReleaseCLock();
 					return;
 				}

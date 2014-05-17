@@ -210,6 +210,8 @@ public:
 	void PlaySe(CCObject* aeChara);	// <播放音效 | Chara
 
 	int	miLastSkillID;			// <上一个触发的技能ID
+
+	void ClearReASkill();		// <反击技能生效时清除操作
 };
 
 

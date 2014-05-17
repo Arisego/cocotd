@@ -231,7 +231,7 @@ void SkillList::randomactfc()
 	setVisible(true);
 	
 	int ti = m_siSkillEn.size();
-	bool rt = (CCRANDOM_0_1() < 0.35);
+	bool rt = (CCRANDOM_0_1() < 0.2);
 
 	if(rt){
 		

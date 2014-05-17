@@ -79,7 +79,7 @@ void LgStat::CountDown(float time, CCObject* target, SEL_MenuHandler selector)
 
 void LgStat::update(float dt)
 {
-	//CCLog(">[LgStat] update");
+	CCLog(">[LgStat] update");
 	switch (miState)
 	{
 	case 2:
