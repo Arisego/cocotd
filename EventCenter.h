@@ -38,6 +38,7 @@ public:
 	void unsetBmCake(Cake* s);
 
 	vector<Scroller*> m_vScrolls;
+	vector<Controller*> m_vControllers;
 
 private:
 	static EventCenter* mSharedEventCenter;

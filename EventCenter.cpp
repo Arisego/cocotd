@@ -173,6 +173,7 @@ bool EventCenter::init(){
 		eglView->setAccelerometerKeyHook(ehandler);
 
 		m_vScrolls.clear();
+		m_vControllers.clear();
 		m_lgstat = NULL;
 
 		return true;
@@ -181,7 +182,18 @@ bool EventCenter::init(){
 }
 
 void EventCenter::setController(Controller* c){
-	mController = c;
+	if(c){
+		m_vControllers.push_back(mController);
+		mController = c;
+	}else{
+		int vs = m_vControllers.size();
+		if(vs>1) {
+			mController = m_vControllers.at(m_vControllers.size()-1);
+			m_vControllers.pop_back();
+		}else{
+			mController = NULL;
+		}
+	}
 }
 
 void EventCenter::setScroller(Scroller* s /* = NULL */){
@@ -193,6 +205,8 @@ void EventCenter::setScroller(Scroller* s /* = NULL */){
 		if(vs>1) {
 			mScroller = m_vScrolls.at(m_vScrolls.size()-1);
 			m_vScrolls.pop_back();
+		}else{
+			mScroller = NULL;
 		}
 	}
 
