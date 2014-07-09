@@ -1,5 +1,6 @@
 #include "MouseMenu.h"
 #include "SoundManager.h"
+#include "EventCenter.h"
 
 MouseMenu* MouseMenu::createWithArray(CCArray* pArrayOfItems)
 {
@@ -56,7 +57,14 @@ MouseMenu* MouseMenu::menuWithItem(CCMenuItem* item)
 
 void MouseMenu::f_init(){
 	lastto = NULL;
+
+	miNums		=	this->getChildrenCount();
+	miHovered	=	-1;
+	miOver		=	-1;
+	miAlignType =	1;
+
 	this->scheduleUpdate();
+	Regist();
 }
 
 void MouseMenu::onExit()
@@ -68,6 +76,7 @@ void MouseMenu::onExit()
 		m_pSelectedItem = NULL;
 	}
 	CC_SAFE_RELEASE_NULL(lastto);
+	UnRegist();
 	CCLayer::onExit();
 }
 
@@ -95,16 +104,20 @@ bool MouseMenu::ccTouchBegan(CCTouch* touch, CCEvent* event)
         }
     }
 
-
-    m_pSelectedItem = this->itemForTouch(touch);
-    if (m_pSelectedItem)
+	CCLog(">[MouseMenu] ccTouchBegan()");
+	CCMenuItem* tcs = this->itemForTouch(touch);
+   
+    if (tcs)
     {
+		 m_pSelectedItem = tcs;
         m_eState = kCCMenuStateTrackingTouch;
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32 )
         m_pSelectedItem->selected();
 #endif
         return true;
     }
+
+	CCLog(">[MouseMenu] ccTouchBegan() | Nothing being touched.");
     return false;
 }
 
@@ -114,6 +127,10 @@ void MouseMenu::ccTouchEnded(CCTouch *touch, CCEvent* event)
     CC_UNUSED_PARAM(touch);
     CC_UNUSED_PARAM(event);
     CCAssert(m_eState == kCCMenuStateTrackingTouch, "[Menu ccTouchEnded] -- invalid state");
+
+	CCLog(">[MouseMenu] ccTouchEnded()");
+	if(miOver == miHovered && miHovered != -1) return;
+
     if (m_pSelectedItem)
     {
         m_pSelectedItem->unselected();
@@ -154,6 +171,8 @@ void MouseMenu::update(float dt){
 	//CCLog(">[MouseMenu] update()");
 	if(!lastto) return;
 	if(!mbEnabled) return;
+
+	miOver = -1;
 	CCMenuItem *currentItem = this->itemForTouch(lastto);		
 	if(NULL != currentItem){
 		if (currentItem != m_pSelectedItem ) 
@@ -167,16 +186,18 @@ void MouseMenu::update(float dt){
 			if (m_pSelectedItem)
 			{
 				m_pSelectedItem->selected();
+				miOver = m_pSelectedItem->getTag() -100;
+				miHovered = miOver;
 			}
 		}
 	}else{
-		if (m_pSelectedItem)
-		{
-			//SoundManager::sharedSoundManager()->PlayLaserSFX();
-			m_pSelectedItem->unselected();
-			m_pSelectedItem = NULL;
-			CC_SAFE_RELEASE_NULL(lastto);
-		}
+		//if (m_pSelectedItem)
+		//{
+		//	//SoundManager::sharedSoundManager()->PlayLaserSFX();
+		//	m_pSelectedItem->unselected();
+		//	m_pSelectedItem = NULL;
+		//	CC_SAFE_RELEASE_NULL(lastto);
+		//}
 	}
 }
 
@@ -186,7 +207,127 @@ void MouseMenu::ReSume()
 }
 
 MouseMenu::MouseMenu():
-	mbEnabled(true)
+	mbEnabled(true),
+	miHovered(-1),
+	miOver(-1),
+	mbRegisted(false)
 {
 
+}
+
+void MouseMenu::s_press(bool up /*= false*/)
+{
+	if(!mbEnabled) return;
+	if(!up) return;
+	if(miAlignType != 1) return;
+
+	++miHovered;
+	CCMenuItem* tci = (CCMenuItem*) this->getChildByTag(miHovered+100);
+	CCLog(">[MouseMenu] s_press() | %d", miHovered);
+	if(!tci){
+		--miHovered;
+		return;
+	}
+
+	SoundManager::sharedSoundManager()->PlayHoverSFX();
+	if(m_pSelectedItem) m_pSelectedItem->unselected();
+	m_pSelectedItem = tci;
+	m_pSelectedItem->selected();
+}
+
+void MouseMenu::w_press(bool up /*= false*/)
+{
+	if(!mbEnabled) return;
+	if(!up) return;
+	if(miAlignType != 1) return;
+
+	if(miHovered == -1) miHovered = miNums;
+	--miHovered;
+	CCMenuItem* tci = (CCMenuItem*) this->getChildByTag(miHovered+100);
+	CCLog(">[MouseMenu] w_press() | %d", miHovered);
+	if(!tci){
+		++miHovered;
+		return;
+	}
+
+	SoundManager::sharedSoundManager()->PlayHoverSFX();
+	if(m_pSelectedItem) m_pSelectedItem->unselected();
+	m_pSelectedItem = tci;
+	m_pSelectedItem->selected();
+}
+
+void MouseMenu::a_press(bool up /*= false*/)
+{
+	if(!mbEnabled) return;
+	if(!up) return;
+	if(miAlignType != 2) return;
+
+	if(miHovered == -1) miHovered = miNums;
+	--miHovered;
+	CCMenuItem* tci = (CCMenuItem*) this->getChildByTag(miHovered+100);
+	CCLog(">[MouseMenu] a_press() | %d", miHovered);
+	if(!tci){
+		++miHovered;
+		return;
+	}
+
+	SoundManager::sharedSoundManager()->PlayHoverSFX();
+	if(m_pSelectedItem) m_pSelectedItem->unselected();
+	m_pSelectedItem = tci;
+	m_pSelectedItem->selected();
+}
+
+void MouseMenu::d_press(bool up /*= false*/)
+{
+	if(!mbEnabled) return;
+	if(!up) return;
+	if(miAlignType != 2) return;
+
+	++miHovered;
+	CCMenuItem* tci = (CCMenuItem*) this->getChildByTag(miHovered+100);
+	CCLog(">[MouseMenu] d_press() | %d", miHovered);
+	if(!tci){
+		--miHovered;
+		return;
+	}
+
+	SoundManager::sharedSoundManager()->PlayHoverSFX();
+	if(m_pSelectedItem) m_pSelectedItem->unselected();
+	m_pSelectedItem = tci;
+	m_pSelectedItem->selected();
+}
+
+void MouseMenu::z_press(bool up /*= false*/)
+{
+	if(!mbEnabled) return;
+	if (m_pSelectedItem)
+	{
+		m_pSelectedItem->unselected();
+		m_pSelectedItem->activate();
+		m_pSelectedItem = NULL;
+		CC_SAFE_RELEASE_NULL(lastto);
+		mbEnabled = false;
+		SoundManager::sharedSoundManager()->PlayDecideSFX();
+	}
+	m_eState = kCCMenuStateWaiting;
+}
+
+void MouseMenu::f_setaligntype(int ai)
+{
+	miAlignType = ai;
+}
+
+void MouseMenu::UnRegist()
+{
+	if(mbRegisted){
+		mbRegisted = false;
+		EventCenter::sharedEventCenter()->setController(NULL);		
+	}
+}
+
+void MouseMenu::Regist()
+{
+	if(mbRegisted) return;
+	EventCenter::sharedEventCenter()->setController(this);
+	mbRegisted = true;
 }

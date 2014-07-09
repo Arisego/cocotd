@@ -55,6 +55,11 @@ bool ModelLayer::m_qlock = false;
 
 void ModelLayer::preQuit(){
 	if(!b_StateRunning || m_qlock) return;
+	if(GameManager::sharedGameManager()->fCanDirectQuit()){
+		runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0), CCCallFunc::create(this,callfunc_selector(ModelLayer::quit_act))));
+		return;
+	}
+
 	setTouchEnabled(true);
 	m_qlock = true;
 
@@ -62,17 +67,16 @@ void ModelLayer::preQuit(){
 
 	CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
 	BYLayerDescendant *mb = new BYLayerDescendant();
-	mb->autorelease();
 	
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
 	float sf = 1;
-	CCSprite* spriteNormal = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,115/sf,23/sf));
-	CCSprite* spriteSelected = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,115/sf,23/sf));
-	CCSprite* spriteDisabled = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,115/sf,23/sf));
-	CCSprite* spriteNormal1 = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,115/sf,23/sf));
-	CCSprite* spriteSelected1 = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,115/sf,23/sf));
-	CCSprite* spriteDisabled1 = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,115/sf,23/sf));
+	CCSprite* spriteNormal = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,70/sf,23/sf));
+	CCSprite* spriteSelected = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,70/sf,23/sf));
+	CCSprite* spriteDisabled = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,70/sf,23/sf));
+	CCSprite* spriteNormal1 = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,70/sf,23/sf));
+	CCSprite* spriteSelected1 = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,70/sf,23/sf));
+	CCSprite* spriteDisabled1 = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,70/sf,23/sf));
 	//spriteNormal->draw();
 	//dynamic_cast<CCNode*>(mgr)->addChild(spriteNormal);
 	//dynamic_cast<CCNode*>(mgr)->addChild(spriteSelected);
@@ -80,14 +84,20 @@ void ModelLayer::preQuit(){
 
 	SpriteTextMenuItem* mif_Yes = new SpriteTextMenuItem();
 	mif_Yes->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(ModelLayer::c_quit_yes) );
+	mif_Yes->settext(ConfigManager::sharedConfigManager()->GetConfigS("yes").c_str(), FNT_CHN, 24);
 	SpriteTextMenuItem* mif_No = new SpriteTextMenuItem();
 	mif_No->initWithNormalSprite(spriteNormal1, spriteSelected1, spriteDisabled1, this, menu_selector(ModelLayer::c_quit_no) );
 	mif_No->autorelease();
+	mif_No->settext(ConfigManager::sharedConfigManager()->GetConfigS("no").c_str(), FNT_CHN, 24);
 	mif_Yes->autorelease();
-
+	mif_Yes->setTag(100);
+	mif_No->setTag(101);
+		
 	//CCMenuItemFont *mif_Yes = CCMenuItemFont::create("Yes",  this, menu_selector(ModelLayer::c_quit_yes) );
 	//CCMenuItemFont *mif_No = CCMenuItemFont::create("No",  this, menu_selector(ModelLayer::c_quit_no) );
 	MouseMenu *mbmm = MouseMenu::menuWithItems(mif_Yes,mif_No,NULL);
+	mbmm->f_setaligntype(2);
+
 	mbmm->setAnchorPoint(ccp(0.5,0));
 	mbmm->setPosition(ccp(0,mif_Yes->getContentSize().height));
 	mbmm->alignItemsHorizontally();
@@ -96,32 +106,42 @@ void ModelLayer::preQuit(){
 	
 
 	float m_textwidth = 300;
-	CCLabelBMFont* m_Text = CCLabelBMFont::create(ConfigManager::sharedConfigManager()->GetConfigS("pre_quit").c_str(), FNT_CHN);
+	CCLabelBMFont* m_Text = CCLabelBMFont::create(ConfigManager::sharedConfigManager()->GetConfigS("pre_quit").c_str(), FNT_CHN, m_textwidth);
+	m_Text->setLineBreakWithoutSpace(true);
+	m_Text->setColor(ccBLACK);
+	m_Text->setScale(0.7);
 	//CCLabelTTF *m_Text = CCLabelTTF::create(, "fonts/simhei.ttf", 18, CCSize(m_textwidth, 0), kCCTextAlignmentLeft);
 	m_Text->setAnchorPoint(ccp(0.5,0));
 	m_Text->setPosition(ccp(0,m_height));
-	m_height += m_Text->getContentSize().height;
+	m_height += (m_Text->getContentSize().height * 0.7);
 	mb->addChild(m_Text);
 	
 	this->addChild(mb);
+	mb->autorelease();
 
-	CCScale9Sprite* nback = CCScale9Sprite::create(s_Button); 
-	nback->setContentSize(CCSize(m_textwidth+ 33,m_height+ 22));
+	CCScale9Sprite* nback = CCScale9Sprite::create("Images/popup_back.png"); 
+	nback->setContentSize(CCSize(m_textwidth+ 123,m_height+ 22));
 	nback->setAnchorPoint(ccp(0.5,0));
-	nback->setOpacity(100);
+	nback->setOpacity(200);
 	mb->addChild(nback,-1);
 
-	
+
 	
 }
 
-void ModelLayer::c_quit_yes(CCObject* sender){
-	
+void ModelLayer::quit_act()
+{
+	GameManager::purgeSharedGameManager();
+}
+
+void ModelLayer::c_quit_yes(CCObject* sender){	
 	GameManager::purgeSharedGameManager();
 }
 
 void ModelLayer::c_quit_no(CCObject* sender){
+	retain();
 	removeFromParent();
+	autorelease();
 	m_qlock = false;
 	GameManager::sharedGameManager()->noQuit();
 }

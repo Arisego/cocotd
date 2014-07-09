@@ -234,18 +234,24 @@ void ToTextLayer::tlbback( CCObject* sender )
 void ToTextLayer::menucallback(CCObject* sender)
 {
 	m_bTouchProt = false;
+	miSelMenuJp = ((SpriteTextMenuItem *) sender)->getSData();
+	runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0), CCCallFunc::create(this,callfunc_selector(ToTextLayer::SelMenuBC))));
+}
+
+void ToTextLayer::SelMenuBC()
+{
 	removeChildByTag(MENUTAG);
-	
-	int jump = ((CCMenuItemFont *) sender)->getTag();
-	GameManager::sharedLogicCenter()->e_jump(jump);
-	Script* jp = (Script*) lockstate->objectForKey(jump);
+	removeChildByTag(MENUTAG+1);
+
+	GameManager::sharedLogicCenter()->e_jump(miSelMenuJp);
+	Script* jp = (Script*) lockstate->objectForKey(miSelMenuJp);
 	sel_menu = NULL;
 	if(jp) StateCenter::sharedStateCenter()->g_lock_change(jp);
 	if(!m_bIsSkip) e_layerstate = 0;
 	else e_layerstate = 4;
 	CC_SAFE_RELEASE_NULL(lockstate);
-	
 }
+///
 
 bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 	const char* filename = ts->getstring("content");
@@ -614,14 +620,23 @@ void ToTextLayer::FormText(){
 			++m_iLine;
 			lines += '\n\r';
 			vi_text.push_back(0);
+			CCLog(">[ToTextLayer] FormText() | Full width change line.");
 		}
 		char t = fulline[i];
-		if(t=='\n'){
+		if(t == 13){
 			mLineCount = 0;
 			++m_iLine;
 			++i;
-			lines += '\n\r';
+			lines += t;
+
+			if(fulline[i+1] == 10){
+				++i;
+				lines += fulline[i+1];
+			}
+
+			
 			vi_text.push_back(0);
+			CCLog(">[ToTextLayer] FormText() | Change line by next.");
 			continue;
 		} else if((t&0xE0) == 0xE0){	//3byte
 			lines += t;
@@ -629,23 +644,32 @@ void ToTextLayer::FormText(){
 			lines += fulline[i+2];
 			i += 3;
 			mLineCount += mSingeWidth;
+			CCLog(">[ToTextLayer] FormText() | Type 3 word.");
 			vi_text.push_back(3);
 		}else if((t&0xC0) == 0xC0){//2byte
 			lines += t;
 			lines += fulline[i+1];
 			i += 2;
 			mLineCount += mSingeWidth;
+			CCLog(">[ToTextLayer] FormText() | Type 2 word.");
 			vi_text.push_back(2);
 		}else{//1byte
+			if(t == 10 || t ==9){
+				++i;
+				continue;
+			}
+
 			lines += t;
 			i++;
 			mLineCount += mSingeWidth/2;
+			CCLog(">[ToTextLayer] FormText() | Type 1 word. %c||%d", t, t);
 			vi_text.push_back(1);
 		}
 		m_iTextcount++;
 	}
 	//lines = fulline;
-	//[0803]CCLog("forming text:\n%s",lines.c_str());
+	//[0803]
+	CCLog("forming text:\n%s",lines.c_str());
 }
 
 void ToTextLayer::ShowText(const char* line, const char* name){
@@ -861,22 +885,54 @@ bool ToTextLayer::DerSelMenu(Script* ts){
 		//CCDictionary* attrs = ts->attributes;
 		CCArray* scrs = ts->scriptnodes;
 		int n = ts->m_snum;
+		int maxleng = 0;	/* <最大字长 */
 
 		CCArray* tm = CCArray::createWithCapacity(n);
 		for(int i=0;i<n;i++){
 			Script* tmp = (Script*) scrs->objectAtIndex(i);		//set more here if you want more.
-			CCMenuItemFont::setFontName("Marker Felt");
-			CCMenuItemFont *item6 = CCMenuItemFont::create(tmp->getstring("content"), this, menu_selector(ToTextLayer::menucallback));
-			item6->setTag(tmp->getint("jump"));
-			tm->insertObject(item6,i);
+
+			float sf = 1;
+			CCSprite* spriteNormal; 
+			CCSprite* spriteSelected;
+			CCSprite* spriteDisabled;
+
+			spriteNormal = CCSprite::create("Images/menuitemsprite2.png", CCRectMake(0,23*2/sf,70/sf,23/sf));
+			spriteSelected = CCSprite::create("Images/menuitemsprite2.png", CCRectMake(0,23*1/sf,70/sf,23/sf));
+			spriteDisabled = CCSprite::create("Images/menuitemsprite2.png", CCRectMake(0,23*0,70/sf,23/sf));
+
+			SpriteTextMenuItem* item2 = new SpriteTextMenuItem();
+			item2->autorelease();
+			item2->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled,this, menu_selector(ToTextLayer::menucallback) );
+			item2->settext(tmp->getstring("content"), FNT_CHN, 24);
+			item2->setSData(tmp->getint("jump"));
+			item2->setTag(100+i);
+
+			maxleng = max(maxleng, strlen(tmp->getstring("content")));
+
+			tm->insertObject(item2,i);
 		}
 		sel_menu = MouseMenu::createWithArray(tm);	
 
 		sel_menu->setTouchEnabled(false);
-		sel_menu->alignItemsHorizontally();
+		sel_menu->alignItemsVertically();
 		sel_menu->setTag(MENUTAG);
 		sel_menu->setPosition(ccp(s.width/2, s.height/2));
+		sel_menu->f_setaligntype(1);
 		addChild(sel_menu);
+
+		float t_width,t_height;
+
+		t_width = maxleng * 30;
+		t_height = n * 30;
+
+		CCScale9Sprite* nback = CCScale9Sprite::create("Images/popup_back.png"); 
+		nback->setContentSize(CCSize(t_width+ 23,t_height+ 22));
+		nback->setAnchorPoint(ccp(0.5,0.5));
+		nback->setPosition(s.width/2, s.height/2 - t_height/2 +30 );
+		nback->setOpacity(200);
+		nback->setTag(MENUTAG+1);
+		addChild(nback,-1);
+
 		e_layerstate = 1;
 
 		return true;

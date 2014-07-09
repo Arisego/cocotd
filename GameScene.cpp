@@ -505,6 +505,7 @@ void GameScene::PrepareSave(){
 
 void GameScene::PreQuit(){
 	//PrepareSave();
+	CCLog(">[GameScene] PreQuit()");
 	StatesManager::PreQuit();
 	ml->Close();
 }

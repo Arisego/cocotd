@@ -141,6 +141,10 @@ protected:
 	virtual void ccTouchMoved(CCTouch *touch, CCEvent * pEvent){
 		if(m_bIsNoFade) BYLayerModal::ccTouchMoved(touch,pEvent);
 	}
+
+	int miSelMenuJp;
+public:
+	void SelMenuBC();
 };
 
 #endif	// __TEXT_LAYER_H__

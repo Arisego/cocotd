@@ -69,6 +69,8 @@ public:
 	void Disable();
 	void EnAblie();
 
+	bool fCanDirectQuit(); /* <是否可以直接退出 */
+
 };
 
 

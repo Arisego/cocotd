@@ -96,6 +96,7 @@ void ConfigManager::SetConfigV(int flag, int val){
 }
 
 string ConfigManager::GetConfigS(const char* msk){
+	CCLog(">[ConfigManager] GetConfiS(%s)", msk);
 	return ((CCString*) strtable->objectForKey(msk))->getCString();
 }
 

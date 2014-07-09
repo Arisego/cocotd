@@ -144,6 +144,7 @@ GameManager::~GameManager()
 	SituJudge::purgeSharedSituJudge();
 	EGroup::purgeSharedEGroup();
 
+	ALSingle::purgeSharedALSingle();
 	//Spliter::purgeSharedSpliter();
 	//HMenu::purgeSharedHMenu();
 }
@@ -356,4 +357,16 @@ void GameManager::Disable()
 void GameManager::EnAblie()
 {
 	mbActivate = true;
+}
+
+bool GameManager::fCanDirectQuit()
+{
+	do 
+	{
+		if(state == SCENE_MENU) break;
+
+		return false;
+	} while (false);
+	return true;
+	
 }

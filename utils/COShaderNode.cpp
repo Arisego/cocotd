@@ -22,7 +22,7 @@ COShaderNode::COShaderNode()
 	,z(0)
 {
 	CCDirector* pDirector = CCDirector::sharedDirector();
-	pDirector->getTouchDispatcher()->addTargetedDelegate(this, kCCMenuHandlerPriority, true);
+	pDirector->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
 }
 
 COShaderNode::~COShaderNode()

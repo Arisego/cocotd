@@ -47,6 +47,8 @@ public:
 	void Add_Button(const char* name,int tag);
 	void buttonback(CCObject* sender);
 
+	void quit_act();
+
 	ModelLayer();
 	~ModelLayer();
 	

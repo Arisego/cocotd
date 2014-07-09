@@ -168,7 +168,7 @@ void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
 	//[FOLLWOINGDEBUG]CCLOG(">decide:%f,%f,%f,%f.",cur.x,cur.y,tar.x,tar.y);
 	if(abs(cur.x - tar.x)<0.01){
 		if(cur.y < tar.y){
-			direc = MS_UP;
+			direc = MS_DOWN;
 			fac = tar.y - cur.y;
 
 			//[FOLLWOINGDEBUG]CCLOG("up:%f",fac);
@@ -179,7 +179,7 @@ void EPhsics::DecideDirect(CCPoint cur,b2Vec2 &bv){
 			}
 
 		}else if(cur.y > tar.y){
-			direc = MS_DOWN;		
+			direc = MS_UP;		
 			fac =cur.y - tar.y;
 			//[FOLLWOINGDEBUG]CCLOG("down:%f",fac);
 			if(fac < SLOW_ZONE){

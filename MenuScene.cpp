@@ -15,8 +15,8 @@
 
 
 static const char s_MenuItem[]            = "Images/menuitemsprite.png";
-static const char s_SendScore[]           = "Images/SendScoreButton.png";
-static const char s_PressSendScore[]      = "Images/SendScoreButtonPressed.png";
+static const char s_MenuItem2[]			  = "Images/menuitemsprite2.png";
+static const char s_MenuItem3[]			  = "Images/menuitemsprite3.png";
 
 using namespace cocos2d;
 
@@ -81,8 +81,7 @@ bool MenuScene::init()
 
 		this->addChild(bg);
 
-
-		//菜单
+		/* <菜单 */
 		MenuLayerMainMenu *menu = new MenuLayerMainMenu();
 		menu->autorelease();
 		CC_BREAK_IF(! menu);
@@ -91,9 +90,7 @@ bool MenuScene::init()
 
 		scheduleUpdate();
 
-
         bRet = true;
-
     } while (0);
 
     return bRet;
@@ -111,68 +108,51 @@ MenuLayerMainMenu::MenuLayerMainMenu()
     CCMenuItemFont::setFontName("Courier New");
 
     setTouchEnabled(true);
-    // Font Item
-	float sf = CCDirector::sharedDirector()->getContentScaleFactor();	//缩放比例
+	float sf = CCDirector::sharedDirector()->getContentScaleFactor();	// <缩放比例
     
-    CCSprite* spriteNormal = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,115/sf,23/sf));
-    CCSprite* spriteSelected = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,115/sf,23/sf));
-    CCSprite* spriteDisabled = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,115/sf,23/sf));
-	//spriteNormal->draw();
-    //dynamic_cast<CCNode*>(mgr)->addChild(spriteNormal);
-    //dynamic_cast<CCNode*>(mgr)->addChild(spriteSelected);
-    //dynamic_cast<CCNode*>(mgr)->addChild(spriteDisabled);
+    CCSprite* spriteNormal; 
+	CCSprite* spriteSelected;
+	CCSprite* spriteDisabled;
+
+	spriteNormal = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,70/sf,23/sf));
+    spriteSelected = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,70/sf,23/sf));
+    spriteDisabled = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,70/sf,23/sf));
 
     SpriteTextMenuItem* item1 = new SpriteTextMenuItem();
 	item1->autorelease();
 	item1->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(MenuLayerMainMenu::menuCallback) );
-	item1->settext("StartGame", "fonts/Scissor Cuts.TTF", 24);
-	/*item1->setAnchorPoint(CCPoint(0,0));*/
-    // Image Item
-    CCMenuItem* item2 = CCMenuItemImage::create(s_SendScore, s_PressSendScore, this, menu_selector(MenuLayerMainMenu::menuCallback2) );
+	item1->settext(ConfigManager::sharedConfigManager()->GetConfigS("gm_begin").c_str(), "fonts/corrode.fnt", 24,0,5);
+	item1->setTag(100);
 
-    // Label Item (LabelAtlas)
-    CCLabelAtlas* labelAtlas = CCLabelAtlas::create("9876543210", "fonts/labelatlas.png",16/sf, 24/sf, '.');
-    CCMenuItemLabel* item3 = CCMenuItemLabel::create(labelAtlas, this, menu_selector(MenuLayerMainMenu::menuCallbackDisabled) );
-    item3->setDisabledColor( ccc3(32,32,64) );
-    item3->setColor( ccc3(200,200,255) );
-	
-    
-    // Font Item
-    CCMenuItemFont *item4 = CCMenuItemFont::create("I toggle enable items", this, menu_selector(MenuLayerMainMenu::menuCallbackEnable) );
+	spriteNormal = CCSprite::create(s_MenuItem2, CCRectMake(0,23*2/sf,70/sf,23/sf));
+	spriteSelected = CCSprite::create(s_MenuItem2, CCRectMake(0,23*1/sf,70/sf,23/sf));
+	spriteDisabled = CCSprite::create(s_MenuItem2, CCRectMake(0,23*0,70/sf,23/sf));
 
-    item4->setFontSizeObj(20);
-    item4->setFontName("Marker Felt");
-    
-    // Label Item (CCLabelBMFont)
-    CCLabelTTF* label = CCLabelTTF::create("配置a", "fonts/Scissor Cuts.TTF", 44);
-    CCMenuItemLabel* item5 = CCMenuItemLabel::create(label, this, menu_selector(MenuLayerMainMenu::menuCallbackConfig));
+	SpriteTextMenuItem* item2 = new SpriteTextMenuItem();
+	item2->autorelease();
+	item2->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled,this, menu_selector(MenuLayerMainMenu::menuCallback2) );
+	item2->settext(ConfigManager::sharedConfigManager()->GetConfigS("gm_continue").c_str(), "fonts/corrode.fnt", 24,0,5);
+	item2->setTag(101);
 
-    // Testing issue #500
-    item5->setScale( 0.8f );
-	
+	spriteNormal = CCSprite::create(s_MenuItem3, CCRectMake(0,23*2/sf,70/sf,23/sf));
+	spriteSelected = CCSprite::create(s_MenuItem3, CCRectMake(0,23*1/sf,70/sf,23/sf));
+	spriteDisabled = CCSprite::create(s_MenuItem3, CCRectMake(0,23*0,70/sf,23/sf));
 
-    // Events
-    CCMenuItemFont::setFontName("Marker Felt");
-    CCMenuItemFont *item6 = CCMenuItemFont::create("Priority Test", this, menu_selector(MenuLayerMainMenu::menuCallbackPriorityTest));
-	
+	SpriteTextMenuItem* item3 = new SpriteTextMenuItem();
+	item3->autorelease();
+	item3->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled,this, menu_selector(MenuLayerMainMenu::onQuit) );
+	item3->settext(ConfigManager::sharedConfigManager()->GetConfigS("gm_quit").c_str(), "fonts/corrode.fnt", 24,0,5);
+	item3->setTag(102);
 
-    // Font Item
-    CCMenuItemFont* item7 = CCMenuItemFont::create("Quit", this, menu_selector(MenuLayerMainMenu::onQuit));
-    
-    CCActionInterval* color_action = CCTintBy::create(0.5f, 0, -255, -255);
-    CCActionInterval* color_back = color_action->reverse();
-    CCFiniteTimeAction* seq = CCSequence::create(color_action, color_back, NULL);
-    item7->runAction(CCRepeatForever::create((CCActionInterval*)seq));
-
-    menu = MouseMenu::menuWithItems( item1, item2, item3, item4, item5, item6, item7, NULL);;
+    menu = MouseMenu::menuWithItems( item1,item2, item3, NULL);
     menu->alignItemsVertically();
-    
-    
+
+
     // elastic effect
     CCSize s = CCDirector::sharedDirector()->getWinSize();
     
     int i=0;
-    CCNode* child;
+    CCMenuItem* child;
     CCArray * pArray = menu->getChildren();
     CCObject* pObject = NULL;
     CCARRAY_FOREACH(pArray, pObject)
@@ -180,26 +160,16 @@ MenuLayerMainMenu::MenuLayerMainMenu()
         if(pObject == NULL)
             break;
 
-        child = (CCNode*)pObject;
-
-        CCPoint dstPoint = child->getPosition();
-        int offset = (int) (s.width/2 + 50);
-        if( i % 2 == 0)
-            offset = -offset;
-        
-        child->setPosition( ccp( dstPoint.x + offset, dstPoint.y) );
-        child->runAction( 
-                          CCEaseElasticOut::create(CCMoveBy::create(2, ccp(dstPoint.x - offset,0)), 0.35f) 
-                        );
+        child = (CCMenuItem*)pObject;
+		child->setOpacity(0);
+        child->runAction( CCFadeIn::create(0.6));
         i++;
     }
 
-    m_disabledItem = item3; item3->retain();
-    m_disabledItem->setEnabled( false );
-	item3->setVisible(false);
-
     addChild(menu);
-    menu->setPosition(ccp(s.width/2, s.height/2));
+	menu->setAnchorPoint(ccp(0.5,0.5));
+    menu->setPosition(ccp(s.width/2+135, s.height/2-50));
+	menu->setScale(1.3);
 }
 
 void MenuLayerMainMenu::registerWithTouchDispatcher()
@@ -212,18 +182,15 @@ void MenuLayerMainMenu::registerWithTouchDispatcher()
 
 MenuLayerMainMenu::~MenuLayerMainMenu()
 {
-    m_disabledItem->release();
+
 }
 
 void MenuLayerMainMenu::menuCallback(CCObject* sender)
 {
 	CCLOG("Prepare to new scene.");
+	menu->setEnabled(false);
+	menu->UnRegist();
 	GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
-}
-
-void MenuLayerMainMenu::menuCallbackConfig(CCObject* sender)
-{
-    GameManager::sharedGameManager()->preConfig(0x18,0x10,0);
 }
 
 void MenuLayerMainMenu::allowTouches(float dt)
@@ -234,31 +201,13 @@ void MenuLayerMainMenu::allowTouches(float dt)
     CCLOG("TOUCHES ALLOWED AGAIN");
 }
 
-void MenuLayerMainMenu::menuCallbackDisabled(CCObject* sender) 
-{
-    // hijack all touch events for 5 seconds
-    CCDirector* pDirector = CCDirector::sharedDirector();
-    pDirector->getTouchDispatcher()->setPriority(kCCMenuHandlerPriority-1, this);
-    schedule(schedule_selector(MenuLayerMainMenu::allowTouches), 5.0f);
-    CCLOG("TOUCHES DISABLED FOR 5 SECONDS");
-}
-
-void MenuLayerMainMenu::menuCallbackEnable(CCObject* sender) 
-{
-    m_disabledItem->setEnabled(! m_disabledItem->isEnabled() );
-	m_disabledItem->setVisible(true);
-}
-
 void MenuLayerMainMenu::menuCallback2(CCObject* sender)
 {
 	SoundManager::sharedSoundManager()->PlayMusic("sound/1.ogg");
-    //((CCLayerMultiplex*)m_pParent)->switchTo(2);
-}
+	menu->setEnabled(false);
+	GameManager::sharedGameManager()->preConfig(0x18,0x10,0);
 
-void MenuLayerMainMenu::menuCallbackPriorityTest(CCObject* pSender)
-{
-	ALSingle::sharedALSingle()->StopAll();
-    //((CCLayerMultiplex*)m_pParent)->switchTo(4);
+    //((CCLayerMultiplex*)m_pParent)->switchTo(2);
 }
 
 void MenuLayerMainMenu::onQuit(CCObject* sender)
