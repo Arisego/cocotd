@@ -38,24 +38,28 @@ public:
     //CREATE_NODE(MenuLayer1);
 };
 
-
 class MenuScene : public cocos2d::CCScene, public StatesManager
 {
+private:
+	CCSprite* msLogo;
+	CCSprite* msLogo2;
+
+	CCSprite* msBg;
+	CCSprite* msMenu;
+	CCSprite* msWys;	// <Tag:WYS
+
+	CCGLProgram *mglProgLogo;
+
+public:
+	void	ELoadFinal();	// <清除和载入真实图片
+
 public:
 	~MenuScene();
-    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
 
-	void update(float dt){
-		//SoundManager::sharedSoundManager()->update(dt);
-	}
+	void update(float dt);
   
-	virtual void PreQuit(){
-		StatesManager::PreQuit();
-		
-	}
-
-    // implement the "static node()" method manually
+	virtual void PreQuit() override;
 	CREATE_FUNC(MenuScene);
 
 };
