@@ -12,6 +12,7 @@
 #include "layers_scenes_transitions_nodes/CCLayer.h"
 
 #include "utils/COShaderNode.h"
+#include "XxUI/HSBotton.h"
 
 static const char s_MenuItem[]            = "Images/menuitemsprite.png";
 static const char s_MenuItem2[]			  = "Images/menuitemsprite2.png";
@@ -50,15 +51,14 @@ bool MenuScene::init()
 		msWys->setTag(TAG_WYS);
 		addChild(msWys,0);
 
-		msLogo = CCSprite::create("Images/UI/logo.png");
-		msLogo->setAnchorPoint(CCPointZero);
-		msLogo->setPosition(ccp(44,46));
-		addChild(msLogo,8);
+		//msLogo = CCSprite::create("Images/UI/logo.png");
+		//msLogo->setAnchorPoint(CCPointZero);
+		//msLogo->setPosition(ccp(44,46));
+		//addChild(msLogo,8);
 
 		msLogo2 = CCSprite::create("Images/UI/logo.png");
 		msLogo2->setAnchorPoint(CCPointZero);
-		msLogo2->setPosition(ccp(44,46));
-		msLogo2->setOpacity(156);
+		msLogo2->setPosition(ccp(44,0));
 		addChild(msLogo2,9);
 
 
@@ -72,15 +72,26 @@ bool MenuScene::init()
 			CCCallFunc::create(this, callfunc_selector(MenuScene::ELoadFinal))
 			, NULL));
 
-		GLchar * fragSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename("Shaders/logo.fsh").c_str())->getCString();
-		mglProgLogo = new CCGLProgram();
-		mglProgLogo->initWithVertexShaderByteArray(ccPositionTexture_vert, fragSource);
-		mglProgLogo->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
-		mglProgLogo->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
-		mglProgLogo->link();
-		mglProgLogo->updateUniforms();
-		msLogo->setShaderProgram(mglProgLogo);
+		//GLchar * fragSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename("Shaders/logo.fsh").c_str())->getCString();
+		//mglProgLogo = new CCGLProgram();
+		//mglProgLogo->initWithVertexShaderByteArray(ccPositionTexture_vert, fragSource);
+		//mglProgLogo->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+		//mglProgLogo->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+		//mglProgLogo->link();
+		//mglProgLogo->updateUniforms();
+		//msLogo->setShaderProgram(mglProgLogo);
 
+		//////////////////////////////////////////////////////////////////////////
+		/* <菜单 */
+		MenuLayerMainMenu *menu = new MenuLayerMainMenu();
+		menu->autorelease();
+		CC_BREAK_IF(! menu);
+		this->addChild(menu,100);
+		AddState(menu);
+
+		//////////////////////////////////////////////////////////////////////////
+		/* <播放音乐 */
+		runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0), CCCallFunc::create(this, callfunc_selector(MenuScene::PlayOpMusic))));
 
 		scheduleUpdate();
         bRet = true;
@@ -99,6 +110,11 @@ void MenuScene::ELoadFinal()
 	addChild(msWys,0);
 }
 
+void MenuScene::PlayOpMusic()
+{
+	SoundManager::sharedSoundManager()->PlayMusic("sound/bgm/op.ogg");
+}
+
 
 void MenuScene::update(float dt){
 
@@ -115,72 +131,21 @@ void MenuScene::PreQuit(){
 //------------------------------------------------------------------
 MenuLayerMainMenu::MenuLayerMainMenu()
 {
-    CCMenuItemFont::setFontSize( 40 );
-    CCMenuItemFont::setFontName("Courier New");
-
     setTouchEnabled(true);
-	float sf = CCDirector::sharedDirector()->getContentScaleFactor();	// <缩放比例
-    
-    CCSprite* spriteNormal; 
-	CCSprite* spriteSelected;
-	CCSprite* spriteDisabled;
 
-	spriteNormal = CCSprite::create(s_MenuItem, CCRectMake(0,23*2/sf,70/sf,23/sf));
-    spriteSelected = CCSprite::create(s_MenuItem, CCRectMake(0,23*1/sf,70/sf,23/sf));
-    spriteDisabled = CCSprite::create(s_MenuItem, CCRectMake(0,23*0,70/sf,23/sf));
+	BYLayerDescendant* mbArea = new BYLayerDescendant();
+	mbArea->autorelease();
+	mbArea->setContentSize(ccp(100,600));
+	mbArea->setAnchorPoint(CCPointZero);
+	mbArea->setPosition(ccp(800,0));
+	addChild(mbArea);
 
-    SpriteTextMenuItem* item1 = new SpriteTextMenuItem();
-	item1->autorelease();
-	item1->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(MenuLayerMainMenu::menuCallback) );
-	item1->settext(ConfigManager::sharedConfigManager()->GetConfigS("gm_begin").c_str(), "fonts/corrode.fnt", 24,0,5);
-	item1->setTag(100);
+	HSButton* tHsB1 = new HSButton("Images/UI/fl.png","",63,96);
+	tHsB1->setactivator(this, menu_selector(MenuLayerMainMenu::menuCallback));
+	tHsB1->setAnchorPoint(CCPointZero);
+	tHsB1->setPosition(ccp(36,477));
+	mbArea->addChild(tHsB1);
 
-	spriteNormal = CCSprite::create(s_MenuItem2, CCRectMake(0,23*2/sf,70/sf,23/sf));
-	spriteSelected = CCSprite::create(s_MenuItem2, CCRectMake(0,23*1/sf,70/sf,23/sf));
-	spriteDisabled = CCSprite::create(s_MenuItem2, CCRectMake(0,23*0,70/sf,23/sf));
-
-	SpriteTextMenuItem* item2 = new SpriteTextMenuItem();
-	item2->autorelease();
-	item2->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled,this, menu_selector(MenuLayerMainMenu::menuCallback2) );
-	item2->settext(ConfigManager::sharedConfigManager()->GetConfigS("gm_continue").c_str(), "fonts/corrode.fnt", 24,0,5);
-	item2->setTag(101);
-
-	spriteNormal = CCSprite::create(s_MenuItem3, CCRectMake(0,23*2/sf,70/sf,23/sf));
-	spriteSelected = CCSprite::create(s_MenuItem3, CCRectMake(0,23*1/sf,70/sf,23/sf));
-	spriteDisabled = CCSprite::create(s_MenuItem3, CCRectMake(0,23*0,70/sf,23/sf));
-
-	SpriteTextMenuItem* item3 = new SpriteTextMenuItem();
-	item3->autorelease();
-	item3->initWithNormalSprite(spriteNormal, spriteSelected, spriteDisabled,this, menu_selector(MenuLayerMainMenu::onQuit) );
-	item3->settext(ConfigManager::sharedConfigManager()->GetConfigS("gm_quit").c_str(), "fonts/corrode.fnt", 24,0,5);
-	item3->setTag(102);
-
-    menu = MouseMenu::menuWithItems( item1,item2, item3, NULL);
-    menu->alignItemsVertically();
-
-
-    // elastic effect
-    CCSize s = CCDirector::sharedDirector()->getWinSize();
-    
-    int i=0;
-    CCMenuItem* child;
-    CCArray * pArray = menu->getChildren();
-    CCObject* pObject = NULL;
-    CCARRAY_FOREACH(pArray, pObject)
-    {
-        if(pObject == NULL)
-            break;
-
-        child = (CCMenuItem*)pObject;
-		child->setOpacity(0);
-        child->runAction( CCFadeIn::create(0.6));
-        i++;
-    }
-
-    addChild(menu);
-	menu->setAnchorPoint(ccp(0.5,0.5));
-    menu->setPosition(ccp(s.width/2+135, s.height/2-50));
-	menu->setScale(1.3);
 }
 
 void MenuLayerMainMenu::registerWithTouchDispatcher()
@@ -199,8 +164,6 @@ MenuLayerMainMenu::~MenuLayerMainMenu()
 void MenuLayerMainMenu::menuCallback(CCObject* sender)
 {
 	CCLOG("Prepare to new scene.");
-	menu->setEnabled(false);
-	menu->UnRegist();
 	GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
 }
 
@@ -214,9 +177,9 @@ void MenuLayerMainMenu::allowTouches(float dt)
 
 void MenuLayerMainMenu::menuCallback2(CCObject* sender)
 {
-	SoundManager::sharedSoundManager()->PlayMusic("sound/1.ogg");
-	menu->setEnabled(false);
-	GameManager::sharedGameManager()->preConfig(0x18,0x10,0);
+	SoundManager::sharedSoundManager()->PlayMusic("sound/bgm/op.ogg");
+	//menu->setEnabled(false);
+	//GameManager::sharedGameManager()->preConfig(0x18,0x10,0);
 
     //((CCLayerMultiplex*)m_pParent)->switchTo(2);
 }

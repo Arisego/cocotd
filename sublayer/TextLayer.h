@@ -9,6 +9,7 @@
 #include "utils/States.h"
 #include "byeven/BYCocos.h"
 #include "sublayer/TextLayerBtn.h"
+#include "XxUI/HSBotton.h"
 
 USING_NS_CC;
 using namespace std;
@@ -21,13 +22,13 @@ private:
 	void update(float dt);
 	float m_timer;
 	CCLabelTTF* m_Label;
-	CCLabelBMFont* m_Name;
+	CCLabelTTF* m_Name;
 	int cur,sum;
 	CCSize s;
 	float mSingeWidth,mLineCount;
 	float m_fTAuto,m_fTText;
 
-	vector<TlBtn*> mvBtns;
+	vector<HSButton*> mvBtns;
 	void tlbback(CCObject* sender);
 	//bool mtblockclick;
 

@@ -186,27 +186,39 @@ void Container::initwithNode( const char* s_Title,CCNode* aNormal,CCNode* aHover
 {
 
 	spriteNormal = aNormal;
-	spriteNormal->setContentSize(CCSize(width,height));
-	spriteNormal->setAnchorPoint(ccp(0,0));
-	if(spriteNormal) addChild(spriteNormal);
+	if(spriteNormal) {
+		spriteNormal->setContentSize(CCSize(width,height));
+		spriteNormal->setAnchorPoint(ccp(0,0));
+		addChild(spriteNormal);
+	}
+
 
 	spriteHover = aHover;
-	spriteHover->setContentSize(CCSize(width,height));
-	spriteHover->setAnchorPoint(ccp(0,0));
-	spriteHover->setVisible(false);
-	if(spriteHover) addChild(spriteHover);
+	if(spriteHover) {
+		spriteHover->setContentSize(CCSize(width,height));
+		spriteHover->setAnchorPoint(ccp(0,0));
+		spriteHover->setVisible(false);
+		addChild(spriteHover);
+	}
+
 
 	spriteDisable = aDisable;
-	spriteDisable->setContentSize(CCSize(width,height));
-	spriteDisable->setAnchorPoint(ccp(0,0));
-	spriteDisable->setVisible(false);
-	if(spriteDisable) addChild(spriteDisable);
+	if(spriteDisable) {
+		spriteDisable->setContentSize(CCSize(width,height));
+		spriteDisable->setAnchorPoint(ccp(0,0));
+		spriteDisable->setVisible(false);
+		addChild(spriteDisable);
+	}
+
 
 	spriteSelected = aSelect;
-	spriteSelected->setContentSize(CCSize(width,height));
-	spriteSelected->setAnchorPoint(ccp(0,0));
-	spriteSelected->setVisible(false);
-	if(spriteSelected) addChild(spriteSelected);
+	if(spriteSelected) {
+		spriteSelected->setContentSize(CCSize(width,height));
+		spriteSelected->setAnchorPoint(ccp(0,0));
+		spriteSelected->setVisible(false);
+		addChild(spriteSelected);
+	}
+
 
 	labelAtlas = CCLabelBMFont::create(s_Title, FNT_CHN);
 	labelAtlas->setPosition(ccp(width/2,height/2));

@@ -52,6 +52,7 @@ private:
 
 public:
 	void	ELoadFinal();	// <清除和载入真实图片
+	void	PlayOpMusic();	// <播放OP1背景音乐
 
 public:
 	~MenuScene();

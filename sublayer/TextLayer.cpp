@@ -10,6 +10,7 @@
 #include <string.h>
 #include "actions/CCAction.h"
 #include <map>
+#include "XxUI/HSBotton.h"
 
 USING_NS_CC;
 
@@ -123,7 +124,7 @@ void ToTextLayer::onEnter()
 	
 	m_sBox->addChild(cpn_textcn);
 
-	m_Name = CCLabelBMFont::create("",FNT_CHN,300);
+	m_Name = CCLabelTTF::create("",FNT_UI_TTF,20);//CCLabelBMFont::create("",FNT_CHN,300);
 	m_Name->setAnchorPoint(CCPointZero);
 	m_Name->setPosition(ccp(60,130));
 	//m_Name->setColor(ccWHITE);
@@ -131,22 +132,37 @@ void ToTextLayer::onEnter()
 
 	//Prepare for menu view.
 	mvBtns.clear();
-	float t_left = 535;
+	float t_left = 533;
 	float t_bottom = 10;
 	
+	CCSprite* tcsTLBack = CCSprite::create("Images/UI/tl_back.png");
+	tcsTLBack->setAnchorPoint(CCPointZero);
+	tcsTLBack->setPosition(ccp(535,12));
+	addChild(tcsTLBack,UI_ZORDER);
+
+	HSButton* tHsBottom;
+	tHsBottom = new HSButton("Images/UI/auto.png","Images/UI/auto.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left,t_bottom));
+	tHsBottom->setTag(0);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+
 	// auto skip save load log hid
-	TlBtn* tb_auto;
-	for(int i = 0;i<7;++i){
-		tb_auto = new TlBtn();
-		tb_auto->setAnchorPoint(CCPointZero);
-		tb_auto->setPosition(ccp(t_left,t_bottom));
-		tb_auto->setTag(i);
-		tb_auto->setstring(tBtnString[i]);
-		tb_auto->setactivator(this,menu_selector(ToTextLayer::tlbback));
-		mvBtns.push_back(tb_auto);
-		addChild(tb_auto,UI_ZORDER);
-		t_left += 45;
-	}
+	//TlBtn* tb_auto;
+	//for(int i = 0;i<7;++i){
+	//	tb_auto = new TlBtn();
+	//	tb_auto->setAnchorPoint(CCPointZero);
+	//	tb_auto->setPosition(ccp(t_left,t_bottom));
+	//	tb_auto->setTag(i);
+	//	tb_auto->setstring(tBtnString[i]);
+	//	tb_auto->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	//	mvBtns.push_back(tb_auto);
+	//	addChild(tb_auto,UI_ZORDER);
+	//	t_left += 45;
+	//}
 
 	//CCMenuItemFont *item4 = CCMenuItemFont::create("Fade", this, menu_selector(TextLayer::FadeText) );
 	//item4->setFontSizeObj(20);

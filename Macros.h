@@ -1,7 +1,7 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
-// <系统信息
+// <绯荤粺淇℃伅
 #define SYS_FRAME 40
 
 //Map Type
@@ -37,7 +37,7 @@
 //constant values
 #define FNT_ENG_NUM "fonts/TO_eng_num.fnt"
 #define FNT_CHN		"fonts/CocoTd.fnt"
-#define FNT_UI_TTF "fonts/STHUPO.TTF"		//new
+#define FNT_UI_TTF "fonts/STXinwei.ttf"		//new
 #define FNT_AVG_TTF "fonts/FZSZJW.TTF"
 #define FNT_UI_LABEL "fonts/FZSZJW.TTF"		//old
 
