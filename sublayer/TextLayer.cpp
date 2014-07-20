@@ -902,8 +902,9 @@ void ToTextLayer::StepNext(){
 
 void ToTextLayer::right_click()
 {
-	if(!m_bIsNoFade) { FadeText(NULL);return;}
 	if(!this->isTouchEnabled()) return;
+	if(!m_bIsNoFade) { FadeText(NULL);return;}
+	
 	CCLog(">[TextLayer] right_click() | e_layerstate:%d",e_layerstate);
 	switch(e_layerstate){
 	case(0):	//text showing

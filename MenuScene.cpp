@@ -80,6 +80,7 @@ bool MenuScene::init()
 		mglProgLogo->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
 		mglProgLogo->link();
 		mglProgLogo->updateUniforms();
+		mglProgLogo->autorelease();
 		msLogo->setShaderProgram(mglProgLogo);
 
 		//////////////////////////////////////////////////////////////////////////
@@ -92,7 +93,8 @@ bool MenuScene::init()
 
 		//////////////////////////////////////////////////////////////////////////
 		/* <播放音乐 */
-		runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0), CCCallFunc::create(this, callfunc_selector(MenuScene::PlayOpMusic))));
+		runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0.1), CCCallFunc::create(this, callfunc_selector(MenuScene::PlayOpMusic))));
+		//PlayOpMusic();
 
 		scheduleUpdate();
         bRet = true;
@@ -146,6 +148,12 @@ MenuLayerMainMenu::MenuLayerMainMenu()
 	tHsB1->setAnchorPoint(CCPointZero);
 	tHsB1->setPosition(ccp(36,477));
 	mbArea->addChild(tHsB1);
+
+	HSButton* tHsB2 = new HSButton("Images/UI/config.png","",64,112);
+	tHsB2->setactivator(this, menu_selector(MenuLayerMainMenu::menuCallback2));
+	tHsB2->setAnchorPoint(CCPointZero);
+	tHsB2->setPosition(ccp(35,8));
+	mbArea->addChild(tHsB2);
 
 }
 

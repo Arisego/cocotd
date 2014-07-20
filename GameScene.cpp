@@ -453,6 +453,8 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 		{
 			if(m_bCanSnap && m_bScrLock){
 				m_bScrLock = false;
+				ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
+				addChild(ms_Mask,tLyMask);
 				unscheduleUpdate();
 				e_act();
 			}
@@ -582,6 +584,8 @@ void GameScene::e_handlecurs(Script* s){
 		{
 		case sShowText:
 			{
+				te->setVisible(true);
+				te->setTouchEnabled(true);
 				te->ShowText(tmp->getstring("content"),tmp->getstring("name"));
 
 				SoundManager::sharedSoundManager()->StopCVSound(slatst.c_str());
@@ -848,6 +852,25 @@ void GameScene::DerChange(Script* s){
 			default:
 				break;
 			}
+		}
+	case 12:	// < Toggle Text Layer Visibility
+		{
+			te->setVisible(false);
+			te->setTouchEnabled(false);
+			break;
+		}
+	case 13:	// <Scene Name In-Out
+		{
+			CCSprite* tcn = CCSprite::create(s->getstring("path"));
+			tcn->setAnchorPoint(CCPointZero);
+			tcn->setPosition(ccp(900,50));
+			bg->addChild(tcn);
+
+			float tdDelay = 1.2f;
+			CCActionInterval* move_ease_in = CCEaseIn::create(CCMoveBy::create(tdDelay, ccp(-tcn->getContentSize().width,0)), tdDelay-0.3);
+			tcn->runAction(CCSequence::create(CCDelayTime::create(0.4), move_ease_in, CCFadeOut::create(0.3), CCRemoveSelf::create(), NULL));
+			
+			break;
 		}
 
 	}//End of switch.

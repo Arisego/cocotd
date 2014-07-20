@@ -159,6 +159,12 @@ void GameManager::runSceneWithId(SceneId id)
 
 	ALSingle::sharedALSingle()->StopAll();
 
+	CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames();
+	CCTextureCache::sharedTextureCache()->removeAllTextures();
+	ALSingle::sharedALSingle()->StopUpdate();
+	ALSingle::sharedALSingle()->StopAll();
+	ALSingle::sharedALSingle()->KillALData();
+
 	switch (id)
 	{
 	case SCENE_MENU:
@@ -180,11 +186,6 @@ void GameManager::runSceneWithId(SceneId id)
 	CCLOG("Prepare to show the new scene.");
 	if (newScene)
 	{
-		CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames();
-		CCTextureCache::sharedTextureCache()->removeAllTextures();
-		ALSingle::sharedALSingle()->StopUpdate();
-		ALSingle::sharedALSingle()->StopAll();
-		ALSingle::sharedALSingle()->KillALData();
 		
 		CCLog(">[GameManager] runSceneWithId() | SingleTons clean over..");
 		//mdl->noConfig(0);

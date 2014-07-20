@@ -45,6 +45,7 @@ ALSingle *ALSingle::sharedALSingle()
 
 void ALSingle::purgeSharedALSingle()
 {
+	if(GameManager::sharedGameManager()->isActivate()) return;
 	CC_SAFE_DELETE(mSharedALSingle);
 }
 

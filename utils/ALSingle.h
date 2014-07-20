@@ -394,6 +394,7 @@ public:
 		ListedEffect.clear();
 
 		if(bgm_playing){
+			stopBackgroundMusic();
 			alSourceStop(bgm_player);
 			ov_raw_seek(oggs[bgpsz].oggFile,0);
 			alDeleteSources(1,&bgm_player);
@@ -411,7 +412,7 @@ public:
 		}
 		musicplayers.clear();
 		//oggs.clear();
-
+		CleanOgg();
 		bgm_playing = false;
 		bgpsz.clear();
 	}
