@@ -51,14 +51,15 @@ bool MenuScene::init()
 		msWys->setTag(TAG_WYS);
 		addChild(msWys,0);
 
-		//msLogo = CCSprite::create("Images/UI/logo.png");
-		//msLogo->setAnchorPoint(CCPointZero);
-		//msLogo->setPosition(ccp(44,46));
-		//addChild(msLogo,8);
+		msLogo = CCSprite::create("Images/UI/logo.png");
+		msLogo->setAnchorPoint(CCPointZero);
+		msLogo->setPosition(ccp(44,0));
+		addChild(msLogo,8);
 
 		msLogo2 = CCSprite::create("Images/UI/logo.png");
 		msLogo2->setAnchorPoint(CCPointZero);
 		msLogo2->setPosition(ccp(44,0));
+		msLogo2->setOpacity(188);
 		addChild(msLogo2,9);
 
 
@@ -72,14 +73,14 @@ bool MenuScene::init()
 			CCCallFunc::create(this, callfunc_selector(MenuScene::ELoadFinal))
 			, NULL));
 
-		//GLchar * fragSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename("Shaders/logo.fsh").c_str())->getCString();
-		//mglProgLogo = new CCGLProgram();
-		//mglProgLogo->initWithVertexShaderByteArray(ccPositionTexture_vert, fragSource);
-		//mglProgLogo->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
-		//mglProgLogo->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
-		//mglProgLogo->link();
-		//mglProgLogo->updateUniforms();
-		//msLogo->setShaderProgram(mglProgLogo);
+		GLchar * fragSource = (GLchar*) CCString::createWithContentsOfFile(CCFileUtils::sharedFileUtils()->fullPathForFilename("Shaders/logo.fsh").c_str())->getCString();
+		mglProgLogo = new CCGLProgram();
+		mglProgLogo->initWithVertexShaderByteArray(ccPositionTexture_vert, fragSource);
+		mglProgLogo->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+		mglProgLogo->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+		mglProgLogo->link();
+		mglProgLogo->updateUniforms();
+		msLogo->setShaderProgram(mglProgLogo);
 
 		//////////////////////////////////////////////////////////////////////////
 		/* <菜单 */

@@ -29,6 +29,7 @@ CCDictionary* ToTextLayer::lockstate = NULL;
 
 ToTextLayer::~ToTextLayer(){
 	CCLOG(">TextLayer desconstruct.");
+	EventCenter::sharedEventCenter()->unsetBmCake(this);
 	CC_SAFE_RELEASE_NULL(lockstate);
 }
 
@@ -42,6 +43,7 @@ void ToTextLayer::Close(){
 void ToTextLayer::Pause(){
 	setTouchEnabled(false);
 	this->unschedule( schedule_selector(ToTextLayer::StreamText));
+	EventCenter::sharedEventCenter()->unsetBmCake(this);
 	unscheduleUpdate();
 }
 
@@ -50,6 +52,7 @@ void ToTextLayer::Resume(){
 	setTouchEnabled(true);
 	setVisible(true);
 	this->schedule( schedule_selector(ToTextLayer::StreamText), m_fTText);
+	EventCenter::sharedEventCenter()->setBmCake(this);
 	if(m_bIsSkip) scheduleUpdate();
 }
 
@@ -141,10 +144,66 @@ void ToTextLayer::onEnter()
 	addChild(tcsTLBack,UI_ZORDER);
 
 	HSButton* tHsBottom;
+
 	tHsBottom = new HSButton("Images/UI/auto.png","Images/UI/auto.png",39,13);
 	tHsBottom->setAnchorPoint(CCPointZero);
 	tHsBottom->setPosition(ccp(t_left,t_bottom));
 	tHsBottom->setTag(0);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+	t_left += 45;
+	tHsBottom = new HSButton("Images/UI/skip.png","Images/UI/skip.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left,t_bottom));
+	tHsBottom->setTag(1);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+	t_left += 45;
+	tHsBottom = new HSButton("Images/UI/sys.png","Images/UI/sys.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left-2,t_bottom+2));
+	tHsBottom->setTag(2);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+	t_left += 45;
+	tHsBottom = new HSButton("Images/UI/save.png","Images/UI/save.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left-4,t_bottom+1));
+	tHsBottom->setTag(3);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+	t_left += 45;
+	tHsBottom = new HSButton("Images/UI/load.png","Images/UI/load.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left,t_bottom+1));
+	tHsBottom->setTag(4);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+	t_left += 45;
+	tHsBottom = new HSButton("Images/UI/log.png","Images/UI/log.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left+1.8,t_bottom+1));
+	tHsBottom->setTag(5);
+	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
+	mvBtns.push_back(tHsBottom);
+	addChild(tHsBottom,UI_ZORDER);
+
+
+	t_left += 45;
+	tHsBottom = new HSButton("Images/UI/hide.png","Images/UI/hide.png",39,13);
+	tHsBottom->setAnchorPoint(CCPointZero);
+	tHsBottom->setPosition(ccp(t_left+2,t_bottom+1));
+	tHsBottom->setTag(6);
 	tHsBottom->setactivator(this,menu_selector(ToTextLayer::tlbback));
 	mvBtns.push_back(tHsBottom);
 	addChild(tHsBottom,UI_ZORDER);
@@ -739,6 +798,7 @@ void ToTextLayer::StartSkip(CCObject* sender){
 }
 
 void ToTextLayer::StartAuto(CCObject* sender){
+	CCLog(">[TextLayer] StartAuto() | pSender:%d", sender);
 	m_bTouchProt = false;
 	if(!sender || m_bIsAuto){		//关闭自动模式
 		stopActionByTag(AUTO_ACTION_TAG);
@@ -838,6 +898,50 @@ void ToTextLayer::StepNext(){
 	}
 	if(m_bIsSkip) mLockNext = false;
 	else GameManager::sharedLogicCenter()->e_gonext();
+}
+
+void ToTextLayer::right_click()
+{
+	if(!m_bIsNoFade) { FadeText(NULL);return;}
+	if(!this->isTouchEnabled()) return;
+	CCLog(">[TextLayer] right_click() | e_layerstate:%d",e_layerstate);
+	switch(e_layerstate){
+	case(0):	//text showing
+		{
+			FadeText(this);
+			break;
+		}
+	case(1):	//do not go ahead. It's a lock.
+		{
+			CCLOG("TextLayer State 0x001. Lock.");
+			FadeText(this);
+			break;
+		} 
+	case(2):	/* <Eat MenuSel Event*/
+		{
+			e_layerstate = 0;
+			break;
+		}
+	case(3):	/* <Auto Mode */
+		{
+			CCLog(">[TextLayer] right_click() | State 3");
+			StartAuto(NULL);
+			mvBtns[0]->onNormal();
+			return;
+		}
+	case(4): /* Skip Mode */
+		{
+			StartSkip(NULL);
+			mvBtns[1]->onNormal();
+			break;
+		}
+	default:
+		{
+			CCLog(">[TextLayer] right_click()| unknown state:%d",e_layerstate);
+			break;
+		}
+	}
+	CCLog(">[TextLayer] right_click()|over | e_layerstate:%d",e_layerstate);
 }
 
 bool ToTextLayer::click(CCTouch *touch, CCEvent * pEvent)

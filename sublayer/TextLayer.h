@@ -16,7 +16,7 @@ using namespace std;
 
 #define MENUTAG 3000
 
-class ToTextLayer : public BYLayerModal,public StateMachine
+class ToTextLayer : public BYLayerModal,public StateMachine,public Cake
 {
 private:
 	void update(float dt);
@@ -72,6 +72,7 @@ public:
 	int e_layerstate;
 	void GetTimePara();
 
+	virtual void right_click() override;
 	CREATE_FUNC(ToTextLayer);
 
 	//////////////////////////////////////////////////////////////////////////
