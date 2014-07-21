@@ -157,7 +157,7 @@ void GameManager::runSceneWithId(SceneId id)
 	CCLOG("Prepare to create the new scene.");
 	mCurrentStage = NULL;
 
-	ALSingle::sharedALSingle()->StopAll();
+	//ALSingle::sharedALSingle()->StopAll();
 
 	CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames();
 	CCTextureCache::sharedTextureCache()->removeAllTextures();

@@ -864,11 +864,15 @@ void GameScene::DerChange(Script* s){
 			CCSprite* tcn = CCSprite::create(s->getstring("path"));
 			tcn->setAnchorPoint(CCPointZero);
 			tcn->setPosition(ccp(900,50));
+			tcn->setOpacity(25);
 			bg->addChild(tcn);
 
 			float tdDelay = 1.2f;
-			CCActionInterval* move_ease_in = CCEaseIn::create(CCMoveBy::create(tdDelay, ccp(-tcn->getContentSize().width,0)), tdDelay-0.3);
-			tcn->runAction(CCSequence::create(CCDelayTime::create(0.4), move_ease_in, CCFadeOut::create(0.3), CCRemoveSelf::create(), NULL));
+			CCActionInterval* move_ease_in = CCEaseIn::create(CCMoveBy::create(tdDelay, ccp(-tcn->getContentSize().width - 33,0)), tdDelay-0.3);
+			tcn->runAction(CCSequence::create(CCDelayTime::create(0.2), 
+				CCSpawn::createWithTwoActions(move_ease_in, 
+				CCSequence::createWithTwoActions(CCDelayTime::create(tdDelay * 0.3),CCFadeTo::create(tdDelay*0.7,255))),
+				CCFadeOut::create(0.28), CCRemoveSelf::create(), NULL));
 			
 			break;
 		}

@@ -123,7 +123,7 @@ void EventCenter::handlekeydown(WPARAM wParam, LPARAM lParam){
 			mSelector->c_press();
 			break;
 		case 27:
-			GameManager::sharedGameManager()->goConfig();	
+			//GameManager::sharedGameManager()->goConfig();	
 			break;
 		case 32:
 			DefendOn();

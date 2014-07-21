@@ -412,7 +412,7 @@ public:
 		}
 		musicplayers.clear();
 		//oggs.clear();
-		CleanOgg();
+		//CleanOgg();
 		bgm_playing = false;
 		bgpsz.clear();
 	}

@@ -255,45 +255,45 @@ void ToTextLayer::tlbback( CCObject* sender )
 	m_bTouchProt = false;
 	switch (tag)
 	{
-	case 0:
+	case(0):
 		{
 			StartAuto(sender);
 			if(m_bIsAuto) ttlbtn->onSelect();
 			else ttlbtn->onNormal();
 			break;
 		}
-	case 1:
+	case(1):
 		{
 			StartSkip(sender);
 			if(m_bIsSkip) ttlbtn->onSelect();
 			else ttlbtn->onNormal();
 			break;
 		}
-	case 2:
+	case(2):
 		{
 			GameManager::sharedGameManager()->goConfig();
 			ttlbtn->onNormal();
 			break;
 		}
-	case 3:
+	case(3):
 		{
 			 GameManager::sharedGameManager()->preConfig(0x1f,0x08,0);
 			 ttlbtn->onNormal();
 			 break;
 		}
-	case 4:
+	case(4):
 		{
 			GameManager::sharedGameManager()->preConfig(0x1f,0x08,1);
 			ttlbtn->onNormal();
 			break;
 		}
-	case 5:
+	case(5):
 		{
 			SoundManager::sharedSoundManager()->PlayHoverSFX();
 			ttlbtn->onNormal();
 			break;
 		}
-	case 6:
+	case(6):
 		{
 			FadeText(sender);
 			ttlbtn->onNormal();			
@@ -418,7 +418,7 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 		{
 			x = ts->getfloat("x");
 			y = ts->getfloat("y");
-			if(y == 0) y = 100;
+			if(y == 0) y = 180;
 
 			string name = ts->getstring("name");
 			removeChildByTag(tag);
@@ -429,10 +429,12 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 			t_cs->setPosition(ccp(x,y));
 			t_cs->setAnchorPoint(CCPoint(0.5,0.5));
 			t_cs->setTag(tag);
-			t_cs->setRotation(ts->getfloat("angel"));
+			float aa = ts->getfloat("angel");
+			if(aa != 0) t_cs->setRotation(aa);
 			int alpha = ts->getint("alpha");
 			if(alpha == 0) alpha = 255;
 			t_cs->setOpacity(alpha);									// Change default to No. If more is need, change the x flag.
+			t_cs->setScale(0.8);
 
 			//[0803]CCLog(">[GS]:Loading...");
 			int zorder = ts->getint("zorder");
@@ -627,9 +629,9 @@ void ToTextLayer::FlushText(const char* line,bool dst){
 	CCLog(">[TextLayer] FlushText() | %s",line);
 	if(m_bIsShownOver)	return;
 	if(dst){	
-		if(line){
-			m_Label->setString(line);
-		}
+		//if(line){
+		//	m_Label->setString(line);
+		//}
 		
 		//lines.append(fulline,cur,sum-cur);
 		//m_Label->setString(lines.c_str());
@@ -951,7 +953,7 @@ bool ToTextLayer::click(CCTouch *touch, CCEvent * pEvent)
 	if(!this->isTouchEnabled()) return true;
 	CCLog(">[TextLayer] click() | e_layerstate:%d",e_layerstate);
 	switch(e_layerstate){
-	case 0:	//text showing
+	case(0):	//text showing
 		{
 			if(!m_bIsShownOver){
 				this->unscheduleAllSelectors();	
@@ -962,21 +964,21 @@ bool ToTextLayer::click(CCTouch *touch, CCEvent * pEvent)
 			}
 			break;
 		}
-	case 1:	//do not go ahead. It's a lock.
+	case(1):	//do not go ahead. It's a lock.
 		{
 			CCLOG("TextLayer State 0x001. Lock.");
 			break;
 		} 
-	case 2:	/* <吃掉MenuSel的事件*/
+	case(2):	/* <吃掉MenuSel的事件*/
 		{
 			e_layerstate = 0;
 			break;
 		}
-	case 3:	/* <Auto Mode接受到Click事件后自动结束Auto? */
+	case(3):	/* <Auto Mode接受到Click事件后自动结束Auto? */
 		{
 			break;
 		}
-	case 4: /* Skip Mode接受Click后直接结束 */
+	case(4): /* Skip Mode接受Click后直接结束 */
 		{
 			StartSkip(NULL);
 			mvBtns[1]->onNormal();

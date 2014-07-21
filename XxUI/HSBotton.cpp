@@ -1,8 +1,10 @@
 #include "HSBotton.h"
 
-HSButton::HSButton(const char* aHover, const char* aSelect,int aw, int ah)
+HSButton::HSButton(const char* aHover, const char* aSelect,int aw, int ah, bool aem)
 {
 	Container::Container();
+
+	mbEmerge = aem;
 
 	spriteNormal	= NULL;
 	spriteDisable	= NULL;
@@ -32,5 +34,17 @@ HSButton::HSButton(const char* aHover, const char* aSelect,int aw, int ah)
 
 	m_iState = C_STATE_NORMAL;
 	scheduleUpdate();
+}
+
+void HSButton::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
+{
+	if(!isVisible()) return;
+	if(checkTouch(pTouch)){
+		onSelect();
+		if(mbEmerge) activate();
+		else runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0), CCCallFunc::create(this, callfunc_selector(Container::activate))));	
+
+	}
+	return;
 }
 
