@@ -178,6 +178,19 @@ void ALSingle::stopBackgroundMusic(){
 		pthread_cancel(up_id);
 	}
 	alSourceStop(bgm_player);
+
+	int processed,queued;
+	alGetSourcei(bgm_player, AL_BUFFERS_PROCESSED, &processed); 
+	alGetSourcei(bgm_player, AL_BUFFERS_QUEUED, &queued); 
+ 
+	while (processed--) 
+	{ 
+		ALuint  buffer; 
+		alSourceUnqueueBuffers(bgm_player, 1, &buffer); 
+		alDeleteBuffers(1, &buffer); 
+	} 
+	Ogg_F t = oggs[bgpsz];
+	ov_raw_seek(t.oggFile,0);		// <ÖØÖÃ
 }
 
 

@@ -5,12 +5,29 @@
 #define TAG_WYS 6001
 #define MV_TLEN 3
 
+void MainLayer::Close()
+{
+	setVisible(false);
+	SoundManager::sharedSoundManager()->StopMusic();
+}
+
+void MainLayer::Pause()
+{
+	setTouchEnabled(false);
+}
+
+void MainLayer::Resume()
+{
+	setVisible(true);
+}
+
 MainLayer::MainLayer()
 {
 }
 
 MainLayer::~MainLayer()
 {
+	CCLog(">[ManiLayer] Deco~");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -26,7 +43,7 @@ bool MainLayer::init()
 		msBg = CCSprite::create("Images/UI/bg.jpg");
 		msBg->setAnchorPoint(ccp(0,1));
 		msBg->setPosition(ccp(0,600));
-		addChild(msBg,-1);
+		addChild(msBg,-10);
 
 		msWys = CCSprite::create("Images/UI/wys.png");
 		msWys->setAnchorPoint(ccp(0,0));
@@ -45,12 +62,6 @@ bool MainLayer::init()
 		msLogo2->setPosition(ccp(44,0));
 		msLogo2->setOpacity(188);
 		addChild(msLogo2,9);
-
-
-		msMenu = CCSprite::create("Images/UI/menu.png");
-		msMenu->setAnchorPoint(CCPointZero);
-		msMenu->setPosition(ccp(0,0));
-		addChild(msMenu,10);
 
 		msBg->runAction(CCMoveBy::create(MV_TLEN,ccp(0,251)));
 		msWys->runAction(CCSequence::create(CCDelayTime::create(MV_TLEN/2), CCFadeTo::create(MV_TLEN*0.7,255), 
@@ -96,27 +107,13 @@ void MainLayer::ELoadFinal()
 	msWys->setPosition(ccp(0,0));
 	msWys->setTag(TAG_WYS);
 	addChild(msWys,0);
+
 	((MenuScene*) getParent())->SplashOver();
 }
 
 void MainLayer::PlayOpMusic()
 {
 	SoundManager::sharedSoundManager()->PlayMusic("sound/bgm/op.ogg");
-}
-
-void MainLayer::Close()
-{
-
-}
-
-void MainLayer::Pause()
-{
-
-}
-
-void MainLayer::Resume()
-{
-
 }
 
 void MainLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)

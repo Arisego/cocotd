@@ -27,9 +27,10 @@ bool MenuScene::init()
     bool bRet = false;
     do 
     {
-		miFlag = 0;	// StateMachine
+		miFlag	= 0;	// StateMachine
+		miState = 0;
 		CC_BREAK_IF(!CCScene::init());
-
+		mbControlLock = false;
 		//////////////////////////////////////////////////////////////////////////
 		/* <MainLayer */
 		ml = new MainLayer();
@@ -39,6 +40,18 @@ bool MenuScene::init()
 		ml->autorelease();
 		addChild(ml, 0);
 		AddState(ml);
+
+		//////////////////////////////////////////////////////////////////////////
+		/* <Chapter 01 */
+		mFlLayer = new FlLayer();
+		mFlLayer->init();
+		mFlLayer->setVisible(false);
+		mFlLayer->setAnchorPoint(CCPointZero);
+		mFlLayer->setPosition(CCPointZero);
+		mFlLayer->autorelease();
+		addChild(mFlLayer,1);
+		AddState(mFlLayer);
+
 
 		//////////////////////////////////////////////////////////////////////////
 		/* <菜单 */
@@ -68,4 +81,46 @@ void MenuScene::PreQuit(){
 void MenuScene::SplashOver()
 {
 	menu->setTouchEnabled(true);
+	miState = 1;
+}
+
+void MenuScene::ChangeState(int ais)
+{
+	if(mbControlLock) return;
+	if(miState == ais) return;
+	switch (ais)
+	{
+	case(1):
+		OpenOnly(ml);
+		ml->PlayOpMusic();
+		menu->EnableAllBtns();
+		UnLockControl();
+		break;
+	case(2):
+		OpenOnly(mFlLayer);
+		mFlLayer->BeginShow();
+		break;
+	default:
+		break;
+	}
+	miState = ais;
+}
+
+void MenuScene::LockControl()
+{
+	mbControlLock = true;
+	menu->setTouchEnabled(false);
+}
+
+void MenuScene::UnLockControl()
+{
+	mbControlLock = false;
+	menu->setTouchEnabled(true);
+}
+
+void MenuScene::GoToGame()
+{
+	LockControl();
+	PreQuit();
+	GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
 }

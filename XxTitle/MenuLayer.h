@@ -3,15 +3,19 @@
 
 #include "byeven\BYCocos.h"
 #include "utils\States.h"
+#include "XxUI\HSBotton.h"
 
 class TitleMMenu : public BYLayerDescendant, public StateMachine
 {
 protected:
-	CCMenuItem*    m_disabledItem;
+	CCSprite* msMenu;
+	std::vector<HSButton*> mvBtns;
 
 public:
 	TitleMMenu(void);
 	~TitleMMenu();
+
+	void	EnableAllBtns();
 
 public:
 	virtual void registerWithTouchDispatcher();

@@ -23,7 +23,6 @@ private:
 	CCSprite* msLogo2;
 
 	CCSprite* msBg;
-	CCSprite* msMenu;
 	CCSprite* msWys;	// <Tag:WYS
 
 	CCGLProgram *mglProgLogo;

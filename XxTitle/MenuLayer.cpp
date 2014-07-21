@@ -1,6 +1,6 @@
 #include "MenuLayer.h"
-#include "XxUI\HSBotton.h"
-#include "..\Corrode\Classes\GameManager.h"
+#include "GameManager.h"
+#include "MenuScene.h"
 
 TitleMMenu::TitleMMenu()
 {
@@ -18,12 +18,19 @@ TitleMMenu::TitleMMenu()
 	tHsB1->setAnchorPoint(CCPointZero);
 	tHsB1->setPosition(ccp(36,477));
 	mbArea->addChild(tHsB1);
+	mvBtns.push_back(tHsB1);
 
 	HSButton* tHsB2 = new HSButton("Images/UI/config.png","",64,112,false);
 	tHsB2->setactivator(this, menu_selector(TitleMMenu::menuCallback2));
 	tHsB2->setAnchorPoint(CCPointZero);
 	tHsB2->setPosition(ccp(35,8));
 	mbArea->addChild(tHsB2);
+	mvBtns.push_back(tHsB2);
+
+	msMenu = CCSprite::create("Images/UI/menu.png");
+	msMenu->setAnchorPoint(CCPointZero);
+	msMenu->setPosition(ccp(0,0));
+	addChild(msMenu,10);
 
 }
 
@@ -37,14 +44,15 @@ void TitleMMenu::registerWithTouchDispatcher()
 
 TitleMMenu::~TitleMMenu()
 {
-
+	CCLog(">[MenuLayer] Deco~");
 }
 
 void TitleMMenu::menuCallback(CCObject* sender)
 {
 	CCLOG("Prepare to new scene.");
-	setTouchEnabled(false);
-	GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
+	((MenuScene*) getParent())->ChangeState(2);
+	//setTouchEnabled(false);
+	//GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
 }
 
 void TitleMMenu::menuCallback2(CCObject* sender)
@@ -69,4 +77,11 @@ void TitleMMenu::Close(){
 
 void TitleMMenu::Resume(){
 	setTouchEnabled(true);
+}
+
+void TitleMMenu::EnableAllBtns()
+{
+	for(std::vector<HSButton*>::iterator it = mvBtns.begin(); it != mvBtns.end(); ++it){
+		(*it)->setEnability(true);
+	}
 }
