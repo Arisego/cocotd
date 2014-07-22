@@ -116,7 +116,7 @@ void ModelLayer::c_quit_no(CCObject* sender){
 bool ModelLayer::m_clock = false;
 
 void ModelLayer::preConfig(int type, int flag, int tab){
-	if(m_clock) return;			//TODO:切换Flag和Tab
+	if(m_clock) return;			// TODO:切换Flag和Tab|?
 	setTouchEnabled(true);
 	mb = NULL;
 	mtTab = NULL;
@@ -127,25 +127,25 @@ void ModelLayer::preConfig(int type, int flag, int tab){
 	miFlag = flag;
 	miTab = tab;
 	
-	if(! (miFlag & miType)) return;	//当前按钮列表不提供这个功能则退出
+	if(! (miFlag & miType)) return;	/* <当前按钮列表不提供这个功能则退出 */
 
-	m_fHeight = 50;
-	m_fWidth = 2.5;
+	m_fHeight = 16;
+	m_fWidth = 700;
 
-	Add_Button("back",0);
+	 Add_Button("back",0);
 	//根据mType the bit 进行按钮的显示
-	m_fHeight = 550 - 30;
-	int tiFlag = 1;
-	for(int i = 1; i <= NUM_BTN; i++){
-		if(miType&tiFlag){
-			Add_Button((CCString::createWithFormat("button_%d",i))->getCString(),tiFlag);
-			m_fHeight -= 30;
-		}
-		tiFlag = tiFlag<<1;
-	}
+	//m_fHeight = 550 - 30;
+	//int tiFlag = 1;
+	//for(int i = 1; i <= NUM_BTN; i++){
+	//	if(miType&tiFlag){
+	//		Add_Button((CCString::createWithFormat("button_%d",i))->getCString(),tiFlag);
+	//		m_fHeight -= 30;
+	//	}
+	//	tiFlag = tiFlag<<1;
+	//}
 
-	m_bLockSave = m_fHeight > 450;
-	Refresh_Button();
+	//m_bLockSave = m_fHeight > 450;
+	//Refresh_Button();
 	Show_Content();
 
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
@@ -156,11 +156,11 @@ void ModelLayer::preConfig(int type, int flag, int tab){
 	nback->setOpacity(199);
 	addChild(nback,-1);
 
-	CCScale9Sprite* nsplit = CCScale9Sprite::create(s_Button); 
-	nsplit->setContentSize(CCSize(5,500));
-	nsplit->setAnchorPoint(ccp(0,0));
-	nsplit->setPosition(ccp(105,50));
-	addChild(nsplit,-1);
+	//CCScale9Sprite* nsplit = CCScale9Sprite::create(s_Button); 
+	//nsplit->setContentSize(CCSize(5,500));
+	//nsplit->setAnchorPoint(ccp(0,0));
+	//nsplit->setPosition(ccp(105,50));
+	//addChild(nsplit,-1);
 }
 
 void ModelLayer::Refresh_Button(){
@@ -181,6 +181,7 @@ void ModelLayer::Add_Button(const char* name,int tag){
 	tabc->setAnchorPoint(ccp(0,0));
 	tabc->setPosition(ccp(m_fWidth,m_fHeight));
 	addChild(tabc);
+	tabc->setOpacity(166);
 	
 	m_vBtns.push_back(tabc);
 }
@@ -207,7 +208,7 @@ void ModelLayer::buttonback(CCObject* sender){
 	Refresh_Button();
 }
 
-/* 显示右侧内容栏 */
+/* <显示右侧内容栏 */
 void ModelLayer::Show_Content(){
 	float m_height = 0;
 
@@ -219,7 +220,7 @@ void ModelLayer::Show_Content(){
 		mb->setPosition(ccp(110,50));
 		
 
-		CCScale9Sprite* nback = CCScale9Sprite::create(s_Button); 
+		CCScale9Sprite* nback = CCScale9Sprite::create(s_ConfigBack); 
 		nback->setAnchorPoint(ccp(0,0));
 		nback->setContentSize(CCSize(690,500));
 		nback->setOpacity(100);
@@ -232,6 +233,7 @@ void ModelLayer::Show_Content(){
 	switch(miFlag){
 	case(0x0010):
 		{
+			EventCenter::sharedEventCenter()->setBmCake(this);
 			mtTab = new ConfigTab();
 			break;
 		 }
@@ -257,17 +259,26 @@ void ModelLayer::Show_Content(){
 			break;
 		}
 	default:
+		return;
 		break;
 	}
 
 	mb->addChild(mtTab);
 	mtTab->setTag(CONTENT_TAG);
 	mtTab->ShowTab(miTab);
-	miTab = -2;			//防止跳转后出现bug
+	miTab = -2;			/* <防止跳转后出现bug */
 
 }
 
 void ModelLayer::noConfig(float dt){
 	m_clock = false;
 	GameManager::sharedGameManager()->noConfig();
+}
+
+void ModelLayer::right_click()
+{
+	if(miFlag == 0x0010){
+		EventCenter::sharedEventCenter()->unsetBmCake(this);
+		noConfig(0);
+	}
 }

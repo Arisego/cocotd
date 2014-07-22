@@ -17,6 +17,7 @@ TitleMMenu::TitleMMenu()
 	tHsB1->setactivator(this, menu_selector(TitleMMenu::menuCallback));
 	tHsB1->setAnchorPoint(CCPointZero);
 	tHsB1->setPosition(ccp(36,477));
+	tHsB1->setTag(2);
 	mbArea->addChild(tHsB1);
 	mvBtns.push_back(tHsB1);
 
@@ -24,6 +25,7 @@ TitleMMenu::TitleMMenu()
 	tHsB2->setactivator(this, menu_selector(TitleMMenu::menuCallback2));
 	tHsB2->setAnchorPoint(CCPointZero);
 	tHsB2->setPosition(ccp(35,8));
+	tHsB2->setTag(9);
 	mbArea->addChild(tHsB2);
 	mvBtns.push_back(tHsB2);
 
@@ -38,7 +40,6 @@ void TitleMMenu::registerWithTouchDispatcher()
 {
 	CCDirector* pDirector = CCDirector::sharedDirector();
 	pDirector->getTouchDispatcher()->addTargetedDelegate(this, kCCMenuHandlerPriority+1, true);
-	//pDirector->getTouchDispatcher()->addStandardDelegate(this, kCCMenuHandlerPriority+1);
 }
 
 
@@ -57,7 +58,7 @@ void TitleMMenu::menuCallback(CCObject* sender)
 
 void TitleMMenu::menuCallback2(CCObject* sender)
 {
-	;
+	((MenuScene*) getParent())->GoToConfig();
 }
 
 void TitleMMenu::onQuit(CCObject* sender)
@@ -79,9 +80,10 @@ void TitleMMenu::Resume(){
 	setTouchEnabled(true);
 }
 
-void TitleMMenu::EnableAllBtns()
+void TitleMMenu::EnableAllBtns(int atag)
 {
 	for(std::vector<HSButton*>::iterator it = mvBtns.begin(); it != mvBtns.end(); ++it){
-		(*it)->setEnability(true);
+		if((*it)->getTag() != atag) (*it)->setEnability(true);
+		else (*it)->setEnability(false);
 	}
 }

@@ -35,6 +35,9 @@ public:
 	void	UnLockControl();	/* <解锁操作|播放补间等特效用 */
 
 	void	GoToGame();			/* <进入游戏 */
+	void	GoToConfig();		/* <进入配置 */
+
+	virtual void NoQuit() override;	/* <从ModelLayer返回 */
 };
 
 #endif  // __GAMEPLAY_LAYER_H__

@@ -61,7 +61,7 @@ bool MenuScene::init()
 		menu->setAnchorPoint(CCPointZero);
 		menu->setPosition(0,0);
 		CC_BREAK_IF(! menu);
-		addChild(menu,100);
+		addChild(menu,9);
 		AddState(menu);
 		
 		bRet = true;
@@ -92,7 +92,7 @@ void MenuScene::ChangeState(int ais)
 	{
 	case(1):
 		OpenOnly(ml);
-		ml->PlayOpMusic();
+		ml->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0), CCCallFunc::create(ml,  callfunc_selector(MainLayer::PlayOpMusic))));
 		menu->EnableAllBtns();
 		UnLockControl();
 		break;
@@ -123,4 +123,18 @@ void MenuScene::GoToGame()
 	LockControl();
 	PreQuit();
 	GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
+}
+
+void MenuScene::NoQuit()
+{
+	StatesManager::NoQuit();
+	menu->EnableAllBtns(miState);
+	UnLockControl();
+}
+
+void MenuScene::GoToConfig()
+{
+	e_State = 1;
+	miFlag	= 0x0010;
+	GameManager::sharedGameManager()->goConfig();
 }

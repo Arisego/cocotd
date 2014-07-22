@@ -9,7 +9,7 @@
 
 USING_NS_CC;
 
-class FlLayer : public BYLayerDescendant, public StateMachine, public Cake
+class FlLayer :  public BYLayerDescendant, public StateMachine, public Cake
 {
 
 public:
@@ -37,7 +37,7 @@ public:
 	void		ELoadFinal();	/* <特效终结 */
 
 	void		BGCallBack(CCObject* pSender);	/* <开场按钮回调 */
-	virtual void byTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+	//virtual void byTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
 	virtual void registerWithTouchDispatcher() override;
 };

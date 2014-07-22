@@ -12,11 +12,12 @@
 #include "byeven/BYCocos.h"
 
 #include "packui/Tab.h"
+#include "utils/Controller.h"
 
 USING_NS_CC;
 using namespace std;
 
-class ModelLayer : public BYLayerAncestor, public StateMachine
+class ModelLayer : public BYLayerAncestor, public StateMachine, public Cake
 {
 private:
 	string sContent;
@@ -52,6 +53,7 @@ public:
 	ModelLayer();
 	~ModelLayer();
 	
+	virtual void right_click() override;
 };
 
 #endif	// __MODEL_LAYER_H__

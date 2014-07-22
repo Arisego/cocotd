@@ -14,7 +14,8 @@ void FlLayer::Pause()
 
 void FlLayer::Resume()
 {
-	//setTouchEnabled(true);
+	setTouchEnabled(true);
+	EventCenter::sharedEventCenter()->setBmCake(this);
 	setVisible(true);
 }
 
@@ -67,6 +68,8 @@ bool FlLayer::init()
 		mBtnEnterIn->setPosition(ccp(366,246));
 		addChild(mBtnEnterIn,3);
 
+		setContentSize(CCSizeMake(700,600));
+
 		return true;
 	} while (false);
 	return false;
@@ -114,7 +117,6 @@ void FlLayer::ELoadFinal()
 
 	mBtnEnterIn->setVisible(true);
 	mBtnEnterIn->setEnability(true);
-	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate( this, kCCMenuHandlerPriority, true );
 	MENU_SCENE->UnLockControl();
 	setTouchEnabled(true);
 }
@@ -128,15 +130,15 @@ void FlLayer::right_click()
 {
 	MENU_SCENE->ChangeState(1);
 }
-
-void FlLayer::byTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
-{
-	exit(99);
-}
+//
+//void FlLayer::byTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
+//{
+//	exit(99);
+//}
 
 void FlLayer::registerWithTouchDispatcher()
 {
-	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate( this, kCCMenuHandlerPriority, true );
+	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate( this, kCCMenuHandlerPriority, false );
 }
 
 FlLayer::~FlLayer()

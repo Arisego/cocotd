@@ -73,7 +73,8 @@ public:
 		tabc->setPosition(ccp(0,500));
 
 		addChild(tabc,1,0);
-		tabc->onSelect();
+		tabc->setEnability(false);
+		//tabc->onSelect();
 
 		ShowTab();
 	}

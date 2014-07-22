@@ -318,8 +318,6 @@ void GameManager::noConfig(){
 	if(m_bInfo) return;
 	if(cs){
 		(dynamic_cast<StatesManager*> (cs))->NoQuit();
-
-
 	}
 }
 

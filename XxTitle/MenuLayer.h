@@ -15,7 +15,7 @@ public:
 	TitleMMenu(void);
 	~TitleMMenu();
 
-	void	EnableAllBtns();
+	void	EnableAllBtns(int atag = 0);
 
 public:
 	virtual void registerWithTouchDispatcher();
