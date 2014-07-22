@@ -23,8 +23,6 @@ USING_NS_CC;
 
 using namespace std;
 
-static const char* tBtnString[] = {"AUTO","SKIP","SYS","SAVE","LOAD","LOG","HIDE"};
-
 CCDictionary* ToTextLayer::lockstate = NULL;
 
 ToTextLayer::~ToTextLayer(){
@@ -271,6 +269,7 @@ void ToTextLayer::tlbback( CCObject* sender )
 		}
 	case(2):
 		{
+			GameManager::sharedLogicCenter()->miFlag	= 0x0010;
 			GameManager::sharedGameManager()->goConfig();
 			ttlbtn->onNormal();
 			break;
@@ -289,7 +288,7 @@ void ToTextLayer::tlbback( CCObject* sender )
 		}
 	case(5):
 		{
-			SoundManager::sharedSoundManager()->PlayHoverSFX();
+			//SoundManager::sharedSoundManager()->PlayHoverSFX();
 			ttlbtn->onNormal();
 			break;
 		}

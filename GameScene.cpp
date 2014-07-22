@@ -71,9 +71,9 @@ string fscp;
 
 GameScene::~GameScene(){
 
-	
+	CCLog(">GameScene Destruct. - Begin");
 //	Imgstack->removeAllObjects();
-	if(initover) 
+	if(initover && !GameManager::sharedGameManager()->isActivate())
 		CC_SAFE_RELEASE_NULL(Imgstack);
 	CC_SAFE_RELEASE_NULL(ScriptList);
 
@@ -81,7 +81,7 @@ GameScene::~GameScene(){
 //	CC_SAFE_RELEASE_NULL(tMovie);
 //	ALSingle::purgeSharedALSingle();
 	
-	CCLOG(">GameScene Destruct.");				//ERR:122;
+	CCLog(">GameScene Destruct. - End");				//ERR:122;
 }
 
 void cleanup(void *arg){  
@@ -209,7 +209,7 @@ bool GameScene::f_cachetest(const char* rscMask){	// <移动缓存并记录进map
 
 void GameScene::f_initover(){
 	this->removeChildByTag(tLySpalash,true);	//移除并清理splash层
-
+	CCLog(">[GameScene] f_initover()");
 	m_pImages = Imgstack;
 	ScriptList = s_sp->m_caScript;
 	//ScriptList->retain();

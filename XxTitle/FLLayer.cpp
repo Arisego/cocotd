@@ -99,7 +99,7 @@ void FlLayer::BeginShow()
 	mcsEnterIn->setVisible(false);
 	mcsEnterIn->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(START_TIME), CCToggleVisibility::create()));
 
-	runAction(CCSequence::createWithTwoActions(CCDelayTime::create(START_TIME), CCCallFunc::create(this, callfunc_selector(FlLayer::ELoadFinal))));
+	runAction(CCSequence::createWithTwoActions(CCDelayTime::create(START_TIME+0.1f), CCCallFunc::create(this, callfunc_selector(FlLayer::ELoadFinal))));
 	EventCenter::sharedEventCenter()->setBmCake(this);
 }
 

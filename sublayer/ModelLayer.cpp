@@ -5,6 +5,8 @@
 
 #include "GameManager.h"
 #include "packui/ConfigManager.h"
+#include "XxUI/SLTab.h"
+#include "utils/COShaderNode.h"
 
 USING_NS_CC_EXT;
 
@@ -71,14 +73,14 @@ void ModelLayer::preQuit(){
 	mb->setAnchorPoint(ccp(0.5,0.5));
 	mb->setPosition(ccp(vs.width/2,vs.height/2));
 	
-	HSButton* tHsB_Yes = new HSButton("Images/UI/q_yes.png","",38,38);
+	HSButton* tHsB_Yes = new HSButton("Images/UI/q_yes.png","",48,48);
 	tHsB_Yes->setactivator(this, menu_selector(ModelLayer::c_quit_yes)); 
 	tHsB_Yes->setAnchorPoint(ccp(0.5,0.5));
 	tHsB_Yes->setPosition(ccp(-104,6));
 	tHsB_Yes->setTag(100);
 	mb->addChild(tHsB_Yes);
 
-	HSButton* tHsB_No = new HSButton("Images/UI/q_no.png","",38,38);
+	HSButton* tHsB_No = new HSButton("Images/UI/q_no.png","",48,48);
 	tHsB_No->setactivator(this, menu_selector(ModelLayer::c_quit_no)); 
 	tHsB_No->setAnchorPoint(ccp(0.5,0.5));
 	tHsB_No->setPosition(ccp(43,6));
@@ -153,7 +155,7 @@ void ModelLayer::preConfig(int type, int flag, int tab){
 	CCScale9Sprite* nback = CCScale9Sprite::create(s_ConfigBack); 
 	nback->setContentSize(winSize);
 	nback->setAnchorPoint(ccp(0,0));
-	nback->setOpacity(199);
+	nback->setOpacity(169);
 	addChild(nback,-1);
 
 	//CCScale9Sprite* nsplit = CCScale9Sprite::create(s_Button); 
@@ -161,6 +163,15 @@ void ModelLayer::preConfig(int type, int flag, int tab){
 	//nsplit->setAnchorPoint(ccp(0,0));
 	//nsplit->setPosition(ccp(105,50));
 	//addChild(nsplit,-1);
+
+	//FlameShader
+	COShaderNode *shadern = COShaderNode::shaderNodeWithVertex("Shaders/back.vsh", "Shaders/back.fsh");
+
+	CCSize size = CCDirector::sharedDirector()->getVisibleSize();
+	shadern->setPosition(ccp(size.width/2, size.height/2));
+	shadern->setSize(size.width,size.height);
+	addChild(shadern,-2);
+	//shadern->autorelease();
 }
 
 void ModelLayer::Refresh_Button(){
@@ -238,9 +249,9 @@ void ModelLayer::Show_Content(){
 			break;
 		 }
 	case(0x0008):
-		{
-			
-			mtTab = new SLTab(m_bLockSave);
+		{		
+			EventCenter::sharedEventCenter()->setBmCake(this);
+			mtTab = new SLTab();
 			break;
 		}
 	case(0x0004):
@@ -277,8 +288,6 @@ void ModelLayer::noConfig(float dt){
 
 void ModelLayer::right_click()
 {
-	if(miFlag == 0x0010){
-		EventCenter::sharedEventCenter()->unsetBmCake(this);
-		noConfig(0);
-	}
+	EventCenter::sharedEventCenter()->unsetBmCake(this);
+	noConfig(0);
 }

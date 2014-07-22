@@ -116,7 +116,7 @@ bool GameManager::init()
 
 
 GameManager::GameManager():
-	mbActivate(true),
+	mbActivate(false),
 	cs(NULL)
 {
 
@@ -126,6 +126,7 @@ GameManager::GameManager():
 
 GameManager::~GameManager()
 {
+	CCLog(">[GameManager] Deco~");
 	if(mdl) CC_SAFE_RELEASE_NULL(mdl);
 
 	InfoTab::purgeSharedInfoTab();
@@ -144,7 +145,9 @@ GameManager::~GameManager()
 	SituJudge::purgeSharedSituJudge();
 	EGroup::purgeSharedEGroup();
 
+	EventCenter::purgeSharedEventCenter();
 	ALSingle::purgeSharedALSingle();
+	
 	//Spliter::purgeSharedSpliter();
 	//HMenu::purgeSharedHMenu();
 }
@@ -154,6 +157,7 @@ void GameManager::runSceneWithId(SceneId id)
 {
 
 	CCScene *newScene = NULL;
+	mbActivate = true;
 	CCLOG("Prepare to create the new scene.");
 	mCurrentStage = NULL;
 
@@ -161,9 +165,11 @@ void GameManager::runSceneWithId(SceneId id)
 
 	CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames();
 	CCTextureCache::sharedTextureCache()->removeAllTextures();
-	ALSingle::sharedALSingle()->StopUpdate();
 	ALSingle::sharedALSingle()->StopAll();
+	ALSingle::sharedALSingle()->StopUpdate();
+	
 	ALSingle::sharedALSingle()->KillALData();
+	ALSingle::sharedALSingle()->CleanOgg();
 
 	switch (id)
 	{

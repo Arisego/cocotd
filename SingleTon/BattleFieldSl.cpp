@@ -23,10 +23,11 @@ void BattleField::setLoadState(){
 	//if(GameManager::sharedLogicCenter()->ml) GameManager::sharedLogicCenter()->ml->tm->DeActive();
 	CCLog(">[BattleField] setLoadState()");
 	if(GameManager::sharedGameManager()->state == GameManager::SCENE_PLAY){
+		if(GameManager::sharedLogicCenter()->ml->m_iMLState < 2) return;	/* <没有地图载入时退出这个过程 */
 		miState = -99;
 		GameManager::sharedLogicCenter()->ml->tm->DeActive();
 		GameManager::sharedLogicCenter()->ml->clearBattle();
-		if(GameManager::sharedLogicCenter()->ml->m_iMLState < 2) return;
+		
 		
 		
 		BattleField::sharedBattleField()->Clean();

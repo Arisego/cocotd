@@ -34,7 +34,6 @@ public:
 
 	void runSceneWithId(SceneId id);
 	void settransition();
-	void runSceneWithTrans(float dt, SceneId id);
 
 	SceneId state;
 	string NextPara;
