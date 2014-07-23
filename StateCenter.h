@@ -11,6 +11,7 @@
 #include "utils/Scriptor.h"
 #include "packui/CharaS.h"
 #include "Macros.h"
+#include "json/json.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ private:
 	CCDictionary* il;				//存储Map单位状态的字典 -- itemlist.
 
 	CCDictionary* m_cdItemList;			//物品列表
+	Json::Value		gLoadedJson;	/* <缓存 */
 
 public:
 	int m_iState,m_oldstate;

@@ -2,14 +2,21 @@
 #define __SL_TAB_H__
 
 #include "packui\Tab.h"
+#include "json/json.h"
 
 class SLCell : public Container
 {
 private:
 	int miSlState;
 
+	CCLabelBMFont*	mLbTIme;
+	CCSprite*		mSpCellBg;
+	virtual void update(float fDelta) override;
+
 public:
 	SLCell();
+	void	initWithJSon(Json::Value);
+	void	ChangeState(int ai);
 };
 
 

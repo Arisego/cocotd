@@ -101,7 +101,7 @@ public:
 
 	CCImage* snapshot;
 	void PrepareSave();
-	void Snap();
+	void Snap();	/* <ÆÁÄ»×´Ì¬½ØÍ¼ */
 
 	mSpotLight* spotLight;
 

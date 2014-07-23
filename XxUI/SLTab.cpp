@@ -1,5 +1,8 @@
 #include "SLTab.h"
 
+#include <fstream>
+#include <iostream>
+
 #define SL_WIDTH 370
 #define SL_HEIGHT 62
 //////////////////////////////////////////////////////////////////////////
@@ -26,11 +29,59 @@ SLCell::SLCell()
 	labelAtlas->setPosition(SL_WIDTH/2, SL_HEIGHT/2 - 3);
 	addChild(labelAtlas);
 
+	mSpCellBg = CCSprite::create("Images/UI/sl_cell.png");
+	mSpCellBg->setAnchorPoint(CCPointZero);
+	mSpCellBg->setPosition(ccp(0,0));
+	mSpCellBg->setVisible(false);
+	addChild(mSpCellBg);
+	
+	mLbTIme = CCLabelBMFont::create("",FNT_CHN);
+	mLbTIme->setPosition(ccp(240,36));
+	mLbTIme->setScale(0.6);
+	mLbTIme->setAnchorPoint(CCPointZero);
+	mSpCellBg->addChild(mLbTIme);
+
+
 	m_obContentSize.width = SL_WIDTH;
 	m_obContentSize.height = SL_HEIGHT;
 
 	m_iState = C_STATE_NORMAL;
 	scheduleUpdate();
+}
+
+void SLCell::initWithJSon(Json::Value ajv)
+{
+	ChangeState(1);
+	mLbTIme->setString(ajv["time"].asCString());
+}
+
+void SLCell::ChangeState(int ai)
+{
+	
+	switch (ai)
+	{
+	case(0):
+		labelAtlas->setVisible(true);
+		break;
+	case(1):
+		labelAtlas->setVisible(false);
+		mSpCellBg->setVisible(true);
+		break;
+	}
+	miSlState = ai;
+}
+
+void SLCell::update(float fDelta)
+{
+	if(mLasto && m_iState != C_STATE_SELECT){
+		if(checkTouch(mLasto)){
+			onHover();
+		}else{
+			onNormal();
+			CC_SAFE_RELEASE_NULL(mLasto);
+			labelAtlas->setColor(COLOUR_NORMAL);
+		}
+	}
 }
 
 
@@ -110,7 +161,6 @@ void SLTab::buttonback(CCObject* sender){
 		{
 			CC_SAFE_RELEASE_NULL(m_oLockSave);
 			m_oLockSave = sender;
-			exit(1);
 
 			if(iSet.count(itag) == 0){
 				savetofile();
@@ -150,13 +200,28 @@ void SLTab::ShowTab(int itab){
 void SLTab::Add_Button(int tag){
 	SLCell* tabc = new SLCell();
 
-	CCString* fullPath = CCString::createWithFormat("save/save_%d.jpg",tag);
-	bool tbSave = CCFileUtils::sharedFileUtils()->isFileExist("save/save_%d.tos");
+	CCString* fullPath = CCString::createWithFormat("save/save_%d.tos",tag);
+	bool tbSave = CCFileUtils::sharedFileUtils()->isFileExist(fullPath->getCString());
 
 	tabc->setPosition(ccp(m_fSWidth,m_fSHeight - tag*(SL_HEIGHT+2)));
 	tabc->setAnchorPoint(CCPointZero);
 	tabc->setactivator(this, menu_selector(SLTab::buttonback));
 	tabc->setTag(tag);
+
+	if(tbSave){
+		ifstream b_file(fullPath->getCString());
+		std::stringstream buffer;  
+		buffer << b_file.rdbuf();  
+		std::string contents(buffer.str()); 
+		CCLog(">[SLTab] Get the tos:%s", contents.c_str());
+
+		Json::Value		tjs_Save;
+		Json::Reader	tjsReader;
+		if(tjsReader.parse(contents,tjs_Save)){
+			tabc->initWithJSon(tjs_Save);
+		}
+	}
+
 	mb->addChild(tabc);
 	m_vSLs[tag] = tabc;
 

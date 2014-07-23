@@ -3,6 +3,9 @@
 #include "SoundManager.h"
 #include "EventCenter.h"
 
+#include <fstream>
+#include <iostream>
+
 #define START_TIME 0.3f	/* <开始特效的时间长度 */
 #define MENU_SCENE	((MenuScene*) getParent())
 
@@ -10,12 +13,14 @@ void FlLayer::Pause()
 {
 	setTouchEnabled(false);
 	EventCenter::sharedEventCenter()->unsetBmCake(this);
+	mFlBtnActive = NULL;
 }
 
 void FlLayer::Resume()
 {
 	setTouchEnabled(true);
 	EventCenter::sharedEventCenter()->setBmCake(this);
+	mFlBtnActive = NULL;
 	setVisible(true);
 }
 
@@ -24,6 +29,7 @@ void FlLayer::Close()
 	setTouchEnabled(false);
 	SoundManager::sharedSoundManager()->StopMusic();
 	EventCenter::sharedEventCenter()->unsetBmCake(this);
+	mFlBtnActive = NULL;
 	setVisible(false);
 }
 
@@ -34,6 +40,7 @@ bool FlLayer::init()
 		mcsBackGround = CCSprite::create("Images/UI/fl_bg.jpg");
 		mcsBackGround->setAnchorPoint(CCPointZero);
 		mcsBackGround->setPosition(CCPointZero);
+		mFlBtnActive = NULL;
 		//mcsBackGround->setOpacity(0);
 		addChild(mcsBackGround,-10);
 
@@ -62,11 +69,56 @@ bool FlLayer::init()
 		mcsEnterIn->setPosition(ccp(366,246));
 		addChild(mcsEnterIn,2);
 
+		/*fl_sl_cb.png*/
+		mBaSLArea = BYLayerDescendant::create();
+		mBaSLArea->setAnchorPoint(CCPointZero);
+		mBaSLArea->setPosition(ccp(10,28));
+		mBaSLArea->setContentSize(CCSizeMake(107,135));
+		addChild(mBaSLArea);
+
+		FLButton* tflb;
+		float tflBH = 90;
+		tflb = new FLButton("Images/UI/fl_sl_cb.png", "", 96, 42, false);
+		tflb->setAnchorPoint(CCPointZero);
+		tflb->setactivator(this, menu_selector(FlLayer::SLBtnBack));
+		tflb->setPosition(0,tflBH);
+		tflb->setTag(0);
+		mvsBtnSLs.push_back(tflb);
+		mBaSLArea->addChild(tflb);
+
+		tflBH -= 40;
+		tflb = new FLButton("Images/UI/fl_sl_cb.png", "", 96, 42, false);
+		tflb->setAnchorPoint(CCPointZero);
+		tflb->setactivator(this, menu_selector(FlLayer::SLBtnBack));
+		tflb->setPosition(0,tflBH);
+		tflb->setTag(1);
+		mvsBtnSLs.push_back(tflb);
+		mBaSLArea->addChild(tflb);
+
+		tflBH -= 40;
+		tflb = new FLButton("Images/UI/fl_sl_cb.png", "", 96, 42, false);
+		tflb->setAnchorPoint(CCPointZero);
+		tflb->setactivator(this, menu_selector(FlLayer::SLBtnBack));
+		tflb->setPosition(0,tflBH);
+		tflb->setTag(2);
+		mvsBtnSLs.push_back(tflb);
+		mBaSLArea->addChild(tflb);
+
+		mBaSLArea->setTouchEnabled(false);
+
 		mBtnEnterIn = new HSButton("Images/UI/enter_in.png","Images/UI/enter_in.png",200,60, false);
 		mBtnEnterIn->setactivator(this, menu_selector(FlLayer::BGCallBack));
 		mBtnEnterIn->setAnchorPoint(CCPointZero);
 		mBtnEnterIn->setPosition(ccp(366,246));
 		addChild(mBtnEnterIn,3);
+
+		mSLCell	= new SLCell();
+		mSLCell->setAnchorPoint(ccp(0.5,0.5));
+		mSLCell->setPosition(280,246);
+		mSLCell->setEnability(false);
+		mSLCell->setVisible(false);
+	
+		addChild(mSLCell, 3);
 
 		setContentSize(CCSizeMake(700,600));
 
@@ -119,6 +171,27 @@ void FlLayer::ELoadFinal()
 	mBtnEnterIn->setEnability(true);
 	MENU_SCENE->UnLockControl();
 	setTouchEnabled(true);
+
+	mBaSLArea->setTouchEnabled(true);
+	bool tbSave;
+	CCString* fullPath;
+	for(int i = 0; i<3; ++i){
+		fullPath	= CCString::createWithFormat("save/save_%d.tos",i);
+		tbSave		= CCFileUtils::sharedFileUtils()->isFileExist(fullPath->getCString());
+		if(tbSave){
+			mvsBtnSLs[i]->setEnability(true);
+			ifstream b_file(fullPath->getCString());
+			std::stringstream buffer;  
+			buffer << b_file.rdbuf();  
+			std::string contents(buffer.str()); 
+			Json::Value tjv;
+			Json::Reader tjr;
+			tjr.parse(contents,tjv);
+			mvsBtnSLs[i]->mJsData = tjv;
+		}else{
+			(mvsBtnSLs[i])->setEnability(false);
+		}
+	}
 }
 
 void FlLayer::BGCallBack(CCObject* pSender)
@@ -144,5 +217,33 @@ void FlLayer::registerWithTouchDispatcher()
 FlLayer::~FlLayer()
 {
 	CCLog(">[FlLayer] Deco~");
+}
+
+void FlLayer::SLBtnBack(CCObject* pSender)
+{
+	CCLog(">[FlLayer] SLBtnBack()");
+	FLButton* tfl = (FLButton*) pSender;
+	StateCenter::sharedStateCenter()->f_load_file(CCString::createWithFormat("save_%d",tfl->getTag())->getCString());
+}
+
+void FlLayer::SetActiveBtn(FLButton* tfl)
+{
+	if(tfl == mFlBtnActive) return;
+	mFlBtnActive = tfl;
+
+	mSLCell->setVisible(true);
+	mSLCell->initWithJSon(tfl->mJsData);
+	mBtnEnterIn->setVisible(false);
+	mcsEnterIn->setVisible(false);
+}
+
+void FlLayer::UnSetActive(FLButton* tfl)
+{
+	if(mFlBtnActive == tfl){
+		mFlBtnActive = NULL;
+		mSLCell->setVisible(false);
+		mBtnEnterIn->setVisible(true);
+		mcsEnterIn->setVisible(true);
+	}
 }
 

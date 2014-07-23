@@ -502,7 +502,7 @@ void GameScene::Snap(){
 
 void GameScene::PrepareSave(){
 	StateCenter::sharedStateCenter()->f_get_state();
-	Snap();
+	//Snap();
 }
 
 void GameScene::PreQuit(){

@@ -5,6 +5,8 @@
 #include "utils\States.h"
 #include "XxUI\HSBotton.h"
 #include "utils\Controller.h"
+#include "XxUI\FLButton.h"
+#include "XxUI\SLTab.h"
 
 
 USING_NS_CC;
@@ -30,14 +32,21 @@ private:
 	CCSprite*	mcsSLaves;
 	CCSprite*	mcsEnterIn;
 
-	HSButton*	mBtnEnterIn;
+	HSButton*	mBtnEnterIn;			/* <EnterIn按钮 */
+	std::vector<FLButton*>	mvsBtnSLs;	/* <读档按钮组 */
+	BYLayerDescendant*	mBaSLArea;
 
 public:
 	void		BeginShow();	/* <开场特效 */
 	void		ELoadFinal();	/* <特效终结 */
 
 	void		BGCallBack(CCObject* pSender);	/* <开场按钮回调 */
-	//virtual void byTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+	void		SLBtnBack(CCObject* pSender);	/* <读档按钮回调 */
+
+	void		SetActiveBtn(FLButton* tfl);
+	void		UnSetActive(FLButton* tfl);
+	FLButton*	mFlBtnActive;					/* <当前登记活跃的FLBtn */
+	SLCell*		mSLCell;						/* <展示的SL */
 
 	virtual void registerWithTouchDispatcher() override;
 };

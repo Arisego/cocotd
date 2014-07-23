@@ -4,6 +4,9 @@
 #include "packui/ItemCell.h"
 #include "SingleTon/BattleFiled.h"
 
+#include <fstream>
+#include <iostream>
+#include "../Corrode/Classes/SoundManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Static Member Init
@@ -471,11 +474,23 @@ bool StateCenter::f_save_file(const char* psz){
 
 		CCString* fullPath = CCString::createWithFormat("save/%s.xml",psz);
 		myDocument->SaveFile(fullPath->getCString());
-		fullPath = CCString::createWithFormat("save/%s.jpg",psz);
-		
-		GameManager::sharedLogicCenter()->snapshot->saveToFile(fullPath->getCString(),false);
 		myDocument->Clear();
 		delete myDocument;
+		// <±£´æ¼ò°æÕªÒª
+		fullPath = CCString::createWithFormat("save/%s.tos",psz);
+		Json::Value root;
+		time_t now;
+		time(&now);
+
+		tm t = *gmtime(&now);  
+		char buff[32]= {};  
+		strftime(buff, 32, "%Y-%m-%d %H:%M:%S", &t); // buff is what u want.
+
+		root["time"]	= buff;
+		root["bgm"]		= ALSingle::sharedALSingle()->bgm_playing?ALSingle::sharedALSingle()->bgpsz:"";
+		std::ofstream a_file(fullPath->getCString());
+		a_file << root.toStyledString();
+		a_file.close();
 
 		return true;
 	} while (0);
@@ -487,9 +502,21 @@ bool StateCenter::f_load_file(const char* psz){
 	{		//Move it to Load over.
 		CC_SAFE_DELETE(g_sp);
 		g_sp = NULL;
+		gLoadedJson.clear();
+
+		CCString* fullPath = CCString::createWithFormat("save/%s.tos",psz);
+
+		ifstream b_file(fullPath->getCString());
+		std::stringstream buffer;  
+		buffer << b_file.rdbuf();  
+		std::string contents(buffer.str()); 
+		CCLog(">[SLTab] Get the tos:%s", contents.c_str());
+
+		Json::Reader	tjsReader;
+		if(!tjsReader.parse(contents,gLoadedJson)) break;
 
 		g_sp = new Scriptor();		
-		CCString* fullPath = CCString::createWithFormat("save/%s.xml",psz);
+		fullPath = CCString::createWithFormat("save/%s.xml",psz);
 		if(! g_sp->parse_file(fullPath->getCString())) break;
 		//CCDirector::sharedDirector()->getRunningScene()->pauseSchedulerAndActions();
 		BattleField::sharedBattleField()->setLoadState();
@@ -570,6 +597,11 @@ bool StateCenter::g_load_file(){
 	BattleField::sharedBattleField()->Load_Over();
 	CC_SAFE_DELETE(g_sp);
 	g_sp = NULL;
+
+	string t_s1 = gLoadedJson["bgm"].asString();
+	if(t_s1.length()>0){
+		SoundManager::sharedSoundManager()->PlayMusic(t_s1.c_str());
+	}
 	
 	return true;
 }

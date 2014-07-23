@@ -26,10 +26,9 @@ using namespace std;
 */
 class Container : public BYLayer
 {
-private:
+protected:
 	CCTouch* mLasto;
 
-protected:
 	CCNode* spriteSelected;
 	CCNode* spriteHover;
 	CCNode* spriteNormal;
