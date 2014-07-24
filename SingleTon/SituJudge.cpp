@@ -2,6 +2,7 @@
 #include "SingleTon/BattleFiled.h"
 #include "Component/AIComponent.h"
 #include "GameManager.h"
+#include "EGroup.h"
 
 SituJudge *SituJudge::mSharedSituJudge = NULL;
 
@@ -153,7 +154,7 @@ void SituJudge::DpsVals( EChesses* aSrc )
 
 	// <输入
 	CCLog(">[SituJudge] DpsVals() | Take In.");
-	if(meThink->group_id & aSrc->group_mask){   /* <对方会攻击自己的情况 */
+	if(EGroup::sharedEGroup()->IsEnemy(aSrc, meThink)){   /* <对方会攻击自己的情况 */
 		//tiLink = aSrc->getAlink();		< Test || 请从chara上读取这个值
 		DpsValues(-JudgeDamageSc(aSrc,meThink) * 0.5, tx, ty, tiLink);
 	}else{					/* <提供辅助的情况 */
@@ -183,7 +184,7 @@ void SituJudge::DpsVals( EChesses* aSrc )
 
 	// <输出
 	CCLog(">[SituJudge] DpsVals() | Give Out.");
-	if(meThink->group_mask & aSrc->group_id){
+	if(EGroup::sharedEGroup()->IsEnemy(meThink, aSrc)){
 		DpsValues(JudgeDamageSc(meThink,aSrc) * 100, tx, ty, tiLink);
 	}else{
 		DpsValues(JudgeHelpSc(meThink,aSrc), tx, ty, tiLink);

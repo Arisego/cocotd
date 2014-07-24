@@ -655,7 +655,7 @@ void GameScene::addBackImg(){
 void GameScene::DerChange(Script* s){
 	int type = s->getint("type");
 	switch(type){
-	case 0:	//更换背景
+	case 0:	// <更换背景
 		{
 			if(BgImg) 
 			{
@@ -670,7 +670,7 @@ void GameScene::DerChange(Script* s){
 
 			break;
 		}
-	case 1:  //清除背景
+	case 1:  // <清除背景
 		{
 			if(BgImg) 
 			{
@@ -680,14 +680,14 @@ void GameScene::DerChange(Script* s){
 			}
 			break;
 		}
-	case 2:	//动态载入方案可以让ml载入一个空的tm来防止非法调用
+	case 2:	// <动态载入方案可以让ml载入一个空的tm来防止非法调用
 		{
 			ml->openTileMap(s->getstring("content"),s->getstring("script"));
 			break;
 		}
 	case -2:
 		{
-			ml->openBattleMap(s->getstring("content"),0);
+			ml->switch_to_battle(s->getstring("content"));
 			break;
 		}
 	case 3:	// <地图的载入方案 >>1.初始化时统一载入并保存在ml中.2.运行时载入使用case2.考虑到相同地图使用不同脚本的情况，第一种可以设计分离，第二种实时性比较好。

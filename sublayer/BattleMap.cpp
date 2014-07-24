@@ -6,6 +6,9 @@
 #include "hud/TFollow.h"
 #include "ccMacros.h"
 #include "SingleTon/SkillJudge.h"
+#include "SingleTon/EGroup.h"
+
+#include "json/json.h"
 
 #define ASTAR_DEPTH 2500
 #define  MAP_SCALE	1.40625
@@ -329,7 +332,7 @@ void BattleMap::ccTouchMoved(CCTouch *touch, CCEvent * pEvent){
 	m_touch->setTouchInfo(touch->getID(),touch->getLocationInView().x,touch->getLocationInView().y);
 }
 
-/* <生成敌人单位 [EChess-Chara] */
+/* <生成敌人单位 [EChess-Chara] | 战场导入信息的核心接口[140724] */
 void BattleMap::f_generateEnemy( int i )
 {
 	Scriptor* tsp = new Scriptor();
@@ -345,11 +348,26 @@ void BattleMap::f_generateEnemy( int i )
 	string t_mask	= t_ssm.at("mask");
 	string t_is		= t_ssm.at("member");
 	string t_scps	= t_ssm.at("script");
+	string t_json	= t_ssm.at("additinfo");
 	vdata.clear();
 	m_sSql = CCString::createWithFormat("select * from enemy_list where id IN (%s)", t_mask.c_str())->getCString();
 	vdata = DBUtil::getDataInfo(m_sSql,NULL);
 	DBUtil::closeDB();
 
+	//////////////////////////////////////////////////////////////////////////
+	
+	Json::Value tjv;
+	Json::Reader tjr;
+	if(tjr.parse(t_json, tjv)){
+		GameManager::sharedLogicCenter()->ml->m_iMaxGroup = tjv["groupnums"].asInt();
+		miPlayerMask = tjv["playermask"].asInt();
+	}else{
+		GameManager::sharedLogicCenter()->ml->m_iMaxGroup = 2;
+		miPlayerMask = 0x02;
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////
 	BattleField::sharedBattleField()->InitBfSp(t_scps.c_str());
 
 	map<int,int> t_miEnemis;
@@ -365,7 +383,7 @@ void BattleMap::f_generateEnemy( int i )
 	Scriptor* t_scp = new Scriptor();
 	stringstream teststream;
 	teststream<<t_is;
-	int t_id,t_x,t_y;
+	int t_id,t_x,t_y,t_gid,t_gmsk;
 	string t_name;
 	do{
 		t_id = 0;
@@ -377,6 +395,8 @@ void BattleMap::f_generateEnemy( int i )
 		teststream>>t_x;		// <横坐标
 		teststream>>t_y;		// <纵坐标
 		teststream>>t_name;		// <敌人的唯一标示
+		teststream>>t_gid;		// <敌人的标识ID
+		teststream>>t_gmsk;		// <敌人的标识掩码
 		/* [id x y s_name] */
 
 		map<string,string> t_ssm = (map<string,string>) vdata.at(t_miEnemis[t_id]);
@@ -391,9 +411,11 @@ void BattleMap::f_generateEnemy( int i )
 
 
 		t_fij_ecd->psz	=	t_ssm.at("spx");			//Test Only. SPX 入口
-		t_fij_ecd->pos	=	ccp(t_x,t_y);
-		t_fij_ecd->group_id = 0x02;
-		t_fij_ecd->group_mask = 0x01;
+		t_fij_ecd->pos	=	ccp(t_x,t_y);				
+
+		// <敌我识别用ID和Mask在此设置
+		t_fij_ecd->group_id = t_gid;
+		t_fij_ecd->group_mask = t_gmsk;
 
 		t_fij_ecd->name	=	t_name;
 		m_itemlist->setObject(t_fij_ecd,t_fij_ecd->name);
@@ -435,8 +457,10 @@ void BattleMap::f_load_chara()
 		t_cca->retain();
 
 		t_ec->pos = ccp(tmp->getfloat("x"),tmp->getfloat("y"));
+
+		// <角色的敌我识别ID和Mask在此设置|注意载入次序
 		t_ec->group_id = 0x01;
-		t_ec->group_mask = 0x02;
+		t_ec->group_mask = miPlayerMask;
 		t_ec->m_pChara = t_cca;
 		t_ec->name = CCString::createWithFormat("chara_%d",tmp->getint("name"))->getCString();
 		t_ec->psz  = t_cca->m_sSpx;//tmp->getstring("file");//t_cca->m_sPsz;			//Spx									//Whether use the same psz is due to further design.
@@ -580,7 +604,7 @@ void BattleMap::draw_skill_range(int a_type, vector<int> a_ran)
 			CCDictElement* tcde;
 			CCDICT_FOREACH(m_itemlist,tcde){
 				tcce = (EChesses*) tcde->getObject();
-				if(tcce->group_id != t_ce->group_id) continue;
+				if(EGroup::sharedEGroup()->IsEnemy(t_ce,tcce)) continue;	// <非敌即友
 				cs_y.insert(make_pair(tcce->pos.x, tcce->pos.y));
 			}
 			break;
@@ -673,7 +697,9 @@ void BattleMap::draw_moving_block()
 		
 
 		CCLOG(">m_itemlist:%s",t_ec->name.c_str());
-		if(t_ec->group_id & m_controller->group_mask){	// For Moving | cs_block is for calculating && cs_dis is for moving deciding while mouse move.
+
+		// <如果目标单位敌视m_controller，则生成ZOC
+		if(EGroup::sharedEGroup()->IsEnemy(t_ec, m_controller)){	// For Moving | cs_block is for calculating && cs_dis is for moving deciding while mouse move.
 			int t_range = 2;							//TODO: Test. ZOC Range = 1; type = ring
 			dps_szd(t_ec->pos, cs_block, 0, t_range);
 		}else{
@@ -1515,7 +1541,7 @@ void BattleMap::find_target_arrage(int a_type, set<pair<int,int>> &a_dt){
 
 	//m_caTarCharas = new CCArray();
 	//m_caTarget = new CCArray();
-	int g_id = m_controller->group_id;
+	//int g_id = m_controller->group_id;
 
 	switch (a_type)
 	{
@@ -1536,7 +1562,7 @@ void BattleMap::find_target_arrage(int a_type, set<pair<int,int>> &a_dt){
 			CCDICT_FOREACH(m_itemlist,t_cde){
 				EChesses* t_cfie = (EChesses*) t_cde->getObject();
 				if(a_dt.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
-					if(t_cfie->group_mask & g_id){
+					if(EGroup::sharedEGroup()->IsEnemy(m_controller, t_cfie)){
 						if(!m_caTarget->containsObject(t_cfie)) m_caTarget->addObject(t_cfie);
 						if(!m_caTarCharas->containsObject(t_cfie->m_pChara)) m_caTarCharas->addObject(t_cfie->m_pChara);
 					}
@@ -1551,7 +1577,7 @@ void BattleMap::find_target_arrage(int a_type, set<pair<int,int>> &a_dt){
 				EChesses* t_cfie = (EChesses*) t_cde->getObject();
 				if(a_dt.count(make_pair(t_cfie->pos.x,t_cfie->pos.y)) > 0){
 
-					if(! (t_cfie->group_mask & g_id)){
+					if(! (EGroup::sharedEGroup()->IsEnemy(m_controller, t_cfie))){
 						if(!m_caTarget->containsObject(t_cfie)) m_caTarget->addObject(t_cfie);
 						if(!m_caTarCharas->containsObject(t_cfie->m_pChara)) m_caTarCharas->addObject(t_cfie->m_pChara);
 					}

@@ -1,5 +1,6 @@
 #include "BHalo.h"
 #include "SingleTon\BattleFiled.h"
+#include "SingleTon\EGroup.h"
 
 class HaloStat{
 public:
@@ -157,7 +158,7 @@ bool BHalo::init()
 			
 			if(te == tsrc)	continue;															// <和自己无关
 			if(miDist < abs(te->pos.x - tsrc->pos.x) + abs(te->pos.y - tsrc->pos.y)) continue;	// <不在范围内就过滤
-			if(te->group_id != tsrc->group_id) continue;										// <仅友军
+			if(EGroup::sharedEGroup()->IsEnemy(tsrc, te)/*te->group_id != tsrc->group_id*/) continue;										// <仅友军
 
 			HaloStat* ths = new HaloStat();
 			mHalosTates.insert(make_pair(te, ths));

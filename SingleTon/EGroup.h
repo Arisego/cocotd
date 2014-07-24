@@ -27,6 +27,7 @@ public:
 	bool	 CheckGrp(CCObject* aTar);																// <检查是否为玩家控制势力 | 实际入参 EChess* | 势力初始化将由脚本完成 | == 是否需要经验值演算 == 是否AI
 	void	 ExpHunp(CCObject* aSrc, int aiV);														// <消耗魂魄引起的经验
 	void	 ExpDead(CCObject* aSrc);																// <单位死亡追加经验 || 注意留心伤害来源死亡的情况
+	bool	 IsEnemy(CCObject* aSrc, CCObject* aTar);	// <Src是否敌视Tar|实际入参 EChess*		
 
 private:
 	static EGroup* mSharedEGroup;

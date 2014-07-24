@@ -141,7 +141,7 @@ void EGroup::FactDamage(CCObject* aSrc, CCObject* aTar, int adamv, int atype, in
 bool EGroup::CheckGrp(CCObject* aTar)
 {
 	EChesses* teTar = ((EChesses*) aTar);
-	return (teTar->group_id == 0x01);
+	return (teTar->group_id == 0x01);	/* <Íæ¼ÒµÄIDÓÀÔ¶ÊÇ0x01 */
 }
 
 void EGroup::ExpHunp(CCObject* aSrc, int aiV)
@@ -307,5 +307,14 @@ bool EGroup::MakDeath(Script* asp)
 		miDame = (tCTar->gethp() + 1);
 		ret = true;
 	} while (false);
+	return ret;
+}
+
+bool EGroup::IsEnemy(CCObject* aSrc, CCObject* aTar){
+	bool ret = false;
+	EChesses* teSrc = (EChesses*) aSrc;
+	EChesses* teTar = (EChesses*) aTar;
+
+	ret = teSrc->group_mask & teTar->group_id;
 	return ret;
 }

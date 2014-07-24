@@ -185,6 +185,7 @@ public:
 
 private:
 	int micECx, micECy;
+
 public:
 	void ScrollBacKChess();		// <退回移动后的棋子
 	void RemoveSCBKState();		// <撤销回退相关信息
@@ -192,6 +193,9 @@ public:
 	bool mbLockCamera;			// <镜头锁定
 
 	void RemoveWhileDead(CCObject* achess);	// <死亡时移除单位
+
+private:
+	int		miPlayerMask;		// <玩家的掩码
 };
 
 #endif

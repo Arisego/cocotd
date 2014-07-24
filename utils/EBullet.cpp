@@ -2,6 +2,7 @@
 
 #include "GameManager.h"
 #include "GameScene.h"
+#include "SingleTon\EGroup.h"
 
 #define SLOW_ZONE 0.068
 
@@ -225,7 +226,7 @@ bool EBullet::SCTouch(b2Fixture* self, b2Fixture* tar,bool bLeave){
 	CCLOG(">Touch:%d.%d",group_mask,group_id);
 	CCLOG(">Touched:%d.%d",tar_b->group_mask,tar_b->group_id);
 	if(tar_b->GetFullName() == m_sTarget) StopFollow();
-	if(group_id != tar_b->group_id){					//This makes bullet destroy itself when contact none player bodies.
+	if(EGroup::sharedEGroup()->IsEnemy(this, tar_b)/*group_id != tar_b->group_id*/){					//This makes bullet destroy itself when contact none player bodies.
 		retain();
 		removeFromParent();
 		delete this;

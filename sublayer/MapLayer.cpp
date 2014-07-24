@@ -825,8 +825,9 @@ void MapLayer::f_init_battle()
 
 	//////////////////////////////////////////////////////////////////////////
 	// <组别控制 - 扩展从这里读入配置
-	m_iMaxGroup = 2;
+	//m_iMaxGroup = 2;
 	m_iCurGroup = 0;		// <没零
+	m_iTrueGGi = 0;
 
 	CCDictElement* t_cde = NULL;
 	CCDictionary* t_cd = bm->m_itemlist;
@@ -892,11 +893,19 @@ void MapLayer::update( float fDelta )
 			//////////////////////////////////////////////////////////////////////////
 			// 
 			
-			m_iCurGroup = m_iCurGroup%m_iMaxGroup;		// <当前组
-			++m_iCurGroup;								// ....
+			m_iTrueGGi = m_iTrueGGi%m_iMaxGroup;		// <当前组
+			++m_iTrueGGi;								// ....
 			
 			m_iMLState = 2;
 			
+			int tiF = 1;
+			for(int i = m_iTrueGGi; i>1; --i){
+				tiF = tiF << 1;
+				CCLog(">[MapLayer] Tif:%d", tiF);
+			}
+			CCLog(">[MapLayer] CurrentGroup:[%d|-|%d]", tiF, m_iTrueGGi);
+			m_iCurGroup = tiF;
+
 			// <m_iTurn - 单纯的计算总回数 和miMaxGroup相除可以得到回合数
 			if(m_iTurn>0){
 				CCDictElement* tc;
@@ -1013,7 +1022,7 @@ void MapLayer::give_control()
 			BattleField::sharedBattleField()->SetSrc((EChesses*) bm->m_controller);	
 			break;
 		}
-	case(0x02):					//TODO: Enemy now directly give up control, add AI here.
+	default:					//TODO: Enemy now directly give up control, add AI here.
 		{
 			//switch_control();		
 			//bm->set_bbattle(0);

@@ -942,8 +942,8 @@ void TileMap::update(float dt)
 
 void TileMap::b_click()
 {
-	if(!cancontrol || !CharaS::sharedCharaS()->getdispchara()) return;
-	GameManager::sharedLogicCenter()->ml->switch_to_battle("bat01");
+	//if(!cancontrol || !CharaS::sharedCharaS()->getdispchara()) return;
+	//GameManager::sharedLogicCenter()->ml->switch_to_battle("bat01");
 }
 
 void TileMap::test_disable_all_entiles()

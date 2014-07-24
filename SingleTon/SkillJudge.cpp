@@ -3,6 +3,7 @@
 #include "utils\EChess.h"
 #include "GameManager.h"
 #include "BattleFiled.h"
+#include "EGroup.h"
 
 //////////////////////////////////////////////////////////////////////////
 // Init
@@ -220,7 +221,7 @@ bool SkillJudge::CheckSkill( AIComponent* tai )
 					CCARRAY_FOREACH(tca,tco){
 						if( GameManager::sharedLogicCenter()->ml->bm->ts_last.count(make_pair(((EChesses*) ((Chara*) tco)->mEcOwner)->pos.x, ((EChesses*) ((Chara*) tco)->mEcOwner)->pos.y)) == 0) continue;
 
-						 if( ((EChesses*) ((Chara*) tco)->mEcOwner)->group_id != tec->group_id) ta += (999 - ((Chara*) tco)->gethp());
+						 if(EGroup::sharedEGroup()->IsEnemy(tec, ((Chara*) tco)->mEcOwner)) ta += (999 - ((Chara*) tco)->gethp());
 						 else ta -= 10;		// <ÓÑ¾üÉËº¦³Í·£
 					}
 					if(ta>tiMax){
@@ -349,7 +350,7 @@ bool SkillJudge::CheckNorM(CCObject* tai, CCObject* tar, bool abact)
 			}
 
 		}else{
-			if(((EChesses*) tar)->group_id == tte->group_id) break;
+			if(EGroup::sharedEGroup()->IsEnemy(tte,tar)) break;
 			tiMax = GameManager::sharedLogicCenter()->ml->bm->cs_y.count(make_pair(((EChesses*) tar)->pos.x, ((EChesses*) tar)->pos.y));
 
 			CCLog(">[SkillJudge] checkNormc tiMax:%d", tiMax);

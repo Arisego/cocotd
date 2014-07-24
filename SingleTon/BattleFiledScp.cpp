@@ -266,7 +266,10 @@ void BattleField::onDeadEvent(EChesses* tar)
 	}
 
 	if(0 == ti){
-		onEvent("all_dead");		// <测试用，实际使用时请指明势力
+		stringstream tss;
+		tss << "all_dead_";
+		tss << gid;
+		onEvent(tss.str().c_str());		// <测试用，实际使用时请指明势力
 	}
 }
 

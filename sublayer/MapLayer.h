@@ -188,6 +188,7 @@ public:
 	
 	int m_iMaxGroup;			// <最大的组别编号
 	int m_iCurGroup;			// <当前拥有控制权的组别
+	int m_iTrueGGi;				// <真实组别数，不计算位移
 	int m_iTurn;
 	
 	/* <AI控制接口 */

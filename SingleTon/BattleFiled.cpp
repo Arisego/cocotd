@@ -753,7 +753,7 @@ bool BattleField::TestBackCh(EChesses* atar)
 	do 
 	{
 		GameManager::sharedLogicCenter()->ml->m_rsb->SetContent(atar);
-		if(atar->group_id == meOrig->group_id) return false;
+		if(!EGroup::sharedEGroup()->IsEnemy(atar, meOrig)) return false;
 		if(atar == meOrig){
 			exit(0x999);
 		}
@@ -1297,7 +1297,8 @@ bool BattleField::PUSkillFilt(CCObject* acSrc, CCObject* acTar, int aiFlag, cons
 	EChesses* teTar = (EChesses*) acTar;
 
 	if(teSrc != meOrig){
-		if(teSrc->group_id == teTar->group_id) return false;
+		//if(teSrc->group_id == teTar->group_id) return false;
+		if(!EGroup::sharedEGroup()->IsEnemy(teSrc,teTar)) return false;
 	}
 
 	if(!teSrc->m_pChara->CanAct()) return false;
@@ -1356,7 +1357,7 @@ int BattleField::DerLocks(CCObject* acSrc, CCObject* acTar, const char* asLScp)
 		if(!EffectControler::sharedEffectControler()->DerLock()) break;
 
 		ret = 1;
-		for(int i = 0; i<t_caLocks->count(); ++i){
+		for(unsigned int i = 0; i<t_caLocks->count(); ++i){
 			Script* t_scp = (Script*) t_caLocks->objectAtIndex(i);
 			switch(t_scp->getint("type")){
 			case(-1):		// <检查攻击次数是否小于某个数值 | 目前只有0是由准确意义的 | 是否是第一次攻击
