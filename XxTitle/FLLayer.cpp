@@ -141,10 +141,10 @@ void FlLayer::BeginShow()
 	mcsTitle->setOpacity(0);
 	mcsTitle->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0.4*START_TIME), CCFadeIn::create(0.6*START_TIME)));
 
-	mcsLeft->setPosition(ccp(100,0));
+	mcsLeft->setPosition(ccp(-367,0));
 	mcsLeft->runAction(CCMoveTo::create(START_TIME, ccp(0,0)));
-	mcsRight->setPosition(ccp(360,0));
-	mcsRight->runAction(CCMoveTo::create(START_TIME, ccp(560,0)));
+	mcsRight->setPosition(ccp(1340,0));
+	mcsRight->runAction(CCMoveTo::create(START_TIME, ccp(460,0)));
 
 	mcsSLaves->setVisible(false);
 	mcsSLaves->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(START_TIME), CCToggleVisibility::create()));

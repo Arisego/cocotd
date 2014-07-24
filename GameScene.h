@@ -51,6 +51,7 @@ public:
 	ToTextLayer* te;
 	MapLayer* ml;
 	string m_sBgi;
+	float	mfBgiX,mfBigY;	/* <背景图片的位置 */
 	bool m_bLoadProtect;	// <对读档时的msp进行保护
 
 	void addBackImg();

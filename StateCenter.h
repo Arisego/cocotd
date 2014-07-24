@@ -34,6 +34,7 @@ private:
 public:
 	int m_iState,m_oldstate;
 	string m_sName, m_sBgi;
+	float	mfBgiX,mfBgiY;	/* <±³¾°Í¼Æ¬µÄÎ»ÖÃ */
 	int m_iJump, m_iTJump;
 
 	std::map<string,int> TagMap;

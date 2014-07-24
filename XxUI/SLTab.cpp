@@ -84,13 +84,18 @@ void SLCell::update(float fDelta)
 	}
 }
 
+int SLCell::get_SLState()
+{
+	return miSlState;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // SLTab
 
 SLTab::SLTab()
 {
-	iSet.clear();
+	//iSet.clear();
 	m_iCurTab = 0;
 	m_oLockSave = NULL;
 
@@ -162,7 +167,7 @@ void SLTab::buttonback(CCObject* sender){
 			CC_SAFE_RELEASE_NULL(m_oLockSave);
 			m_oLockSave = sender;
 
-			if(iSet.count(itag) == 0){
+			if(((SLCell*) m_oLockSave)->get_SLState() == 0){
 				savetofile();
 			}else{
 				vector<string> sl;

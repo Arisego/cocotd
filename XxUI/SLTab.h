@@ -14,6 +14,7 @@ private:
 	virtual void update(float fDelta) override;
 
 public:
+	int		get_SLState();
 	SLCell();
 	void	initWithJSon(Json::Value);
 	void	ChangeState(int ai);
@@ -30,7 +31,7 @@ private:
 	ConfigManager* cm;
 	float m_fSHeight,m_fSWidth;
 	int m_iCurTab;
-	set<int> iSet;
+	//set<int> iSet;
 	Container* mTabName;
 
 	BYLayerDescendant* mb;

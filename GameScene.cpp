@@ -271,6 +271,8 @@ void GameScene::f_initover(){
 		te->ELoad();
 
 		m_sBgi = t_sc->m_sBgi;
+		mfBgiX = t_sc->mfBgiX;
+		mfBigY = t_sc->mfBgiY;
 		addBackImg();
 		tMovie->cleanupplayer();
 
@@ -645,6 +647,8 @@ void GameScene::addBackImg(){
 	if(m_sBgi.length()<1) return;
 	f_cachetest(m_sBgi.c_str());
 	BgImg = CCSprite::create(m_sBgi.c_str());
+	BgImg->setAnchorPoint(CCPointZero);
+	BgImg->setPosition(ccp(mfBgiX,mfBigY));
 	bg->addChild(BgImg);
 }
 

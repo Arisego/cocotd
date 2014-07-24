@@ -150,6 +150,8 @@ bool StateCenter::f_save_file(const char* psz){
 		PngElement->SetAttribute("jump",m_iJump);
 		PngElement->SetAttribute("olds",m_oldstate);
 		PngElement->SetAttribute("bgi",m_sBgi.c_str());
+		PngElement->SetAttribute("bgi_x",((CCString*) CCString::createWithFormat("f%f",mfBgiX))->getCString());
+		PngElement->SetAttribute("bgi_y",((CCString*) CCString::createWithFormat("f%f",mfBgiY))->getCString());
 		//[Error]CCLOG(">>Save to file.%s",m_sBgi.c_str());
 		PngElement->SetAttribute("tjump",m_iTJump);
 
@@ -537,6 +539,8 @@ bool StateCenter::f_load_file(const char* psz){
 					m_sName		=	t->getstring("content");
 					m_oldstate	=	t->getint("olds");
 					m_sBgi		=	t->getstring("bgi");
+					mfBgiX		=	t->getfloat("bgi_x");
+					mfBgiY		=	t->getfloat("bgi_y");
 					m_iTJump	=	t->getint("tjump");
 					GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
 					m_scTags	=	t;
@@ -632,6 +636,8 @@ void StateCenter::f_get_state(){
 	m_sBgi.clear();
 	if(gs->BgImg){
 		m_sBgi = gs->m_sBgi;
+		mfBgiX = gs->BgImg->getPosition().x;
+		mfBgiY = gs->BgImg->getPosition().y;
 		//[Error]CCLOG(">>Value:%s",m_sBgi.c_str());
 	}
 	//////////////////////////////////////////////////////////////////////////
