@@ -112,6 +112,7 @@ void HMenu::dissMiss()
 	{
 	case 2:
 		{
+			removeChildByTag(RA_TAG);
 			break;
 		}
 	default:
@@ -124,8 +125,14 @@ void HMenu::showSB()
 {
 	if(miState == 2) return;
 	miState = 2;
-	Rwl* tRwl = new Rwl(400, 400);
+	Rwl* tRwl = new Rwl(378, 192);
 	tRwl->setAnchorPoint(CCPointZero);
-	tRwl->setPosition(ccp(300,100));
+	tRwl->setPosition(ccp(300,300));
 	addChild(tRwl, 1, RA_TAG);
+}
+
+void HMenu::DissMissSB()
+{
+	removeChildByTag(RA_TAG);
+	miState = 0;
 }

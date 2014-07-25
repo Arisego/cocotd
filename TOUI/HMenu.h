@@ -33,7 +33,8 @@ public:
 
 	void dissMiss();	// <通用关闭显示接口
 	
-	void showSB();		// <miState = 2;
+	void	showSB();		// <miState = 2;
+	void	DissMissSB();	// <消除胜败条件
 	
 private:
 	/*static */HMenu* mSharedHMenu;

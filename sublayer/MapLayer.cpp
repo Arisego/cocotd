@@ -1038,6 +1038,9 @@ void MapLayer::right_click()
 	// <解除HMENU是最优先的 || 屏蔽右键逻辑
 	if(m_Hmenu->mbShown){
 		if(m_bLfMenu){
+			m_Hmenu->DissMissSB();
+			m_lfm->miFlag = 0;
+			m_lfm->Refresh_Button();
 			dissmissLeftFm();
 		}
 		return;
@@ -1332,6 +1335,8 @@ void MapLayer::lfmenu_back( CCObject* pSender )
 	Container* t_c = (Container*) pSender;
 	int tiType = t_c->getTag();
 	CCLog("[][][][%d",tiType);
+
+	if(tiType != 2) m_Hmenu->DissMissSB();
 
 	switch (tiType)
 	{

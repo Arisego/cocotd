@@ -155,5 +155,8 @@ void LeftMenu::Refresh_Button(){
 void LeftMenu::buttonback( CCObject* pSender )
 {
 	CCLog(">Redirect:%d",((Container*) pSender)->getTag());
+	miFlag = ((Container*) pSender)->getTag();
 	activate(pSender);
+	Refresh_Button();
+
 }

@@ -32,15 +32,17 @@ public:
 			CCNode* t_par = this->getParent();
 
 
-			CCSprite* c9s = CCSprite::create("Images/scroll_line.png"); 
+			CCSprite* c9s = CCSprite::create("Images/UI/scrollbar_line.png"); 
 			c9s->setTextureRect(CCRectMake(0,0,2,t_sbbh));
 			c9s->setAnchorPoint(ccp(0,0));
 			c9s->setPosition(ccp(m_tViewSize.width - 4 , 10));
 			t_par->addChild(c9s);
 
 			CC_SAFE_RELEASE_NULL(pSb);
-			pSb = CCSprite::create("Images/scrollbar_normal.png");
-			pSb->setTextureRect(CCRectMake(0,0,6,t_sblh));
+			pSb = CCSprite::create("Images/UI/scrollbar_normal.png");
+			//pSb->setTextureRect(CCRectMake(0,0,6,t_sblh));
+			pSb->setScaleY(t_sblh/77);
+			pSb->setTextureRect(CCRectMake(0,0,6,77));
 			pSb->setAnchorPoint(CCPointZero);
 			pSb->setPosition(ccp(m_tViewSize.width-6,t_sbbh + 10 - t_sblh));
 

@@ -11,7 +11,7 @@ Rwl::Rwl(float aW, float aH)
 	mfWidth = aW;
 	mfHeight = aH;
 
-	CCScale9Sprite* nback = CCScale9Sprite::create("Images/config_back.png"); 
+	CCScale9Sprite* nback = CCScale9Sprite::create("Images/UI/sb_back.png"); 
 	nback->setContentSize(CCSize(mfWidth,mfHeight));
 	nback->setAnchorPoint(ccp(0,0));
 	nback->setOpacity(200);
