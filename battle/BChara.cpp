@@ -579,12 +579,6 @@ int Chara::getSHP(){
 }
 
 void Chara::initValues(){ // <战场环境开启后进行的初始化
-	setvalue("b_hunpo", siHunPo[m_iiAttrs["tama_0"]]);	// <魂魄
-	setvalue("b_maxhunpo", siHunPo[m_iiAttrs["tama_0"]]);
-	setvalue("b_maxxudong",siXuDong[m_iiAttrs["tama_2"]]);
-	setvalue("b_maxgedang",siGeDang[m_iiAttrs["tama_4"]]);
-	
-	m_iiAttrs["b_actcout"] = 0;		// <单位行动过的次数
 	
 	int t_iType = getvalue("attack");		// <[TODO]从单位中获得攻击属性,具体的来源需要根据设计进行变更，注意默认取得的是0
 	//t_iType = 1;																// <[TestOnly] 使用上面获取的值
@@ -604,7 +598,17 @@ void Chara::initValues(){ // <战场环境开启后进行的初始化
 	initSkill();
 
 	miRu = 0;
-	roundUp();
+	if(!StateCenter::sharedStateCenter()->m_bIsLoad){ // <非读档状态才需要进行这些初始化
+		setvalue("b_hunpo", siHunPo[m_iiAttrs["tama_0"]]);	// <魂魄
+		setvalue("b_maxhunpo", siHunPo[m_iiAttrs["tama_0"]]);
+		setvalue("b_maxxudong",siXuDong[m_iiAttrs["tama_2"]]);
+		setvalue("b_maxgedang",siGeDang[m_iiAttrs["tama_4"]]);
+
+		m_iiAttrs["b_actcout"] = 0;		// <单位行动过的次数
+		roundUp();
+	}
+	
+	
 	miRu = 0;
 }
 

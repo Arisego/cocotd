@@ -212,6 +212,7 @@ void MapLayer::f_resumecon(){
 void MapLayer::Close(){		//关闭显示和地图切换由别的函数负责
 	f_pauseall();
 	close_hud();
+	EventCenter::sharedEventCenter()->unsetBmCake(this);
 }
 
 void MapLayer::Pause(){
@@ -229,6 +230,7 @@ void MapLayer::Resume(){
 	f_resumeall();
 	if(!tm) return;
 	show_hud();
+	EventCenter::sharedEventCenter()->setBmCake(this);
 	tm->setTouchEnabled(true);
 }
 
@@ -845,6 +847,7 @@ void MapLayer::f_init_battle()
 	m_bottomArrow = NULL;
 
 	EventCenter::sharedEventCenter()->setBmCake(this);
+	StateCenter::sharedStateCenter()->f_LoadOver();
 	//m_iMLState = 3;					//state change to 3, wait for token.
 }
 
@@ -1351,9 +1354,21 @@ void MapLayer::lfmenu_back( CCObject* pSender )
 			m_Hmenu->showSB();
 			break;
 		}
+	case 128:	/* <存档 */
+		{
+			GameManager::sharedGameManager()->preConfig(0x1f,0x08,0);
+			break;
+		}
+	case 256:	/* <读档 */
+		{
+			GameManager::sharedGameManager()->preConfig(0x1f,0x08,1);
+			break;
+		}
 	default:
 		break;
 	}
+	t_c->setEnability(true);
+	m_lfm->miFlag = 0;
 }
 
 void MapLayer::Show_Arrows(int aiu, int aib)

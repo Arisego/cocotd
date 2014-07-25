@@ -78,6 +78,8 @@ public:
 
 	void clear();	//Clear current states.&Prepare for new states.
 	CCDictionary* f_get_itemlist(int i);
+
+	void	f_LoadOver();	/* <清理被置放的存档标识 */
 };
 
 #endif

@@ -211,11 +211,13 @@ bool StateCenter::f_save_file(const char* psz){
 			CCDICT_FOREACH(tcd,pElement)
 			{
 				Chara* t_icad = (Chara*) pElement->getObject();
+				CCLog(">[StateCenter] SaveChara:%s", t_icad->m_sName.c_str());
 
 				PngElement = new TiXmlElement("png");
 				PackElement->LinkEndChild(PngElement);
 
 				PngElement->SetAttribute("cid",t_icad->m_iCharaID);
+				PngElement->SetAttribute("degug_name", t_icad->m_sName.c_str());
 
 				{
 					TiXmlElement *LockElement = new TiXmlElement("lock");
@@ -226,9 +228,10 @@ bool StateCenter::f_save_file(const char* psz){
 						LockElement->LinkEndChild(LockElement1);
 						LockElement1->SetAttribute("name",it->first.c_str());
 						LockElement1->SetAttribute("value",it->second);
+						CCLog(">[StateCenter] %s-%d", it->first.c_str(), it->second);
 					}
 				}
-
+				CCLog(">[StateCenter] SaveChara- FP-Over");
 				{
 					TiXmlElement *LockElement = new TiXmlElement("lock");
 					PngElement->LinkEndChild(LockElement);
@@ -441,8 +444,8 @@ bool StateCenter::f_save_file(const char* psz){
 							ti	= it->first;
 							LockElement1->SetAttribute("name",ti);
 							LockElement1->SetAttribute("value",it->second);
-							LockElement1->SetAttribute("lock",t_icad->m_viiELock[ti]);
-							LockElement1->SetAttribute("sum",t_icad->m_viiESum[ti]);
+							LockElement1->SetAttribute("lock", t_icad->m_viiELock.size()>0?t_icad->m_viiELock[ti]:0);
+							LockElement1->SetAttribute("sum", t_icad->m_viiESum.size()>0?t_icad->m_viiESum[ti]:0);
 						}
 					}
 
@@ -822,4 +825,9 @@ void StateCenter::f_insert_item(int aid,int agroup, ItemCellData* aicd )
 
 	t_caGItem->setObject(aicd,t_max+1);
 
+}
+
+void StateCenter::f_LoadOver()
+{
+	m_bIsLoad = false;
 }

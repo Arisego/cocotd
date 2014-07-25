@@ -55,7 +55,7 @@ void CharaS::load_chara(Script* ts){
 	for(int i = 0; i<ts->m_snum; ++i){
 		Script* t = (Script*) ts->scriptnodes->objectAtIndex(i);
 
-		CCLOG(">Read for chara:%d",t->getint("cid"));
+		CCLog(">[CharaS] Read for chara:%d|%s",t->getint("cid"),t->getstring("degug_name"));
 
 		int i_id = t->getint("cid");
 		Chara* ticd = new Chara();
@@ -78,6 +78,7 @@ void CharaS::load_chara(Script* ts){
 					for(int k = 0; k<t_cp->m_snum;++k){
 						Script* t_kcp = (Script*) t_cp->scriptnodes->objectAtIndex(k);
 						ticd->m_iiAttrs.insert(pair<string,int>(t_kcp->getstring("name"),t_kcp->getint("value")));
+						CCLog(">[CharaS] ValueLoad:%s,%d", t_kcp->getstring("name"),t_kcp->getint("value"));
 					}
 					break;
 				}
