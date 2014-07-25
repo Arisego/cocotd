@@ -40,6 +40,8 @@ public:
 
 private:
 	void ReadLgCell(std::string asHead, LogicCell* algc);
+public:
+	int miSBType;	/* <胜利条件或者失败条件 */
 };
 
 #endif

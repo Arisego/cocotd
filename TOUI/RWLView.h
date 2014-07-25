@@ -35,7 +35,7 @@ public:
 		width = w;
 		height = h;
 		m_iTag = t;
-
+		miSBType = m_iTag;
 		init();
 	}
 	//[IN] 滚动相应的距离

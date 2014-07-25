@@ -18,7 +18,11 @@ Rwl::Rwl(float aW, float aH)
 	addChild(nback,-2);
 
 	RWLView* tRwlView = new RWLView(mfWidth, mfHeight,0);
-	tRwlView->setPosition(ccp(1,1));
+	tRwlView->setPosition(ccp(1,-10));
+	addChild(tRwlView);
+
+	tRwlView = new RWLView(mfWidth, mfHeight,1);
+	tRwlView->setPosition(ccp(1,-101));
 	addChild(tRwlView);
 }
 

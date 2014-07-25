@@ -51,25 +51,36 @@ void RWLViewDBSource::init_data(float width){
 	rw = width;
 
 	data = CCArray::create();
+
+	switch (miSBType)
 	{
-		CCLabelTTF* tlt = CCLabelTTF::create("Win:", FNT_UI_LABEL, 26,CCSize(rw,0), kCCTextAlignmentLeft);
-		tlt->retain();
-		m_plength.push_back(tlt->getContentSize().height);
-		CCLog("+++++++%f", tlt->getContentSize().height);
-		m_height += tlt->getContentSize().height;
-		data->addObject(tlt);	
-		ReadLgCell(" ", BattleField::sharedBattleField()->mlp_Win);
+	case(0):
+		{
+			/*CCLabelTTF* tlt = CCLabelTTF::create("Win:", FNT_UI_LABEL, 26,CCSize(rw,0), kCCTextAlignmentLeft);
+			tlt->retain();
+			m_plength.push_back(tlt->getContentSize().height);
+			CCLog("+++++++%f", tlt->getContentSize().height);
+			m_height += tlt->getContentSize().height;
+			data->addObject(tlt);	*/
+			ReadLgCell(" ", BattleField::sharedBattleField()->mlp_Win);
+			break;
+		}
+	case(1):
+		{
+/*			CCLabelTTF* tlt = CCLabelTTF::create("Win:", FNT_UI_LABEL, 26,CCSize(rw,0), kCCTextAlignmentLeft);
+			tlt->retain();
+			m_plength.push_back(tlt->getContentSize().height);
+			CCLog("+++++++%f", tlt->getContentSize().height);
+			m_height += tlt->getContentSize().height;
+			data->addObject(tlt);*/	
+			ReadLgCell(" ", BattleField::sharedBattleField()->mlp_Lose);
+			break;
+		}
+	default:
+		break;
 	}
 
-	{
-		CCLabelTTF* tlt = CCLabelTTF::create("Win:", FNT_UI_LABEL, 26,CCSize(rw,0), kCCTextAlignmentLeft);
-		tlt->retain();
-		m_plength.push_back(tlt->getContentSize().height);
-		CCLog("+++++++%f", tlt->getContentSize().height);
-		m_height += tlt->getContentSize().height;
-		data->addObject(tlt);	
-		ReadLgCell(" ", BattleField::sharedBattleField()->mlp_Lose);
-	}
+
 
 	m_number = data->count();
 	data->retain();
