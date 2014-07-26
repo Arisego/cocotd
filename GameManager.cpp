@@ -206,7 +206,7 @@ void GameManager::runSceneWithId(SceneId id)
 			CCDirector::sharedDirector()->runWithScene(newScene);
 		else
 		{
-			CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, newScene));
+			CCDirector::sharedDirector()->replaceScene(/*CCTransitionFade::create(0.5f, */newScene/*)*/);
 
 		}
 		

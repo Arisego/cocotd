@@ -80,6 +80,7 @@ void TOEquips::onNormal()
 
 void TOEquips::onHover()
 {
+	if(!m_bIsEnabled) return;
 	Container::onHover();
 	mLB_NJFront->setColor(COLOUR_HOVER);
 	mLB_NJBack->setColor(COLOUR_HOVER);

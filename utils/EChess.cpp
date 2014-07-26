@@ -385,9 +385,15 @@ void EChesses::load_chara_dbsp( Script* sp )
 			}
 		case(1):
 			{
+				m_pChara->m_viiELock.assign(5,0);
+				m_pChara->m_viiESum.assign(5,0);
+				int t_ii;
 				for(int k = 0; k<t_cp->m_snum;++k){
 					Script* t_kcp = (Script*) t_cp->scriptnodes->objectAtIndex(k);
-					m_pChara->m_miiEquips.insert(pair<int,int>(t_kcp->getint("name"),t_kcp->getint("value")));
+					t_ii = t_kcp->getint("name");
+					m_pChara->m_miiEquips.insert(pair<int,int>(t_ii,t_kcp->getint("value")));
+					m_pChara->m_viiELock[t_ii] = t_kcp->getint("lock");
+					m_pChara->m_viiESum[t_ii] = t_kcp->getint("sum");
 				}
 				break;
 			}

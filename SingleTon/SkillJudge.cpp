@@ -350,7 +350,7 @@ bool SkillJudge::CheckNorM(CCObject* tai, CCObject* tar, bool abact)
 			}
 
 		}else{
-			if(EGroup::sharedEGroup()->IsEnemy(tte,tar)) break;
+			if(!EGroup::sharedEGroup()->IsEnemy(tte,tar)) break;
 			tiMax = GameManager::sharedLogicCenter()->ml->bm->cs_y.count(make_pair(((EChesses*) tar)->pos.x, ((EChesses*) tar)->pos.y));
 
 			CCLog(">[SkillJudge] checkNormc tiMax:%d", tiMax);

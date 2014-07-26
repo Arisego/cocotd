@@ -7,6 +7,7 @@
 #include "SingleTon/EGroup.h"
 #include "SoundManager.h"
 #include "SingleTon/SkillJudge.h"
+#include "XxUI/BmVList.h"
 
 USING_NS_CC;
 
@@ -16,6 +17,9 @@ USING_NS_CC;
 
 #define LFM_ZORDER 90
 #define SPL_ZORDER 89
+
+#define BMV_ZORDER 100
+#define BMV_TAG	   8010
 
 static const char* sArrowPath[] = {"Images/arrow_broken_left.png","Images/arrow_normal_left.png","Images/arrow_blood_left.png"};
 
@@ -1057,6 +1061,17 @@ void MapLayer::right_click()
 			case(1):
 				{
 					CCLog(">No need for right click.");
+					/* <左边|选中单位| */
+					if(m_lsb->getContent()){
+						BmVList* tbvl = new BmVList();
+						tbvl->init();
+						tbvl->setChara(((EChesses*)m_lsb->getContent())->m_pChara);
+						tbvl->setAnchorPoint(CCPointZero);
+						tbvl->setPosition(450,0);
+						addChild(tbvl,BMV_ZORDER);
+						tbvl->setTag(BMV_TAG);
+						bm->set_bbattle(8);	//
+					}
 					break;
 				}
 			case(2):
@@ -1116,6 +1131,13 @@ void MapLayer::right_click()
 					bm->clean_cs();
 					bm->set_bbattle(6);
 					Dissmiss_Arrows();
+					break;
+				}
+			case(8):
+				{
+					removeChildByTag(BMV_TAG);
+					m_lsb->SetContent(NULL);
+					bm->set_bbattle(1);
 				}
 			}
 			

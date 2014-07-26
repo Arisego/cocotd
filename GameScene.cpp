@@ -208,7 +208,6 @@ bool GameScene::f_cachetest(const char* rscMask){	// <移动缓存并记录进map
 }
 
 void GameScene::f_initover(){
-	this->removeChildByTag(tLySpalash,true);	//移除并清理splash层
 	CCLog(">[GameScene] f_initover()");
 	m_pImages = Imgstack;
 	ScriptList = s_sp->m_caScript;
@@ -328,7 +327,7 @@ void GameScene::onExit(){
 
 void GameScene::update(float dt)	//负责整个scene的初始化
 {
-	CCLog(">[GameScene] update()");
+	//CCLog(">[GameScene] update()");
 	static float fsumt = 0;
 	fsumt += dt;
 	switch(m_StageState){
@@ -444,19 +443,29 @@ void GameScene::update(float dt)	//负责整个scene的初始化
 	case(2):			//2 --> stage初始化完成
 		{
 			CCLog("Init overed.");
-			f_initover();	
+			
+			ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
+			ms_Mask->setOpacity(188);
+			addChild(ms_Mask,101,tLyMask);
+			m_StageState = -2;
+			break;
+		}
+	case(-2):
+		{
+			f_initover();
+			this->removeChildByTag(tLySpalash,true);	/* <移除并清理splash层 */
+			removeChildByTag(tLyMask);
+			ms_Mask = NULL;
 			m_StageState = 3;
-			unscheduleUpdate();
+			//unscheduleUpdate();
 			m_flag = 0;
 			break;
 		}
-
 	case(3):			//3 --> stage进入循环
 		{
 			if(m_bCanSnap && m_bScrLock){
 				m_bScrLock = false;
-				ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
-				addChild(ms_Mask,tLyMask);
+
 				unscheduleUpdate();
 				e_act();
 			}

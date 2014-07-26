@@ -809,7 +809,7 @@ void BattleField::PreJudge(EChesses* atar)
 	{
 		int hit_rate = src->getFixValue("hit")*5 + src->getFixValue("luk") - tar->getFixValue("avg") * 5 - tar->getFixValue("luk") + 70 + src->getFixRate(0);
 		int hx_rate = (src->getFixValue("base_hit") + src->getFixValue("luk")/5 - iBossHuiXin[tar->getvalue("boss_class")])/100 + src->getFixRate(1);
-		int damage =src->getFixValue("atk") + src->getvalue("a_atk");	
+		int damage =src->getFixValue("atk") + src->getvalue("a_atk") - tar->getFixValue("def");	
 
 		GameManager::sharedLogicCenter()->ml->m_lsb->RefreshAct(hit_rate, hx_rate, damage);
 	}
