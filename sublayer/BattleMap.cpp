@@ -265,6 +265,13 @@ void BattleMap::update(float dt)
 
 			break;
 		}
+	case(8):
+		{
+			checkpoint(m_touch);
+			BattleField::sharedBattleField()->ShowChess(m_eCurMouse);
+			CC_BREAK_IF(!m_touch);
+			break;
+		}
 	case(3):						// state == 3 : <移动鼠标并选择目标.
 	case(7):
 		{		

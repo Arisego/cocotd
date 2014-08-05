@@ -20,6 +20,7 @@
 #include "SingleTon/SituJudge.h"
 #include "SingleTon/EGroup.h"
 #include "battle/BufferList.h"
+#include "ABScene.h"
 
 using namespace cocos2d;
 
@@ -184,6 +185,9 @@ void GameManager::runSceneWithId(SceneId id)
 		newScene = mCurrentStage;
 		break;
 
+	case SCENE_ZB:
+		newScene = ABScene::create();
+		break;
 	case SCENE_GAMEOVER:
 //		newScene = GameOver::scene();
 		break;

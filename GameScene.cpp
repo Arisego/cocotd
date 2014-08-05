@@ -889,7 +889,11 @@ void GameScene::DerChange(Script* s){
 			
 			break;
 		}
-
+	case 14:	// <ÇÐ»»µ½Õû±¸Scene
+		{
+			GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_ZB);
+			break;
+		}
 	}//End of switch.
 }
 

@@ -1062,14 +1062,14 @@ void MapLayer::right_click()
 				{
 					CCLog(">No need for right click.");
 					/* <左边|选中单位| */
-					if(m_lsb->getContent()){
-						BmVList* tbvl = new BmVList();
-						tbvl->init();
-						tbvl->setChara(((EChesses*)m_lsb->getContent())->m_pChara);
-						tbvl->setAnchorPoint(CCPointZero);
-						tbvl->setPosition(450,0);
-						addChild(tbvl,BMV_ZORDER);
-						tbvl->setTag(BMV_TAG);
+					if(m_lsb->isVisible() && m_lsb->getContent()){
+						mbvl = new BmVList();
+						mbvl->init();
+						mbvl->setChara(((EChesses*)m_lsb->getContent())->m_pChara);
+						mbvl->setAnchorPoint(CCPointZero);
+						mbvl->setPosition(450,0);
+						addChild(mbvl,BMV_ZORDER);
+						mbvl->setTag(BMV_TAG);
 						bm->set_bbattle(8);	//
 					}
 					break;
@@ -1135,9 +1135,17 @@ void MapLayer::right_click()
 				}
 			case(8):
 				{
-					removeChildByTag(BMV_TAG);
-					m_lsb->SetContent(NULL);
-					bm->set_bbattle(1);
+					if(m_lsb->getContent() != mbvl->g_chara->mEcOwner){
+						mbvl->setChara(((EChesses*)m_lsb->getContent())->m_pChara);
+						
+					}else{
+						removeChildByTag(BMV_TAG);
+						mbvl = NULL;
+						bm->set_bbattle(1);
+					}
+					
+					//m_lsb->SetContent(NULL);
+					
 				}
 			}
 			

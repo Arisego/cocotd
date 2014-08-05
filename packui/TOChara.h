@@ -17,7 +17,7 @@ USING_NS_CC;
 
 */
 
-class TOChara : public CCLayer,public CharaTab,public Activator
+class TOChara : public CCLayer,public CharaTab,public Activator, public Cake
 {
 public:
 	TOChara(int a_iCharaID,CCObject* target, SEL_MenuHandler selector);
@@ -77,6 +77,7 @@ protected:
 	void d_press();
 	void z_press();
 	void x_press();
+	virtual void right_click() override;
 
 private:
 	/* <½ÇÉ«ÐòºÅ */

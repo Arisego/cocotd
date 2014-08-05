@@ -125,11 +125,32 @@ void BmVList::ShowContents()
 	string			 t_name;
 	CCLabelBMFont*	 t_clbm = NULL;
 
+	int ti = 0;
 	CCDICT_FOREACH(m_cdBmNum,pCde){
 		t_name = pCde->getStrKey();
 		t_clbm = (CCLabelBMFont*) pCde->getObject();
 
-		t_clbm->setString(CCString::createWithFormat("%d",g_chara->getvalue(t_name))->getCString());
+		string tsMai = CCString::createWithFormat("%d",g_chara->getvalue(t_name))->getCString();
+		if(ti > 3 && ti < 14){
+			int ti = g_chara->getFixValue(t_name) - g_chara->getvalue(t_name);
+			string tsMid;
+			ti>0?tsMid="+":tsMid="";
+			string tsAto =  CCString::createWithFormat("%d",ti)->getCString();
+			t_clbm->removeAllChildren();
+			t_clbm->setString((tsMai + tsMid + tsAto).c_str());
+
+			CCArray* pArray = t_clbm->getChildren();
+			CCLog(">[BmVList] %s - length:%d", tsMai.c_str(), tsMai.length());
+			for(int tfi = tsMai.length(); tfi < pArray->count(); ++tfi){
+				CCSprite* tcs = (CCSprite*) pArray->objectAtIndex(tfi);
+				tcs->setColor(ccRED);
+			}
+
+		}else{
+			t_clbm->setString(tsMai.c_str());
+		}
+		++ti;
+		
 	}
 
 	// Equipment

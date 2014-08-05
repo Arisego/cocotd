@@ -27,6 +27,7 @@
 #include "TOUI/Spliter.h"
 #include "TOUI/HMenu.h"
 #include "TOUI/LgStat.h"
+#include "XxUI/BmVList.h"
 
 USING_NS_CC;
 using namespace std;
@@ -235,6 +236,9 @@ public:
 	void DelaySound(Script* ascp, CCObject* ae);		// <²¥·Å´øÔÝÍ£ÑÓ³ÙµÄÉùÒô
 	CCObject* mDSEChess;								// <»º´æÓÃ
 	void ReleaseSound();				// <½âËø|DelaySound()
+
+protected:
+	BmVList* mbvl;	/* <ÊôÐÔ±í-ÓÒ²à */ 
 
 };
 

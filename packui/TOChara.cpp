@@ -29,6 +29,7 @@
 TOChara::TOChara( int a_iCharaID,CCObject* target, SEL_MenuHandler selector )
 {
 	EventCenter::sharedEventCenter()->SetCharaTab(this);
+	EventCenter::sharedEventCenter()->setBmCake(this);
 
 	m_iCharaID	= -3;
 	m_iPage		= 0;
@@ -93,6 +94,7 @@ TOChara::~TOChara()
 	CC_SAFE_RELEASE_NULL(m_cdPopSkils);
 
 	EventCenter::sharedEventCenter()->SetCharaTab(NULL);
+	EventCenter::sharedEventCenter()->unsetBmCake(this);
 }
 
 void TOChara::RefreshView(int Page)
@@ -124,11 +126,17 @@ void TOChara::RefreshData( int Id )
 {
 	if(m_iCharaID == Id) return;
 
-	if(mSpStand) {mSpStand->removeFromParent();mSpStand = NULL;}
+	Chara* t_chara = NULL;
+	t_chara = CharaS::sharedCharaS()->getchara(Id);
+	if(!t_chara) t_chara = CharaS::sharedCharaS()->getIDChara(Id);
+	if(!t_chara) {
+		CCLog(">[TOChara] Wrong CharaID:%d", Id);
+		return;
+	}
 	m_iCharaID = Id;
 	m_iPage = 0;
-
-	g_chara = CharaS::sharedCharaS()->getchara(m_iCharaID);
+	g_chara = t_chara;
+	if(mSpStand) {mSpStand->removeFromParent();mSpStand = NULL;}
 
 	// <EqÊý¾Ý
 	CC_SAFE_RELEASE_NULL(m_cdEquips);
@@ -922,7 +930,7 @@ void TOChara::l_press()
 {
 	if(!m_bPopup){
 		int t = m_iPage;
-		RefreshData(min(m_iCharaID+1,CharaS::sharedCharaS()->m_iNumber-1));
+		RefreshData(m_iCharaID+1);
 		RefreshView(t);
 	}
 }
@@ -1043,4 +1051,10 @@ void TOChara::d_press()
 		break;
 	}
 }
+
+void TOChara::right_click()
+{
+	x_press();
+}
+
 

@@ -58,6 +58,7 @@ public:
 	int getvalue(string name);
 	void setvalue(string name, int val);
 	void addvalue(string name, int val);
+	void f_aa_addvalue(string name, int val);
 	void plusvalue(string name, int val);	// <不做任何检测，替代原有的Addvalue
 	void addBatValue(string name, int val);	// <针对b_数值做额外的优化
 

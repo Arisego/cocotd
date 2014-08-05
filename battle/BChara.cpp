@@ -669,7 +669,9 @@ void Chara::AddFiRate(int ai)
 void Chara::RemoveMAttrs(map<string,int> &attrs)
 {
 	for(map<string,int>::iterator it = attrs.begin(); it != attrs.end(); ++it){
-		m_iiAttrs[it->first.c_str()] -= it->second;
+		if(!it->first.compare("chp")) sethp(m_iiAttrs[it->first] - it->second);
+		else if(!it->first.compare("cmp")) setmp(m_iiAttrs[it->first] - it->second);
+		else m_iiAdditions[it->first.c_str()] -= it->second;
 	}
 }
 
@@ -677,7 +679,7 @@ void Chara::AddonMAttrs(map<string,int> &attrs)
 {
 	for(map<string,int>::iterator it = attrs.begin(); it != attrs.end(); ++it){
 		//m_iiAttrs[it->first.c_str()] += it->second;
-		addvalue(it->first.c_str(), it->second);
+		f_aa_addvalue(it->first.c_str(), it->second);	/* <这里发生了变更，数值混乱时请检查这里！！！ */
 	}
 }
 
@@ -1136,4 +1138,20 @@ void Chara::PlayVodActor()
 	mVodScp = NULL;
 	miSSCount = 0;
 	msHSMask.clear();
+}
+
+void Chara::f_aa_addvalue(string name, int val)
+{
+	if(name[0] == 'b'){
+		if(name[1] == '_'){
+			addBatValue(name,val);
+			return;
+		}
+	}
+
+	if(!name.compare("chp")) sethp(m_iiAttrs[name] + val);
+	else if(!name.compare("cmp")) setmp(m_iiAttrs[name] + val);
+	else {
+		m_iiAdditions[name] += val;
+	}
 }

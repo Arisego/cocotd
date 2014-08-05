@@ -17,9 +17,6 @@ protected:
 	CCDictionary* m_cdBmNum;
 	/* <装备按钮 */
 	vector<TOEquips*> m_vEBtns;	
-
-	/* <角色数据来源 */
-	Chara* g_chara;
 	//////////////////////////////////////////////////////////////////////////
 	// page id 1
 	/* name */
@@ -33,6 +30,8 @@ public:
 	~BmVList();
 	virtual bool init();
 	void	setChara(Chara* ac);
+	
+	Chara* g_chara;	/* <角色数据来源 */
 
 protected:
 	void	ShowContents();

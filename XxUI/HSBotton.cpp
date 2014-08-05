@@ -17,7 +17,7 @@ HSButton::HSButton(const char* aHover, const char* aSelect,int aw, int ah, bool 
 	addChild(spriteHover);
 
 	if(strlen(aSelect)>0){
-		spriteSelected = CCSprite::create(aHover); 
+		spriteSelected = CCSprite::create(aSelect); 
 		spriteSelected->setContentSize(CCSize(aw,ah));
 		spriteSelected->setAnchorPoint(ccp(0,0));
 		spriteSelected->setVisible(false);

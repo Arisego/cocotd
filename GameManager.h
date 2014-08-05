@@ -29,6 +29,7 @@ public:
 	{
 		SCENE_MENU,
 		SCENE_PLAY,
+		SCENE_ZB,
 		SCENE_GAMEOVER
 	};
 
