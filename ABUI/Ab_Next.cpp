@@ -15,10 +15,10 @@ AbNext::AbNext(int aw, int ah)
 	spriteNormal->setPosition(CCPointZero);
 	addChild(spriteNormal);
 
-	CCActionInterval* tcMove = CCMoveBy::create(0.2,ccp(40,0));
+	CCActionInterval* tcMove = CCMoveBy::create(0.2f,ccp(40,0));
 	spriteNormal->runAction(CCRepeatForever::create(CCSequence::create(
 		tcMove
-		, CCDelayTime::create(0.3)
+		, CCDelayTime::create(0.3f)
 		, tcMove->reverse()
 		, NULL
 		)));
@@ -28,6 +28,20 @@ AbNext::AbNext(int aw, int ah)
 	msNextText->setPosition(ccp(0,70));
 	msNextText->setVisible(true);
 	addChild(msNextText);
+
+	msNextText->runAction(CCRepeatForever::create(CCSequence::create(
+		CCFadeTo::create(0.1f,200)
+		, CCDelayTime::create(0.1f)
+		, CCFadeTo::create(0.1f,255)
+		, NULL
+		)));
+	
+	spriteNormal->runAction(CCRepeatForever::create(CCSequence::create(
+		CCFadeTo::create(0.2,100)
+		, CCDelayTime::create(0.3)
+		, CCFadeTo::create(0.2,255)
+		, NULL
+		)));
 	 
 	msNextTextHov = CCSprite::create("Images/UI/next_text_hov.png");
 	msNextTextHov->setAnchorPoint(CCPointZero);
