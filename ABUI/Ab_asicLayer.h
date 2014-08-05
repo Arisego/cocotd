@@ -10,6 +10,7 @@
 #include "byeven/BYCocos.h"
 #include "Ab_Head.h"
 #include "utils/States.h"
+#include "Ab_Next.h"
 USING_NS_CC;
 
 class ABasicLayer: public BYLayerDescendant, public StateMachine
@@ -22,6 +23,7 @@ public:
 
 	void	HdBack(CCObject* sender);		/* <头像点击返回 */
 	void	PopupBack(CCObject* sender);	/* <弹出人物属性返回 */
+	void	SCBack(CCObject* sender);		/* <系统相关三按钮返回 */
 private:
 	std::vector<ABHead*>	mvHeads;	// <左侧头像列表
 	virtual bool init();
@@ -32,6 +34,10 @@ private:
 	virtual void Resume();
 
 	int	miCid;	// <被选中的chara的ID
+
+protected:
+	CCLabelBMFont* mlbMoney;	// <金钱
+	AbNext*	mAbNext;			// <下一个
 };
 
 

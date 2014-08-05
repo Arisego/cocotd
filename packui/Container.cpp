@@ -6,6 +6,8 @@
 Container::Container(){
 	autorelease();
 	m_bIsEnabled = true;
+
+	m_pListener = NULL;
 	mLasto = NULL;
 }
 
@@ -29,6 +31,7 @@ void Container::activate()
 {
 	if (m_bIsEnabled)
 	{
+		if(!m_pListener) return;
 		if (m_pListener && m_pfnSelector)
 		{
 			(m_pListener->*m_pfnSelector)(this);
