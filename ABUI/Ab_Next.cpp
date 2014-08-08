@@ -30,9 +30,9 @@ AbNext::AbNext(int aw, int ah)
 	addChild(msNextText);
 
 	msNextText->runAction(CCRepeatForever::create(CCSequence::create(
-		CCFadeTo::create(0.1f,200)
-		, CCDelayTime::create(0.1f)
-		, CCFadeTo::create(0.1f,255)
+		CCFadeTo::create(0.2f,200)
+		, CCDelayTime::create(0.3f)
+		, CCFadeTo::create(0.2f,255)
 		, NULL
 		)));
 	

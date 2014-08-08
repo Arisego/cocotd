@@ -191,6 +191,9 @@ void ALSingle::stopBackgroundMusic(){
 	} 
 	Ogg_F t = oggs[bgpsz];
 	ov_raw_seek(t.oggFile,0);		// <ÖØÖÃ
+
+	alDeleteSources(1, &bgm_player);
+	alGenSources(1, &bgm_player);
 }
 
 
