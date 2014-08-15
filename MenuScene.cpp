@@ -122,7 +122,7 @@ void MenuScene::GoToGame()
 {
 	LockControl();
 	PreQuit();
-	GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
+	GameManager::sharedGameManager()->ChangeScene(GameManager::SCENE_PLAY,"script/fl_001.tos");
 }
 
 void MenuScene::NoQuit()

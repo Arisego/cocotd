@@ -696,7 +696,7 @@ void GameScene::DerChange(Script* s){
 		}
 	case -2:
 		{
-			ml->switch_to_battle(s->getstring("content"));
+			ml->switch_to_battle(s->getstring("content"),s->getint("enemy_group"));
 			break;
 		}
 	case 3:	// <地图的载入方案 >>1.初始化时统一载入并保存在ml中.2.运行时载入使用case2.考虑到相同地图使用不同脚本的情况，第一种可以设计分离，第二种实时性比较好。
@@ -800,9 +800,15 @@ void GameScene::DerChange(Script* s){
 			{
 			case 0:			//fade in [black] mask.
 				{
+					
 					if(!ms_Mask){					
-						ms_Mask = CCLayerColor::create(ccc4(0,0,0,0));
+						ms_Mask = CCLayerColor::create(ccc4(s->getint("r"), s->getint("g"), s->getint("b"), s->getint("a")));
 						addChild(ms_Mask,tLyMask);
+					}
+					else
+					{
+						ms_Mask->setColor(ccc3(s->getint("r"), s->getint("g"), s->getint("b")));
+						ms_Mask->setOpacity(s->getint("a"));
 					}
 					ms_Mask->runAction(CCSequence::create(FRETAIN,CCFadeIn::create(s->getfloat("time")),FRELEASE,NULL));
 					break;
@@ -865,6 +871,7 @@ void GameScene::DerChange(Script* s){
 			default:
 				break;
 			}
+			break;
 		}
 	case 12:	// < Toggle Text Layer Visibility
 		{
@@ -891,7 +898,7 @@ void GameScene::DerChange(Script* s){
 		}
 	case 14:	// <切换到整备Scene
 		{
-			GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_ZB);
+			GameManager::sharedGameManager()->ChangeScene(GameManager::SCENE_ZB, s->getint("zbid"));
 			break;
 		}
 	}//End of switch.

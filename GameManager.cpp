@@ -181,12 +181,13 @@ void GameManager::runSceneWithId(SceneId id)
 
 	case SCENE_PLAY:
 		mCurrentStage = GameScene::create();
-		mCurrentStage->scpfile = "script/init.xml";
+		mCurrentStage->scpfile = msCache.length()>0?msCache:"script/init.xml";
 		newScene = mCurrentStage;
 		break;
 
 	case SCENE_ZB:
-		newScene = ABScene::create();
+		newScene = new ABScene(miCache);
+
 		break;
 	case SCENE_GAMEOVER:
 //		newScene = GameOver::scene();
@@ -378,4 +379,18 @@ bool GameManager::fCanDirectQuit()
 	} while (false);
 	return true;
 	
+}
+
+void GameManager::ChangeScene(SceneId id, const char* atCn /*= ""*/)
+{
+	msCache = atCn;
+	runSceneWithId(id);
+}
+
+void GameManager::ChangeScene(SceneId id, int aid)
+{
+	miCache = aid;
+	if (aid == 0) exit(2001);
+
+	runSceneWithId(id);
 }

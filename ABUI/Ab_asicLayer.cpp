@@ -32,6 +32,7 @@ bool ABasicLayer::init()
 		mAbNext = new AbNext(83,74);
 		mAbNext->setAnchorPoint(CCPointZero);
 		mAbNext->setPosition(ccp(800,500));
+		mAbNext->setactivator(this, menu_selector(ABasicLayer::NxtBack));
 		addChild(mAbNext,0);
 
 		CCSize os = CCDirector::sharedDirector()->getVisibleSize();
@@ -261,6 +262,11 @@ void ABasicLayer::SCBack(CCObject* sender)
 	default:
 		break;
 	}
+}
+
+void ABasicLayer::NxtBack(CCObject* sender)
+{
+	ROOT_AB->GotoNext();
 }
 
 

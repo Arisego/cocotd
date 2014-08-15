@@ -24,6 +24,7 @@ public:
 	void	HdBack(CCObject* sender);		/* <头像点击返回 */
 	void	PopupBack(CCObject* sender);	/* <弹出人物属性返回 */
 	void	SCBack(CCObject* sender);		/* <系统相关三按钮返回 */
+	void	NxtBack(CCObject* sender);		/* <前进按钮返回 */
 private:
 	std::vector<ABHead*>	mvHeads;	// <左侧头像列表
 	virtual bool init();

@@ -71,6 +71,15 @@ public:
 
 	bool fCanDirectQuit(); /* <是否可以直接退出 */
 
+private:
+	/* <场景切换缓存组 */
+	string	msCache;
+	int		miCache;
+
+public:
+	void	ChangeScene(SceneId id, const char* atCn = "");
+	void	ChangeScene(SceneId id, int aid);
+
 };
 
 

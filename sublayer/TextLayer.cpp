@@ -371,7 +371,7 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 			last = tag;
 			return true;
 		}			
-	case 2:
+	case 2:	//2:载入动画
 		{
 			x = ts->getfloat("x");
 			y = ts->getfloat("y");
@@ -446,6 +446,11 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 				last = tag;
 				//[0803]CCLog(">[GS]:Load and remain:%d",tag);
 			}
+
+
+			int tFlip = ts->getint("flip");
+			if (tFlip) t_cs->setFlipX(true);
+
 			TagMap[name] = tag;
 			PathMap[name] = filename;
 			return true;
@@ -487,7 +492,7 @@ CCAction* ToTextLayer::DerAction(Script* ts, int indent){
 		const char* type = ts->getstring("type");
 		CCAction* t_ca = NULL;
 		static map<string,CCAction*> a_map;
-
+		
 		if(strcmp(type,"sequence") == 0 || strcmp(type,"spawn") == 0 || strcmp(type,"repeat") == 0){
 			int num = ts->m_snum;
 			CCArray* sl = ts->scriptnodes;
@@ -552,6 +557,9 @@ CCAction* ToTextLayer::DerAction(Script* ts, int indent){
 			t_ca =  CCRotateTo::create(ts->getfloat("duration"), ts->getfloat("x"),ts->getfloat("y"));
 		}else if(strcmp(type,"fadeto") == 0){
 			t_ca =  CCFadeTo::create(ts->getfloat("duration"), ts->getint("alpha"));
+		}
+		else if (strcmp(type, "textauto") == 0){
+			t_ca = CCSequence::createWithTwoActions(CCDelayTime::create(ts->getfloat("duration")), CCCallFunc::create(this, callfunc_selector(ToTextLayer::AutoNext)));
 		}
 
 

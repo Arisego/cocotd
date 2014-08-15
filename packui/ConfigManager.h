@@ -41,6 +41,8 @@ public:
 	~ConfigManager();
 
 	string GetConfigS(const char* msk);
+
+	string getZBState(int aiZBID);	/* <获得整备界面信息|JSON */
 };
 
 #endif

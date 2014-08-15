@@ -53,7 +53,7 @@ public:
 	~MapLayer();
 	MapLayer();
 
-	void switch_to_battle(string s);		//Switch to battle.
+	void switch_to_battle(string s, int ai = 0);		//Switch to battle.
 	void switch_to_walk();
 
 	TileMap* tm;

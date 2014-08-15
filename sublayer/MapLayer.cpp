@@ -1176,7 +1176,7 @@ void MapLayer::script_over()
 }
 
 // Test: Battle通常由GameScene借由msp或计算得出并调用。其开始和结束都必须保证通知到GameScene。
-void MapLayer::switch_to_battle( string s )
+void MapLayer::switch_to_battle( string s,int aig )
 {
 	m_iMLState = 2;				// <TODO |　EMERGENT | 使用脚步进行初始化 [START] 将轮转开始交给接口控制，同时将镜头控制纳入脚本接口(f_setcamera || 已实现)
 	if(wm){
@@ -1189,7 +1189,7 @@ void MapLayer::switch_to_battle( string s )
 		f_pauseall();
 		f_stopcontrol();
 	}
-	openBattleMap(s.c_str(),0);
+	openBattleMap(s.c_str(), aig);
 	
 	m_Spliter->f_open();
 	m_Spliter->ShowClock();

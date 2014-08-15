@@ -105,3 +105,29 @@ void ConfigManager::purgeSharedConfigManager()
 	CC_SAFE_DELETE(mSharedConfigManager);
 	
 }
+
+std::string ConfigManager::getZBState(int aiZBID)
+{
+	string ts_ret = "";
+
+	stringstream tSqlS;
+	tSqlS << "select * from zb_list ";
+	tSqlS << "where id = ";
+	tSqlS << ConvertToString(aiZBID);
+
+	CCLog(">[ConfigManager] getZBState() | %s", tSqlS.str().c_str());
+	vector<map<string, string>> vdata;
+	DBUtil::initDB("save.db");
+	vdata = DBUtil::getDataInfo(tSqlS.str(), NULL);
+	int m_number = vdata.size();
+
+	for (int i = 0; i < m_number; i++){
+		ts_ret = ((map<string, string>) vdata.at(i)).at("config");
+		if (ts_ret.length()>0){
+			break;
+		}
+	}
+
+	DBUtil::closeDB();
+	return ts_ret;
+}
