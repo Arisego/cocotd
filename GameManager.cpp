@@ -56,11 +56,11 @@ GameManager *GameManager::sharedGameManager()
 
 GameScene *GameManager::sharedLogicCenter()
 {
-	if(!mCurrentStage) 
+	if(!mCurrentStage && mSharedGameManager->state == SCENE_PLAY) 
 	{
 		GameScene* cur = (GameScene*) CCDirector::sharedDirector()->getRunningScene();
 		mCurrentStage = cur;
-		CCLOG("<<<<<< PB:GameScene is not requested normaly,the ptr may be a wrong one.");
+		CCLog("<<<<<< PB:GameScene is not requested normaly,the ptr may be a wrong one.");
 		
 	}
 	return mCurrentStage;
@@ -393,4 +393,9 @@ void GameManager::ChangeScene(SceneId id, int aid)
 	if (aid == 0) exit(2001);
 
 	runSceneWithId(id);
+}
+
+int GameManager::getCacheId()
+{
+	return miCache;
 }

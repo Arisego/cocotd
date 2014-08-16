@@ -6,6 +6,7 @@
 void BattleField::setSaveState(){
 	CCLog(">[BattleField] setSaveState()");
 	mbNeedSave = false;
+	if (!GameManager::sharedLogicCenter()) return;
 	if(GameManager::sharedLogicCenter()->ml->m_iMLState < 2) return;
 	GameManager::sharedLogicCenter()->ml->tm->DeActive();
 	GameManager::sharedLogicCenter()->ml->tm = GameManager::sharedLogicCenter()->ml->wm;
@@ -14,6 +15,7 @@ void BattleField::setSaveState(){
 
 void BattleField::unsetSaveState(){
 	CCLog(">[BattleField] unsetSaveState()");
+	if (!GameManager::sharedLogicCenter()) return;
 	if(GameManager::sharedLogicCenter()->ml->m_iMLState < 2) return;
 	GameManager::sharedLogicCenter()->ml->tm = GameManager::sharedLogicCenter()->ml->bm;
 	GameManager::sharedLogicCenter()->ml->tm->EnActive();

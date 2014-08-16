@@ -80,6 +80,8 @@ public:
 	void	ChangeScene(SceneId id, const char* atCn = "");
 	void	ChangeScene(SceneId id, int aid);
 
+	int		getCacheId();
+
 };
 
 

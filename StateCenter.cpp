@@ -123,6 +123,8 @@ bool StateCenter::f_save_file(const char* psz){
 		//////////////////////////////////////////////////////////////////////////
 		// <存档通知
 
+		GameManager::SceneId tSid = GameManager::sharedGameManager()->state;
+
 		// <保存GameScene中的变量并截图
 		GameManager::sharedLogicCenter()->PrepareSave();
 		BattleField::sharedBattleField()->setSaveState();
@@ -145,29 +147,51 @@ bool StateCenter::f_save_file(const char* psz){
 
 		TiXmlElement *PngElement = new TiXmlElement("png");
 		PackElement->LinkEndChild(PngElement);
-		PngElement->SetAttribute("type",m_iState);
-		PngElement->SetAttribute("content",m_sName.c_str());
-		PngElement->SetAttribute("jump",m_iJump);
-		PngElement->SetAttribute("olds",m_oldstate);
-		PngElement->SetAttribute("bgi",m_sBgi.c_str());
-		PngElement->SetAttribute("bgi_x",((CCString*) CCString::createWithFormat("f%f",mfBgiX))->getCString());
-		PngElement->SetAttribute("bgi_y",((CCString*) CCString::createWithFormat("f%f",mfBgiY))->getCString());
-		//[Error]CCLOG(">>Save to file.%s",m_sBgi.c_str());
-		PngElement->SetAttribute("tjump",m_iTJump);
+		PngElement->SetAttribute("scene_id", tSid);
 
-		for(map<string,int>::iterator it = TagMap.begin(); it != TagMap.end(); ++it){
-			if(it->second == 0) continue;
-			TiXmlElement *LockElement = new TiXmlElement("lock");
-			PngElement->LinkEndChild(LockElement);
-			LockElement->SetAttribute("name",it->first.c_str());
-			LockElement->SetAttribute("tag",it->second);
-			LockElement->SetAttribute("content",PathMap[it->first].c_str());
+		switch (tSid)
+		{
+		case GameManager::SCENE_MENU:
+			break;
+		case GameManager::SCENE_PLAY:
+			{
+				PngElement->SetAttribute("type", m_iState);
+				PngElement->SetAttribute("content", m_sName.c_str());
+				PngElement->SetAttribute("jump", m_iJump);
+				PngElement->SetAttribute("olds", m_oldstate);
+				PngElement->SetAttribute("bgi", m_sBgi.c_str());
+				PngElement->SetAttribute("bgi_x", ((CCString*)CCString::createWithFormat("f%f", mfBgiX))->getCString());
+				PngElement->SetAttribute("bgi_y", ((CCString*)CCString::createWithFormat("f%f", mfBgiY))->getCString());
+				//[Error]CCLOG(">>Save to file.%s",m_sBgi.c_str());
+				PngElement->SetAttribute("tjump", m_iTJump);
 
-			//[Error]CCLOG(">save for png by tag:%d",it->second);
-			CCSprite* t_ccs = (CCSprite*) GameManager::sharedLogicCenter()->te->getChildByTag(it->second);
-			LockElement->SetAttribute("x",((CCString*) CCString::createWithFormat("f%f",t_ccs->getPositionX()))->getCString());
-			LockElement->SetAttribute("y",((CCString*) CCString::createWithFormat("f%f",t_ccs->getPositionY()))->getCString());
-			LockElement->SetAttribute("angel",((CCString*) CCString::createWithFormat("f%f",t_ccs->getRotation()))->getCString());
+				for (map<string, int>::iterator it = TagMap.begin(); it != TagMap.end(); ++it){
+					if (it->second == 0) continue;
+					TiXmlElement *LockElement = new TiXmlElement("lock");
+					PngElement->LinkEndChild(LockElement);
+					LockElement->SetAttribute("name", it->first.c_str());
+					LockElement->SetAttribute("tag", it->second);
+					LockElement->SetAttribute("content", PathMap[it->first].c_str());
+
+					//[Error]CCLOG(">save for png by tag:%d",it->second);
+					CCSprite* t_ccs = (CCSprite*)GameManager::sharedLogicCenter()->te->getChildByTag(it->second);
+					LockElement->SetAttribute("x", ((CCString*)CCString::createWithFormat("f%f", t_ccs->getPositionX()))->getCString());
+					LockElement->SetAttribute("y", ((CCString*)CCString::createWithFormat("f%f", t_ccs->getPositionY()))->getCString());
+					LockElement->SetAttribute("angel", ((CCString*)CCString::createWithFormat("f%f", t_ccs->getRotation()))->getCString());
+				}
+				break;
+			}			
+		case GameManager::SCENE_ZB:
+			{
+				PngElement->SetAttribute("zb_id", GameManager::sharedGameManager()->getCacheId());
+				break;
+			}		
+		case GameManager::SCENE_GAMEOVER:
+			break;
+		default:
+			CCLog(">[StateCenter] GameMamager State not avalible.");
+			exit(2004);
+			break;
 		}
 		
 		//////////////////////////////////////////////////////////////////////////
@@ -536,18 +560,37 @@ bool StateCenter::f_load_file(const char* psz){
 			switch(t->getint("type")){
 			case(0):					// <脚本文件状态
 				{
-					t =(Script*) t->scriptnodes->objectAtIndex(0);
-					m_iState	=	t->getint("type");
-					m_iJump		=	t->getint("jump");
-					m_sName		=	t->getstring("content");
-					m_oldstate	=	t->getint("olds");
-					m_sBgi		=	t->getstring("bgi");
-					mfBgiX		=	t->getfloat("bgi_x");
-					mfBgiY		=	t->getfloat("bgi_y");
-					m_iTJump	=	t->getint("tjump");
-					GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
-					m_scTags	=	t;
-					m_scTags->retain();
+					t = (Script*)t->scriptnodes->objectAtIndex(0);
+					GameManager::SceneId tSId = (GameManager::SceneId)t->getint("scene_id");
+					switch (tSId)
+					{
+					case GameManager::SCENE_MENU:
+						break;
+					case GameManager::SCENE_PLAY:
+						
+						m_iState = t->getint("type");
+						m_iJump = t->getint("jump");
+						m_sName = t->getstring("content");
+						m_oldstate = t->getint("olds");
+						m_sBgi = t->getstring("bgi");
+						mfBgiX = t->getfloat("bgi_x");
+						mfBgiY = t->getfloat("bgi_y");
+						m_iTJump = t->getint("tjump");
+						GameManager::sharedGameManager()->runSceneWithId(GameManager::SCENE_PLAY);
+						m_scTags = t;
+						m_scTags->retain();
+						break;
+					case GameManager::SCENE_ZB:
+						{
+							int tZbId = t->getint("zb_id");
+							GameManager::sharedGameManager()->ChangeScene(GameManager::SCENE_ZB, tZbId);
+							break;
+						}
+					case GameManager::SCENE_GAMEOVER:
+						break;
+					default:
+						break;
+					}
 					return true;
 				}
 			}
@@ -628,6 +671,10 @@ void StateCenter::f_load_lock(Script* ts){
 void StateCenter::f_get_state(){
 	GameScene* gs = GameManager::sharedLogicCenter();
 	il = NULL;
+	if (!gs) {
+		CCLog(">[StateCenter] f_get_state()| Not in GameScene.");
+		return;
+	}
 	//////////////////////////////////////////////////////////////////////////
 	m_oldstate	=	gs->las_state;
 	m_iState	=	gs->e_State;

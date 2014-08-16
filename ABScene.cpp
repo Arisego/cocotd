@@ -1,5 +1,7 @@
 #include "ABScene.h"
 #include "packui\ConfigManager.h"
+#include "StateCenter.h"
+#include "GameManager.h"
 
 ABScene::~ABScene()
 {
@@ -27,6 +29,7 @@ ABScene::ABScene(int zid)
 	ReadConfig();
 	init();
 	autorelease();
+	StateCenter::sharedStateCenter()->f_LoadOver();
 }
 
 void ABScene::ReadConfig()
@@ -42,7 +45,6 @@ void ABScene::ReadConfig()
 
 void ABScene::GotoNext()
 {
-	// TODO<<<<
-	exit(333);
+	GameManager::sharedGameManager()->ChangeScene(GameManager::SCENE_PLAY, mjvConfig["next_map"].asCString());
 }
 

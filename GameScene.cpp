@@ -104,19 +104,26 @@ void *initmusic(void *arg){
 	CCArray* mss = s_sp->initcs;
 	int i = 0;
 	Script* s;
-	for(;i<mss->count();++i){
-		s = (Script*) mss->objectAtIndex(i);
-		if(s->getint("type") == 2) break;			// Initcs -- Type == 2 -- Music Initilize. 唯一
-	//	CC_SAFE_RELEASE_NULL(s);
+	if (mss){
+		for (; i < mss->count(); ++i){
+			s = (Script*)mss->objectAtIndex(i);
+			if (s->getint("type") == 2) break;			// Initcs -- Type == 2 -- Music Initilize. 唯一
+			//	CC_SAFE_RELEASE_NULL(s);
+		}
 	}
+
 	CCLog(">[GameScene] T_Music:Preparing Buffer.");
 	CCArray* sss = s->scriptnodes;
 	Script* t;
-	for(i=0;i<s->m_snum;++i){
-		t = (Script*) sss->objectAtIndex(i);
-		SoundManager::sharedSoundManager()->PreLoadSrc(t->getstring("path"));
-		CCLog(">[GameScene] T_Music:%s.",t->getstring("path"));
+
+	if (sss){
+		for (i = 0; i < s->m_snum; ++i){
+			t = (Script*)sss->objectAtIndex(i);
+			SoundManager::sharedSoundManager()->PreLoadSrc(t->getstring("path"));
+			CCLog(">[GameScene] T_Music:%s.", t->getstring("path"));
+		}
 	}
+
 	CCLog(">[GameScene] T_Music:Return.");
 	return ((void *)0);
 }
@@ -175,13 +182,17 @@ void *initfiles(void *arg){
 	CCLOG(">PT_LOCK_PASS");
 	//Img Cache Begin.Use Png only.
 	CCArray* mss = s_sp->initcs;
-	int i = 0;
-	Script* s;
-	for(;i<mss->count();++i){
-		s = (Script*) mss->objectAtIndex(i);
-		if(s->getint("type") == 1) initImg(s);			// Initcs -- Type == 1 -- Png Pack. Multi.
-		//CC_SAFE_RELEASE_NULL(s);
+
+	if (mss){
+		int i = 0;
+		Script* s;
+		for (; i < mss->count(); ++i){
+			s = (Script*)mss->objectAtIndex(i);
+			if (s->getint("type") == 1) initImg(s);			// Initcs -- Type == 1 -- Png Pack. Multi.
+			//CC_SAFE_RELEASE_NULL(s);
+		}
 	}
+
 
 
 	pthread_create(&music,NULL,initmusic,(void *)1);
@@ -899,6 +910,25 @@ void GameScene::DerChange(Script* s){
 	case 14:	// <切换到整备Scene
 		{
 			GameManager::sharedGameManager()->ChangeScene(GameManager::SCENE_ZB, s->getint("zbid"));
+			break;
+		}
+	case 15:	// <切换地图层显示
+		{
+		switch (s->getint("val"))
+		{
+			case 0:
+			{
+				ml->setVisible(false);
+				break;
+			}
+			case 1:
+			{
+				ml->setVisible(true);
+				break;
+			}
+			default:
+				break;
+		}
 			break;
 		}
 	}//End of switch.

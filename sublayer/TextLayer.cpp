@@ -11,6 +11,7 @@
 #include "actions/CCAction.h"
 #include <map>
 #include "XxUI/HSBotton.h"
+#include "XxUI/TxTajie.h"
 
 USING_NS_CC;
 
@@ -18,6 +19,7 @@ USING_NS_CC;
 #define AUTO_ACTION_TAG 1001
 #define SKIP_TIME 0.1
 #define FONT_WIDTH 26			// [AT]: If you change this value remember to change the size of "Images/block.png" to FW + 1.
+#define TAG_GREY_TAGI	8010
 
 #define UI_ZORDER 100
 
@@ -343,35 +345,35 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 	{
 	case -1: //Grey it
 		{
-			CCSprite* tcs =(CCSprite*) getChildByTag(tag);
+		TxTajie* tcs = (TxTajie*)getChildByTag(tag);
 			if(tcs) {
-				tcs->runAction(CCTintBy::create(0,-130,-130,-130));
-				//[0803]CCLog(">[GS]:gray the tj:%d",tag);
+				tcs->f_SetGrey(true);
+				CCLog(">[GS]:gray the tj:%d",tag);
 			}
 				
 			break;
 		}
 	case 1:  // 0:change the color;
 		{
-			//[0803]CCLog(">[GS]change color:fade-%d,light-%d",last,tag);
-			CCSprite* tcs =(CCSprite*) getChildByTag(last);
+			//[0803]
+			CCLog(">[GS]change color:fade-%d,light-%d",last,tag);
+			TxTajie* tcs = (TxTajie*)getChildByTag(last);
 			if(last != 0&&tcs) {
-				tcs->runAction(CCTintBy::create(0,-130,-130,-130));
+				tcs->f_SetGrey(true);
 				//[0803]CCLog(">[GS]:fade succes");
 			}
 				
-			tcs =(CCSprite*) getChildByTag(tag);
-			CCFiniteTimeAction* dr = CCTintBy::create(0,-130,-130,-130);
+			tcs = (TxTajie*)getChildByTag(tag);
 			if(tcs) {
-				tcs->runAction(dr->reverse());
-				//[0803]CCLog(">[GS]:Light succes");
+				tcs->f_SetGrey(false);
+				CCLog(">[GS]:Light tcs:%d", tag);
 			}
 				
 
 			last = tag;
 			return true;
 		}			
-	case 2:	//2:载入动画
+	case 2:	// 2:载入动画
 		{
 			x = ts->getfloat("x");
 			y = ts->getfloat("y");
@@ -424,7 +426,7 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 
 			GameManager::sharedLogicCenter()->f_cachetest(filename);		//读入缓存文件，如果文件未缓存而filename不是本地文件，将会出现错误。
 			
-			cocos2d::CCSprite* t_cs = cocos2d::CCSprite::create(filename);
+			TxTajie* t_cs = TxTajie::create(filename);
 			t_cs->setPosition(ccp(x,y));
 			t_cs->setAnchorPoint(CCPoint(0.5,0.5));
 			t_cs->setTag(tag);
@@ -439,8 +441,8 @@ bool ToTextLayer::DerLoadImg(Script* ts){	//meta
 			int zorder = ts->getint("zorder");
 			addChild(t_cs,ts->getint("zorder"));
 			if(zorder == 0 && ts->getint("link") == 0){
-				t_cs->runAction(CCTintBy::create(0,-130,-130,-130));
-				//[0803]CCLog(">[GS]:Load and grey:%d",tag);
+				t_cs->f_SetGrey(true);
+				CCLog(">[GS]:Load and grey:%d",tag);
 			}
 			if(ts->getint("link") == 1) {		
 				last = tag;
